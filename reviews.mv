@@ -133,12 +133,6 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0008', 'An error occured while creating the table ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalValues. Please make sure this table was not already created.' ) }">
 	</MvIF>
 
-	<MvQUERY	NAME	= "Merchant"
-				QUERY	= "{ 'CREATE UNIQUE INDEX ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalValues ON ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalValues ( id )' }">
-	<MvIF EXPR = "{ g.MvQUERY_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0009', g.MvQUERY_Error ) }">
-	</MvIF>
-
 	<MvCOMMENT>
 	|
 	|	Create Store Keys.
@@ -165,9 +159,17 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Uninstall_Store" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $  g.Store_Table_Prefix $ 'TGReviews_Settings' }">
+	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $  g.Store_Table_Prefix $ 'TGReviews_Products'}">
+	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $  g.Store_Table_Prefix $ 'TGReviews_Store'}">
+	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $  g.Store_Table_Prefix $ 'TGReviews_AdditionalFields'}">
+	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $  g.Store_Table_Prefix $ 'TGReviews_AdditionalValues'}">
+
+	<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Library_DB ].StoreKey_Delete( 'TGRProduct' ) }">
+	<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Library_DB ].StoreKey_Delete( 'TGRStore' ) }">
+	<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Library_DB ].StoreKey_Delete( 'TGRAdditional' ) }">
 	<MvFUNCTIONRETURN VALUE = 1 />
 </MvFUNCTION>
-
 
 
 <MvCOMMENT>
