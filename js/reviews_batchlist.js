@@ -3,6 +3,8 @@ function Reviews_Batchlist() {
 	MMBatchList.call( this, 'jsReviews_Batchlist' );
 	this.Feature_SearchBar_SetPlaceholderText( 'Search Reviews...' );
 	this.SetDefaultSort( 'id', '-' );
+	this.Feature_Add_Enable('Add Review');
+	this.Feature_Edit_Enable('Edit Review(s)');
 	this.Feature_Delete_Enable('Delete Reviews(s)');
 	this.Feature_RowDoubleClick_Enable();
 	this.processingdialog = new ProcessingDialog();
@@ -25,7 +27,9 @@ Reviews_Batchlist.prototype.onCreateRootColumnList = function() {
 				.SetDisplayInList(false)
 				.SetAdvancedSearchEnabled(false),
 			new Reviews_ProductLookup_Column( 'Product Code', 'product_code', 'product_code'),
-			new MMBatchList_Column_Name( 'Product Name', 'product_name', 'product_name'),
+			new MMBatchList_Column_Name( 'Product Name', 'product_name', 'product_name')
+				.SetOnDisplayEdit( function( record ) { return DrawMMBatchListString_Data( record.order_id ); } )
+				.SetUpdateOnModifiedOnly( true ),
 			new MMBatchList_Column_DateTime( 'Date', 'created', 'created'),
 			new MMBatchList_Column_Name( 'Product ID', 'product_id', 'product_id')
 				.SetAdvancedSearchEnabled(false)
@@ -37,8 +41,10 @@ Reviews_Batchlist.prototype.onCreateRootColumnList = function() {
 				.SetDisplayInMenu(false)
 				.SetDisplayInList(false)
 				.SetAdvancedSearchEnabled(false),
-			new MMBatchList_Column_Name( 'Order ID', 'order_id', 'order_id'),
-			new MMBatchList_Column_Name( 'Rating', 'rating', 'rating' ),
+			new MMBatchList_Column_Numeric( 'Order ID', 'order_id', 'order_id')
+				.SetOnDisplayEdit( function( record ) { return DrawMMBatchListString_Data( record.order_id ); } )
+				.SetUpdateOnModifiedOnly( true ),
+			new MMBatchList_Column_Numeric( 'Rating', 'rating', 'rating' ),
 			new MMBatchList_Column_Name( 'Name', 'name', 'name' ),
 			new MMBatchList_Column_Name( 'Email', 'email', 'email' ),
 			new MMBatchList_Column_Name( 'Location', 'location', 'location' ),
@@ -50,4 +56,27 @@ Reviews_Batchlist.prototype.onCreateRootColumnList = function() {
 		];
 	}
 	return columnlist;
+}
+
+Reviews_Batchlist.prototype.onCreate = function() {
+	var record;
+	record = new Object();
+	record.approved = 0;
+	record.question = '';
+	record.created = Date.now() / 1000 | 0;
+	record.cust_id = 0;
+	record.order_id = '';
+	record.rating = '';
+	record.name = '';
+	record.email = '';
+	record.location = '';
+	record.notify = 0;
+	record.title = '';
+	record.summary = '';
+	if ( type == 'Product') {
+		record.product_id = 0;
+		record.product_code = '';
+		record.product_name = '';
+	}
+	return record;
 }
