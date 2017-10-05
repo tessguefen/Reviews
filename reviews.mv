@@ -5,7 +5,7 @@
 	<MvASSIGN NAME = "l.module:version"		VALUE = "1.000">
 	<MvASSIGN NAME = "l.module:api_ver"		VALUE = "9.00">
 	<MvASSIGN NAME = "l.module:description"	VALUE = "All the Reviews!">
-	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store">
+	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside">
 	<MvCOMMENT><MvASSIGN NAME = "l.module:features"	VALUE = "system, vis_system, component, data_store, vis_product, json, clientside, import, export"></MvCOMMENT>
 </MvFUNCTION>
 
@@ -166,4 +166,78 @@
 
 <MvFUNCTION NAME = "Module_Uninstall_Store" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvFUNCTIONRETURN VALUE = 1 />
+</MvFUNCTION>
+
+
+
+<MvCOMMENT>
+| 
+|	system
+| 
+</MvCOMMENT>
+
+<MvFUNCTION NAME = "SystemModule_Action" PARAMETERS = "module var, action" STANDARDOUTPUTLEVEL = "compresswhitespace">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "SystemModule_Screen" PARAMETERS = "module var, screen" STANDARDOUTPUTLEVEL = "compresswhitespace">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "SystemModule_UIException" PARAMETERS = "module var, exception" STANDARDOUTPUTLEVEL = "compresswhitespace">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvCOMMENT>
+|
+|	vis_system
+|
+</MvCOMMENT>
+
+
+<MvFUNCTION NAME = "Module_System_Tabs" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = "TGR_SETT:Reviews Settings,TGR_PROD:Product Reviews,TGR_STORE:Store Reviews">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_System_Head" PARAMETERS = "module var, tab" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ ( l.tab NE 'TGR_SETT' ) AND ( l.tab NE 'TGR_PROD' ) AND ( l.tab NE 'TGR_STORE' )  }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_System_Content" PARAMETERS = "module var, tab, load_fields" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvIF EXPR = "{ ( l.tab NE 'TGR_SETT' ) AND ( l.tab NE 'TGR_PROD' ) AND ( l.tab NE 'TGR_STORE' )  }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+	hai.
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_System_Update" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "html, text, compresswhitespace">
+	<MvIF EXPR = "{ ( l.tab NE 'TGR_SETT' ) AND ( l.tab NE 'TGR_PROD' ) AND ( l.tab NE 'TGR_STORE' )  }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_System_Validate" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "compresswhitespace">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvCOMMENT>
+|
+|	json
+|
+</MvCOMMENT>
+
+<MvFUNCTION NAME = "Module_JSON" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "html, text, compresswhitespace" ERROROUTPUTLEVEL = "">
+</MvFUNCTION>
+
+<MvCOMMENT>
+|
+|	clientside
+|
+</MvCOMMENT>
+<MvFUNCTION NAME = "Module_Clientside" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "html, text" ERROROUTPUTLEVEL = "">
 </MvFUNCTION>
