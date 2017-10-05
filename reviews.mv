@@ -1,0 +1,169 @@
+<MvFUNCTION NAME = "Module_Description" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "compresswhitespace">
+	<MvASSIGN NAME = "l.module:code"		VALUE = "tgreviews">
+	<MvASSIGN NAME = "l.module:name"		VALUE = "Reviews! With things that work!">
+	<MvASSIGN NAME = "l.module:provider"	VALUE = "Tess Guefen">
+	<MvASSIGN NAME = "l.module:version"		VALUE = "1.000">
+	<MvASSIGN NAME = "l.module:api_ver"		VALUE = "9.00">
+	<MvASSIGN NAME = "l.module:description"	VALUE = "All the Reviews!">
+	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store">
+	<MvCOMMENT><MvASSIGN NAME = "l.module:features"	VALUE = "system, vis_system, component, data_store, vis_product, json, clientside, import, export"></MvCOMMENT>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_Install_Store" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvCOMMENT>
+	|
+	|	Create Settings table.
+	|
+	</MvCOMMENT>
+
+	<MvQUERY	NAME = "Merchant"
+				QUERY = "{ 'CREATE TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Settings
+							(
+								name	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 255 ) $	',
+								value	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 255 ) $ '
+							)' }">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0001', 'An error occured while creating the table ' $ g.Store_Table_Prefix $ 'TGReviews_Settings. Please make sure this table was not already created.' ) }">
+	</MvIF>
+
+	<MvQUERY	NAME = "Merchant"
+				QUERY = "{ 'CREATE TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Products
+							(
+								id			' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+								created		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+								product_id	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+								cust_id		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+								order_id	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+								approved	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_BOOL()			$ ',
+								rating		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+								name		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 255 ) 		$ ',
+								email		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 255 ) 		$ ',
+								location	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 255 ) 		$ ',
+								notify		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_BOOL()	 		$ ',
+								title		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 255 ) 		$ ',
+								summary		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_MEMO()			$ '
+							)' }">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0002', 'An error occured while creating the table ' $ g.Store_Table_Prefix $ 'TGReviews_Products. Please make sure this table was not already created.' ) }">
+	</MvIF>
+
+	<MvCOMMENT>
+	|
+	|	Create Product Reviews table.
+	|
+	</MvCOMMENT>
+
+	<MvQUERY	NAME	= "Merchant"
+				QUERY	= "{ 'CREATE UNIQUE INDEX ' $ g.Store_Table_Prefix $ 'TGReviews_Products ON ' $ g.Store_Table_Prefix $ 'TGReviews_Products ( id )' }">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0003', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvCOMMENT>
+	|
+	|	Create Store Reviews table.
+	|
+	</MvCOMMENT>
+
+	<MvQUERY	NAME = "Merchant"
+				QUERY = "{ 'CREATE TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Store
+							(
+								id			' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+								created		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+								cust_id		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+								order_id	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+								approved	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+								name		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 255 ) 		$ ',
+								email		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 255 ) 		$ ',
+								location	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 255 ) 		$ ',
+								rating		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+								title		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 255 ) 		$ ',
+								summary		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_MEMO()			$ '
+							)
+				' }">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0004', 'An error occured while creating the table ' $ g.Store_Table_Prefix $ 'TGReviews_Store. Please make sure this table was not already created.' ) }">
+	</MvIF>
+
+	<MvQUERY	NAME	= "Merchant"
+				QUERY	= "{ 'CREATE UNIQUE INDEX ' $ g.Store_Table_Prefix $ 'TGReviews_Store ON ' $ g.Store_Table_Prefix $ 'TGReviews_Store ( id )' }">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0005', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvCOMMENT>
+	|
+	|	Create Additional Fields table.
+	|
+	</MvCOMMENT>
+
+	<MvQUERY	NAME = "Merchant"
+				QUERY = "{ 'CREATE TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalFields
+							(
+								id			' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+								code		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 255 )		$ ',
+								name		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 255 )		$ '
+							)
+				' }">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0006', 'An error occured while creating the table ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalFields. Please make sure this table was not already created.' ) }">
+	</MvIF>
+
+	<MvQUERY	NAME	= "Merchant"
+				QUERY	= "{ 'CREATE UNIQUE INDEX ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalFields ON ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalFields ( id )' }">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0007', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvCOMMENT>
+	|
+	|	Create Additional Field Values table.
+	|
+	</MvCOMMENT>
+
+	<MvQUERY	NAME = "Merchant"
+				QUERY = "{ 'CREATE TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalValues
+							(
+								field_id	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+								rating_id	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+								value		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 255 )		$ '
+							)
+				' }">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0008', 'An error occured while creating the table ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalValues. Please make sure this table was not already created.' ) }">
+	</MvIF>
+
+	<MvQUERY	NAME	= "Merchant"
+				QUERY	= "{ 'CREATE UNIQUE INDEX ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalValues ON ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalValues ( id )' }">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0009', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvCOMMENT>
+	|
+	|	Create Store Keys.
+	|		TGRProduct, TGRStore, TGRAdditional
+	|
+	</MvCOMMENT>
+
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].StoreKey_Insert( 'TGRProduct', 1 ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0010', 'An error occured while creating the store key, TGRProduct. Please make sure this does not already exsist.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].StoreKey_Insert( 'TGRStore', 1 ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0011', 'An error occured while creating the store key, TGRStore. Please make sure this does not already exsist.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].StoreKey_Insert( 'TGRAdditional', 1 ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0012', 'An error occured while creating the store key, TGRAdditional. Please make sure this does not already exsist.' ) }">
+	</MvIF>
+	<MvFUNCTIONRETURN VALUE = 1 />
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_Upgrade_Store" PARAMETERS = "module var, version" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1 />
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_Uninstall_Store" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1 />
+</MvFUNCTION>
