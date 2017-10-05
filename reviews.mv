@@ -233,7 +233,13 @@
 |
 </MvCOMMENT>
 
-<MvFUNCTION NAME = "Module_JSON" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "html, text, compresswhitespace" ERROROUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Module_JSON" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }">
+		<MvFUNCTIONRETURN>
+	</MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'Product_Reviews_Load_Query' }">
+		<MvFUNCTIONRETURN VALUE = "{ Product_Reviews_Load_Query( l.module ) }">
+	</MvIF>
 </MvFUNCTION>
 
 <MvCOMMENT>
@@ -241,5 +247,18 @@
 |	clientside
 |
 </MvCOMMENT>
-<MvFUNCTION NAME = "Module_Clientside" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "html, text" ERROROUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Module_Clientside" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, compresswhitespace" ERROROUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }">
+		<MvFUNCTIONRETURN>
+	</MvIF>
+	<MvIF EXPR = "{ g.Filename EQ 'Reviews_Batchlist.js' }">
+		<MvEVAL EXPR = "{ [ g.Module_Clientside ].Module_Content_Type( l.module, 'text/javascript' ) }">
+		<MvINCLUDE FILE = "js/reviews_batchlist.js">
+	</MvIF>
+	<MvIF EXPR = "{ g.Filename EQ 'Reviews_Functions.js' }">
+		<MvEVAL EXPR = "{ [ g.Module_Clientside ].Module_Content_Type( l.module, 'text/javascript' ) }">
+		<MvINCLUDE FILE = "js/reviews_functions.js">
+	</MvIF>
 </MvFUNCTION>
+
+<MvINCLUDE FILE = "functions.mv">
