@@ -201,9 +201,29 @@
 	<MvFUNCTIONRETURN VALUE = "TGR_SETT:Reviews Settings,TGR_PROD:Product Reviews,TGR_STORE:Store Reviews">
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Module_System_Head" PARAMETERS = "module var, tab" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Module_System_Head" PARAMETERS = "module var, tab" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
 	<MvIF EXPR = "{ ( l.tab NE 'TGR_SETT' ) AND ( l.tab NE 'TGR_PROD' ) AND ( l.tab NE 'TGR_STORE' )  }">
 		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+	<MvIF EXPR = "{ ( l.tab EQ 'TGR_PROD' ) OR ( l.tab EQ 'TGR_STORE' ) }">
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_JavaScript() }">
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_CSS() }">
+		<MvIF EXPR = "{ l.tab EQ 'TGR_PROD' }">
+			<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_ProductLookup_Dialog_JavaScript() }">
+			<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_ProductLookup_Dialog_CSS() }">
+			<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_ProductLookup.js' }"></script>
+		</MvIF>
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_CSS() }">
+		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_Functions.js' }"></script>
+		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_Batchlist.js' }"></script>
+		<script language="JavaScript">
+			<MvIF EXPR = "{ l.tab EQ 'TGR_PROD' }">
+			var type = 'Product';
+			<MvELSE>
+			var type = 'Store';
+			</MvIF>
+			MMScreen_LoadFinished( function() { new Reviews_Batchlist(); } );
+		</script>
 	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
@@ -212,7 +232,13 @@
 	<MvIF EXPR = "{ ( l.tab NE 'TGR_SETT' ) AND ( l.tab NE 'TGR_PROD' ) AND ( l.tab NE 'TGR_STORE' )  }">
 		<MvFUNCTIONRETURN VALUE = 1>
 	</MvIF>
-	hai.
+	<MvIF EXPR = "{ ( l.tab EQ 'TGR_PROD' ) OR ( l.tab EQ 'TGR_STORE' ) }">
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_HTML() }">
+		<div id="jsReviews_Batchlist"></div>
+		<MvIF EXPR = "{ l.tab EQ 'TGR_PROD' }">
+			<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_ProductLookup_Dialog_HTML() }">
+		</MvIF>
+	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -233,12 +259,9 @@
 |
 </MvCOMMENT>
 
-<MvFUNCTION NAME = "Module_JSON" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
-	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }">
-		<MvFUNCTIONRETURN>
-	</MvIF>
+<MvFUNCTION NAME = "Module_JSON" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ g.Module_Function EQ 'Product_Reviews_Load_Query' }">
-		<MvFUNCTIONRETURN VALUE = "{ Product_Reviews_Load_Query( l.module ) }">
+		<MvEVAL EXPR = "{ Product_Reviews_Load_Query( l.module ) }">
 	</MvIF>
 </MvFUNCTION>
 
@@ -248,9 +271,6 @@
 |
 </MvCOMMENT>
 <MvFUNCTION NAME = "Module_Clientside" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, compresswhitespace" ERROROUTPUTLEVEL = "">
-	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }">
-		<MvFUNCTIONRETURN>
-	</MvIF>
 	<MvIF EXPR = "{ g.Filename EQ 'Reviews_Batchlist.js' }">
 		<MvEVAL EXPR = "{ [ g.Module_Clientside ].Module_Content_Type( l.module, 'text/javascript' ) }">
 		<MvINCLUDE FILE = "js/reviews_batchlist.js">
@@ -258,6 +278,10 @@
 	<MvIF EXPR = "{ g.Filename EQ 'Reviews_Functions.js' }">
 		<MvEVAL EXPR = "{ [ g.Module_Clientside ].Module_Content_Type( l.module, 'text/javascript' ) }">
 		<MvINCLUDE FILE = "js/reviews_functions.js">
+	</MvIF>
+	<MvIF EXPR = "{ g.Filename EQ 'Reviews_ProductLookup.js' }">
+		<MvEVAL EXPR = "{ [ g.Module_Clientside ].Module_Content_Type( l.module, 'text/javascript' ) }">
+		<MvINCLUDE FILE = "js/reviews_productlookup.js">
 	</MvIF>
 </MvFUNCTION>
 
