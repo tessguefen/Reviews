@@ -1,3 +1,8 @@
+<MvCOMMENT>
+|
+|	Product Review Functions
+|
+</MvCOMMENT>
 <MvFUNCTION NAME = "Product_Reviews_Load_Query" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
 	<MvASSIGN NAME = "g.Filter"			VALUE = "{ trim( g.Filter ) }">
 	<MvASSIGN NAME = "g.Sort"			VALUE = "{ trim( g.Sort ) }">
@@ -63,10 +68,72 @@
 
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Products_Reviews_Update" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Product_Reviews_Update" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
 	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Products_Reviews_Insert" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Product_Reviews_Insert" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
 	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
+</MvFUNCTION>
+
+<MvCOMMENT>
+|
+|	Store Reviews Functions
+|
+</MvCOMMENT>
+
+<MvFUNCTION NAME = "Store_Reviews_Load_Query" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvASSIGN NAME = "g.Filter"			VALUE = "{ trim( g.Filter ) }">
+	<MvASSIGN NAME = "g.Sort"			VALUE = "{ trim( g.Sort ) }">
+	<MvASSIGN NAME = "g.Offset"			VALUE = "{ trim( g.Offset ) }">
+	<MvASSIGN NAME = "g.Count"			VALUE = "{ trim( g.Count ) }">
+	<MvASSIGN NAME = "l.search_query"	VALUE = "">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SELECT( l.search_query,'s.*' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_FROM( l.search_query, g.Store_Table_Prefix $ 'TGReviews_Store', 's' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Filter( l.search_query, g.Filter,'id:s.id,created:s.created,cust_id:s.cust_id,order_id:s.order_id,approved:s.approved,rating:s.rating,name:s.name,email:s.email,location:s.location,title:s.title,summary:s.summary' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_OrderBy_Fields(l.search_query, g.Sort, 'id:s.id,created:s.created,cust_id:s.cust_id,order_id:s.order_id,approved:s.approved,rating:s.rating,name:s.name,email:s.email,location:s.location,title:s.title,summary:s.summary', 's.id' ) }">
+
+	<MvASSIGN NAME = "l.search_sql" VALUE = "{ [ g.Module_Library_DB].SQL_Query_Build( l.search_query, l.search_fields ) }">
+
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].SQL_Query_Count( l.search_query, l.total_count ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error(g.Error_Code, g.Error_Message ) }">
+	<MvELSEIF EXPR = "{ NOT [ g.Module_Library_Native_DBAPI ].DB_OPENVIEW_Range('Merchant', 'TGReviews_Store', l.search_sql, l.search_fields, g.Offset, g.Count) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( 'TGReviews-JSON-0001', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.count" VALUE = 0>
+
+	<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Response_Start() }">
+		{
+			"data":
+				[
+					<MvWHILE EXPR = "{ ( NOT TGReviews_Store.d.EOF ) AND ( ( g.Count EQ 0 ) OR (l.count LT g.Count ) ) }">
+					<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_ArrayElement_Start( l.count )}">
+					"id": <MvEVAL EXPR = "{ int( TGReviews_Store.d.id ) }">,
+					"created": <MvEVAL EXPR = "{ int( TGReviews_Store.d.created ) }">,
+					"product_id" : <MvEVAL EXPR = "{ int( TGReviews_Store.d.product_id ) }">,
+					"cust_id" : <MvEVAL EXPR = "{ int( TGReviews_Store.d.cust_id ) }">,
+					"order_id" : <MvEVAL EXPR = "{ int( TGReviews_Store.d.order_id ) }">,
+					"approved" : <MvEVAL EXPR = "{ int( TGReviews_Store.d.approved ) }">,
+					"rating" : <MvEVAL EXPR = "{ int( TGReviews_Store.d.rating ) }">,
+					"name" : "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( TGReviews_Store.d.name ) }">",
+					"email" : "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( TGReviews_Store.d.email ) }">",
+					"location" : "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( TGReviews_Store.d.location ) }">"
+					"title" : "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( TGReviews_Store.d.title ) }">",
+					"summary" : "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( TGReviews_Store.d.summary ) }">"
+					<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_ArrayElement_End() }">
+					<MvSKIP NAME = "Merchant" VIEW = "TGReviews_Store" ROWS = 1>
+					</MvWHILE>
+				],
+
+			"total_count": <MvEVAL EXPR = "{ int( l.total_count ) }">,
+			"start_offset": <MvEVAL EXPR = "{ int( g.Offset ) }">
+		}
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_Store">
+	}
+
 </MvFUNCTION>

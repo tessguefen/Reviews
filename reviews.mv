@@ -261,8 +261,9 @@
 
 <MvFUNCTION NAME = "Module_JSON" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ g.Module_Function EQ 'Product_Reviews_Load_Query'	}"><MvFUNCTIONRETURN VALUE = "{ Product_Reviews_Load_Query( l.module )	}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'Products_Reviews_Update'		}"><MvFUNCTIONRETURN VALUE = "{ Products_Reviews_Update( l.module )		}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'Products_Reviews_Insert'		}"><MvFUNCTIONRETURN VALUE = "{ Products_Reviews_Insert( l.module )		}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'Product_Reviews_Update'		}"><MvFUNCTIONRETURN VALUE = "{ Product_Reviews_Update( l.module )		}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'Product_Reviews_Insert'		}"><MvFUNCTIONRETURN VALUE = "{ Product_Reviews_Insert( l.module )		}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'Store_Reviews_Load_Query'		}"><MvFUNCTIONRETURN VALUE = "{ Store_Reviews_Load_Query( l.module )	}"></MvIF>
 </MvFUNCTION>
 
 <MvCOMMENT>
