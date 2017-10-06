@@ -70,7 +70,7 @@ Reviews_Batchlist.prototype.onCreateRootColumnList = function() {
 		columnlist.push(	new MMBatchList_Column_TextArea( 'Edit Summary', 'Summary', 'summary', 'summary' ) );
 
 		for ( i = 0, i_len = self.additional_fields.length; i < i_len; i++ ) {
-			columnlist.push( new MMBatchList_Column_Text( self.additional_fields[ i ].name, self.additional_fields[ i ].code, self.additional_fields[ i ].code ).SetAdvancedSearchEnabled(false) );
+			columnlist.push( new MMBatchList_Column_Text( self.additional_fields[ i ].name, self.additional_fields[ i ].code, 'AdditionalFields:' + self.additional_fields[ i ].code ).SetAdvancedSearchEnabled(false) );
 		}
 
 
@@ -78,6 +78,8 @@ Reviews_Batchlist.prototype.onCreateRootColumnList = function() {
 }
 
 Reviews_Batchlist.prototype.onCreate = function() {
+	var self = this;
+	var i, i_len;
 	var record;
 	record = new Object();
 	record.approved = 0;
@@ -96,6 +98,10 @@ Reviews_Batchlist.prototype.onCreate = function() {
 		record.product_id = 0;
 		record.product_code = '';
 		record.product_name = '';
+	}
+	for ( i = 0, i_len = self.additional_fields.length; i < i_len; i++ ) {
+		var code = self.additional_fields[ i ].code;
+		record[code] = '';
 	}
 	return record;
 }
