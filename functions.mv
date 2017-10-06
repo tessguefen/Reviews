@@ -146,9 +146,9 @@
 		<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'product_id = ? ', 'g.Product_ID' ) }">
 	</MvIF>
 
-	<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Filter( l.search_query, g.Filter,'id:s.id,created:s.created,product_id:s.product_id,cust_id:s.cust_id,order_id:s.order_id,approved:s.approved,rating:s.rating,name:s.name,email:s.email,location:s.location,notify:s.notify,title:s.title,summary:s.summary,product_name:p.name,product_code:p.code' ) }">
+	<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Filter( l.search_query, g.Filter,'id:s.id,created:s.created,product_id:s.product_id,cust_id:s.cust_id,order_id:s.order_id,approved:s.approved,rating:s.rating,name:s.name,email:s.email,location:s.location,notify:s.notify,title:s.title,summary:s.summary,product_name:p.name,product_code:p.code,addl_test:addl_test' ) }">
 
-	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_OrderBy_Fields(l.search_query, g.Sort, 'id:s.id,created:s.created,product_id:s.product_id,cust_id:s.cust_id,order_id:s.order_id,approved:s.approved,rating:s.rating,name:s.name,email:s.email,location:s.location,notify:s.notify,title:s.title,summary:s.summary,product_name:p.name,product_code:p.code', 's.id' ) }">
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_OrderBy_Fields(l.search_query, g.Sort, 'id:s.id,created:s.created,product_id:s.product_id,cust_id:s.cust_id,order_id:s.order_id,approved:s.approved,rating:s.rating,name:s.name,email:s.email,location:s.location,notify:s.notify,title:s.title,summary:s.summary,product_name:p.name,product_code:p.code,addl_test:addl_test', 's.id' ) }">
 
 	<MvASSIGN NAME = "l.search_sql" VALUE = "{ [ g.Module_Library_DB].SQL_Query_Build( l.search_query, l.search_fields ) }">
 
@@ -288,4 +288,33 @@
 		<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_Store">
 	}
 
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_Load_Additional_Fields" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, compresswhitespace">
+	<MvOPENVIEW	NAME	= "Merchant"
+				VIEW	= "TGReviews_AdditionalFields"
+				QUERY	= "{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalFields' }">
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( 'TGReviews-JSON-0003', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.dnum" VALUE = "1" >
+
+	{
+	"success": 1,
+	"data": [
+		<MvWHILE EXPR = "{ NOT TGReviews_AdditionalFields.d.EOF }">
+			<MvIF EXPR = "{ l.dnum GT 1 }">,</MvIF>
+			{
+				"id": "<MvEVAL EXPR ="{ int( TGReviews_AdditionalFields.d.id ) }">",
+				"code": "<MvEVAL EXPR ="{ [ g.Module_JSON ].JSON_Encode( TGReviews_AdditionalFields.d.code ) }">",
+				"name": "<MvEVAL EXPR ="{ [ g.Module_JSON ].JSON_Encode( TGReviews_AdditionalFields.d.name ) }">"
+			}
+			<MvASSIGN NAME = "l.dnum" VALUE = "{ l.dnum + 1 }">
+
+			<MvSKIP NAME = "Merchant" VIEW = "TGReviews_AdditionalFields" ROWS = 1>
+		</MvWHILE>
+		]
+	}
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_AdditionalFields">
 </MvFUNCTION>

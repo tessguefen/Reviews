@@ -1,3 +1,11 @@
+function Load_Additional_Fields( callback, delegator ) {
+	return AJAX_Call_Module(	callback,
+								'admin',
+								'tgreviews',
+								'Load_Additional_Fields',
+								'',
+								delegator );
+}
 function Reviews_Load_Query( filter, sort, offset, count, callback, delegator ) {
 	return AJAX_Call_Module(	callback,
 								'admin',

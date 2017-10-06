@@ -264,6 +264,7 @@
 	<MvIF EXPR = "{ g.Module_Function EQ 'Product_Reviews_Update'		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Update( l.module )		}"></MvIF>
 	<MvIF EXPR = "{ g.Module_Function EQ 'Product_Reviews_Insert'		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Insert( l.module )		}"></MvIF>
 	<MvIF EXPR = "{ g.Module_Function EQ 'Store_Reviews_Load_Query'		}"><MvFUNCTIONRETURN VALUE = "{ Store_Reviews_Load_Query( l.module )		}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'Load_Additional_Fields'		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Load_Additional_Fields( l.module )		}"></MvIF>
 </MvFUNCTION>
 
 <MvCOMMENT>
