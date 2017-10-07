@@ -36,7 +36,7 @@ Reviews_Batchlist.prototype.onCreateRootColumnList = function() {
 		if ( type == 'Product' ) {
 			columnlist.push(	new Reviews_ProductLookup_Column( 'Product Code', 'product_code', 'product_code') );
 			columnlist.push(	new MMBatchList_Column_Name( 'Product Name', 'product_name', 'product_name')
-								.SetOnDisplayEdit( function( record ) { return DrawMMBatchListString_Data( record.order_id == 0 ? '' : record.order_id ); } )
+								.SetOnDisplayEdit( function( record ) { return DrawMMBatchListString_Data( !record.product_name ? '' : record.product_name ); } )
 								.SetUpdateOnModifiedOnly( true )
 							);
 			columnlist.push(	new MMBatchList_Column_Name( 'Product ID', 'product_id', 'product_id')
@@ -70,7 +70,7 @@ Reviews_Batchlist.prototype.onCreateRootColumnList = function() {
 		columnlist.push(	new MMBatchList_Column_TextArea( 'Edit Summary', 'Summary', 'summary', 'summary' ) );
 
 		for ( i = 0, i_len = self.additional_fields.length; i < i_len; i++ ) {
-			columnlist.push( new MMBatchList_Column_Text( self.additional_fields[ i ].name, self.additional_fields[ i ].code, 'AdditionalFields:' + self.additional_fields[ i ].code ).SetAdvancedSearchEnabled(false) );
+			columnlist.push( new MMBatchList_Column_Text( self.additional_fields[ i ].name, 'AdditionalFields_' + self.additional_fields[ i ].code, 'AdditionalFields:' + self.additional_fields[ i ].code ).SetAdvancedSearchEnabled(false) );
 		}
 
 
@@ -100,7 +100,7 @@ Reviews_Batchlist.prototype.onCreate = function() {
 		record.product_name = '';
 	}
 	for ( i = 0, i_len = self.additional_fields.length; i < i_len; i++ ) {
-		var code = self.additional_fields[ i ].code;
+		var code = 'AdditionalFields_' + self.additional_fields[ i ].code;
 		record[code] = '';
 	}
 	return record;

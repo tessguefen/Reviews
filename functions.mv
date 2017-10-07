@@ -206,6 +206,10 @@
 					"summary" : "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( TGReviews_Products.d.summary ) }">",
 					"product_code" : "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( TGReviews_Products.d.product_code ) }">",
 					"product_name" : "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( TGReviews_Products.d.product_name ) }">"
+					<MvFOREACH ITERATOR = "l.field" ARRAY = "l.fields" COUNT = "{ Load_Additional_Fields_Product_Review( TGReviews_Products.d.id, l.fields) }">
+						,
+						"AdditionalFields_<MvEVAL EXPR = "{ l.field:code }">": "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( l.field:value ) }">"
+					</MvFOREACH>
 					<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_ArrayElement_End() }">
 					<MvSKIP NAME = "Merchant" VIEW = "TGReviews_Products" ROWS = 1>
 					</MvWHILE>
@@ -341,30 +345,63 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "JSON_Load_Additional_Fields" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, compresswhitespace">
+	{
+	"success": 1,
+	"data": [
+		<MvFOREACH ITERATOR = "l.field" ARRAY = "l.fields" COUNT = "{ Load_Additional_Fields( l.fields ) }">
+			<MvIF EXPR = "{ l.POS1 GT 1 }">,</MvIF>
+			{
+				"id": "<MvEVAL EXPR ="{ int( l.field:id ) }">",
+				"code": "<MvEVAL EXPR ="{ [ g.Module_JSON ].JSON_Encode( l.field:code ) }">",
+				"name": "<MvEVAL EXPR ="{ [ g.Module_JSON ].JSON_Encode( l.field:name ) }">"
+			}
+			<MvASSIGN NAME = "l.dnum" VALUE = "{ l.dnum + 1 }">
+		</MvFOREACH>
+		]
+	}
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Load_Additional_Fields" PARAMETERS = "fields var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.fields" VALUE = "">
 	<MvOPENVIEW	NAME	= "Merchant"
 				VIEW	= "TGReviews_AdditionalFields"
 				QUERY	= "{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalFields' }">
 	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( 'TGReviews-JSON-0003', g.MvOPENVIEW_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( 'TGReviews-LOAD-0003', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+	<MvASSIGN NAME = "l.count" VALUE = "0">
+	<MvWHILE EXPR = "{ NOT TGReviews_AdditionalFields.d.EOF }">
+		<MvASSIGN NAME = "l.count" VALUE = "{ l.count + 1 }">
+		<MvASSIGN NAME = "l.fields" INDEX = "{ l.count }" MEMBER = "id" VALUE = "{ TGReviews_AdditionalFields.d.id }">
+		<MvASSIGN NAME = "l.fields" INDEX = "{ l.count }" MEMBER = "code" VALUE = "{ TGReviews_AdditionalFields.d.code }">
+		<MvASSIGN NAME = "l.fields" INDEX = "{ l.count }" MEMBER = "name" VALUE = "{ TGReviews_AdditionalFields.d.name }">
+		<MvSKIP NAME = "Merchant" VIEW = "TGReviews_AdditionalFields" ROWS = 1>
+	</MvWHILE>
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_AdditionalFields">
+	<MvFUNCTIONRETURN VALUE = "{ l.count }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Load_Additional_Fields_Product_Review" PARAMETERS = "review_id, fields var" STANDARDOUTPUTLEVEL = "">
+	<MvFOREACH ITERATOR = "l.field" ARRAY = "l.fields" COUNT = "{ Load_Additional_Fields( l.fields ) }">
+		<MvASSIGN NAME = "l.field" MEMBER = "value" VALUE = "{ Load_Additional_Value( l.review_id, l.field:id ) }">
+	</MvFOREACH>
+	<MvFUNCTIONRETURN VALUE = "{ miva_array_elements( l.fields ) }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Load_Additional_Value" PARAMETERS = "review_id, field_id" STANDARDOUTPUTLEVEL = "">
+
+	<MvOPENVIEW NAME	= "Merchant"
+				VIEW 	= "TGReviews_AdditionalValues"
+				QUERY 	= "{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalValues WHERE rating_id = ? AND field_id = ? ' }"
+				FIELDS	= "l.review_id, l.field_id">
+
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TTGReviews-LOAD-1004:', 'An error occured while checking a record. Error:' $ g.MvQUERY_Error ) }">
 	</MvIF>
 
-	<MvASSIGN NAME = "l.dnum" VALUE = "1" >
+	<MvASSIGN NAME = "l.return"  VALUE = "{ TGReviews_AdditionalValues.d.value }">
 
-	{
-	"success": 1,
-	"data": [
-		<MvWHILE EXPR = "{ NOT TGReviews_AdditionalFields.d.EOF }">
-			<MvIF EXPR = "{ l.dnum GT 1 }">,</MvIF>
-			{
-				"id": "<MvEVAL EXPR ="{ int( TGReviews_AdditionalFields.d.id ) }">",
-				"code": "<MvEVAL EXPR ="{ [ g.Module_JSON ].JSON_Encode( TGReviews_AdditionalFields.d.code ) }">",
-				"name": "<MvEVAL EXPR ="{ [ g.Module_JSON ].JSON_Encode( TGReviews_AdditionalFields.d.name ) }">"
-			}
-			<MvASSIGN NAME = "l.dnum" VALUE = "{ l.dnum + 1 }">
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_AdditionalValues">
 
-			<MvSKIP NAME = "Merchant" VIEW = "TGReviews_AdditionalFields" ROWS = 1>
-		</MvWHILE>
-		]
-	}
-	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_AdditionalFields">
+	<MvFUNCTIONRETURN VALUE = "{ l.return }">
 </MvFUNCTION>
