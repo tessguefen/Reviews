@@ -26,6 +26,12 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0001', 'An error occured while creating the table ' $ g.Store_Table_Prefix $ 'TGReviews_Settings. Please make sure this table was not already created.' ) }">
 	</MvIF>
 
+	<MvCOMMENT>
+	|
+	|	Create Product Reviews table.
+	|
+	</MvCOMMENT>
+
 	<MvQUERY	NAME = "Merchant"
 				QUERY = "{ 'CREATE TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Products
 							(
@@ -47,48 +53,11 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0002', 'An error occured while creating the table ' $ g.Store_Table_Prefix $ 'TGReviews_Products. Please make sure this table was not already created.' ) }">
 	</MvIF>
 
-	<MvCOMMENT>
-	|
-	|	Create Product Reviews table.
-	|
-	</MvCOMMENT>
 
 	<MvQUERY	NAME	= "Merchant"
 				QUERY	= "{ 'CREATE UNIQUE INDEX ' $ g.Store_Table_Prefix $ 'TGReviews_Products ON ' $ g.Store_Table_Prefix $ 'TGReviews_Products ( id )' }">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0003', g.MvQUERY_Error ) }">
-	</MvIF>
-
-	<MvCOMMENT>
-	|
-	|	Create Store Reviews table.
-	|
-	</MvCOMMENT>
-
-	<MvQUERY	NAME = "Merchant"
-				QUERY = "{ 'CREATE TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Store
-							(
-								id			' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
-								created		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
-								cust_id		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
-								order_id	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
-								approved	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
-								name		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 255 ) 		$ ',
-								email		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 255 ) 		$ ',
-								location	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 255 ) 		$ ',
-								rating		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
-								title		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 255 ) 		$ ',
-								summary		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_MEMO()			$ '
-							)
-				' }">
-	<MvIF EXPR = "{ g.MvQUERY_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0004', 'An error occured while creating the table ' $ g.Store_Table_Prefix $ 'TGReviews_Store. Please make sure this table was not already created.' ) }">
-	</MvIF>
-
-	<MvQUERY	NAME	= "Merchant"
-				QUERY	= "{ 'CREATE UNIQUE INDEX ' $ g.Store_Table_Prefix $ 'TGReviews_Store ON ' $ g.Store_Table_Prefix $ 'TGReviews_Store ( id )' }">
-	<MvIF EXPR = "{ g.MvQUERY_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0005', g.MvQUERY_Error ) }">
 	</MvIF>
 
 	<MvCOMMENT>
@@ -144,10 +113,6 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0010', 'An error occured while creating the store key, TGRProduct. Please make sure this does not already exsist.' ) }">
 	</MvIF>
 
-	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].StoreKey_Insert( 'TGRStore', 1 ) }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0011', 'An error occured while creating the store key, TGRStore. Please make sure this does not already exsist.' ) }">
-	</MvIF>
-
 	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].StoreKey_Insert( 'TGRAdditional', 1 ) }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0012', 'An error occured while creating the store key, TGRAdditional. Please make sure this does not already exsist.' ) }">
 	</MvIF>
@@ -161,12 +126,10 @@
 <MvFUNCTION NAME = "Module_Uninstall_Store" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $  g.Store_Table_Prefix $ 'TGReviews_Settings' }">
 	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $  g.Store_Table_Prefix $ 'TGReviews_Products'}">
-	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $  g.Store_Table_Prefix $ 'TGReviews_Store'}">
 	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $  g.Store_Table_Prefix $ 'TGReviews_AdditionalFields'}">
 	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $  g.Store_Table_Prefix $ 'TGReviews_AdditionalValues'}">
 
 	<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Library_DB ].StoreKey_Delete( 'TGRProduct' ) }">
-	<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Library_DB ].StoreKey_Delete( 'TGRStore' ) }">
 	<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Library_DB ].StoreKey_Delete( 'TGRAdditional' ) }">
 	<MvFUNCTIONRETURN VALUE = 1 />
 </MvFUNCTION>
@@ -198,30 +161,23 @@
 
 
 <MvFUNCTION NAME = "Module_System_Tabs" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
-	<MvFUNCTIONRETURN VALUE = "TGR_SETT:Reviews Settings,TGR_PROD:Product Reviews,TGR_STORE:Store Reviews">
+	<MvFUNCTIONRETURN VALUE = "TGR_SETT:Reviews: Settings,TGR_ADDL:Reviews: Additional Fields,TGR_PROD:Reviews: Product Reviews">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_System_Head" PARAMETERS = "module var, tab" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
-	<MvIF EXPR = "{ ( l.tab NE 'TGR_SETT' ) AND ( l.tab NE 'TGR_PROD' ) AND ( l.tab NE 'TGR_STORE' )  }">
+	<MvIF EXPR = "{ ( l.tab NE 'TGR_SETT' ) AND ( l.tab NE 'TGR_PROD' ) AND ( l.tab NE 'TGR_ADDL' ) }">
 		<MvFUNCTIONRETURN VALUE = 1>
 	</MvIF>
-	<MvIF EXPR = "{ ( l.tab EQ 'TGR_PROD' ) OR ( l.tab EQ 'TGR_STORE' ) }">
+	<MvIF EXPR = "{ ( l.tab EQ 'TGR_PROD' ) }">
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_JavaScript() }">
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_CSS() }">
-		<MvIF EXPR = "{ l.tab EQ 'TGR_PROD' }">
-			<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_ProductLookup_Dialog_JavaScript() }">
-			<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_ProductLookup_Dialog_CSS() }">
-			<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_ProductLookup.js' }"></script>
-		</MvIF>
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_ProductLookup_Dialog_JavaScript() }">
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_ProductLookup_Dialog_CSS() }">
+		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_ProductLookup.js' }"></script>
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_CSS() }">
 		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_Functions.js' }"></script>
 		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_Batchlist.js' }"></script>
 		<script language="JavaScript">
-			<MvIF EXPR = "{ l.tab EQ 'TGR_PROD' }">
-			var type = 'Product';
-			<MvELSE>
-			var type = 'Store';
-			</MvIF>
 			MMScreen_LoadFinished( function() { new Reviews_Batchlist(); } );
 		</script>
 	</MvIF>
@@ -229,21 +185,19 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_System_Content" PARAMETERS = "module var, tab, load_fields" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
-	<MvIF EXPR = "{ ( l.tab NE 'TGR_SETT' ) AND ( l.tab NE 'TGR_PROD' ) AND ( l.tab NE 'TGR_STORE' )  }">
+	<MvIF EXPR = "{ ( l.tab NE 'TGR_SETT' ) AND ( l.tab NE 'TGR_PROD' ) }">
 		<MvFUNCTIONRETURN VALUE = 1>
 	</MvIF>
-	<MvIF EXPR = "{ ( l.tab EQ 'TGR_PROD' ) OR ( l.tab EQ 'TGR_STORE' ) }">
+	<MvIF EXPR = "{ ( l.tab EQ 'TGR_PROD' ) }">
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_HTML() }">
 		<div id="jsReviews_Batchlist"></div>
-		<MvIF EXPR = "{ l.tab EQ 'TGR_PROD' }">
-			<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_ProductLookup_Dialog_HTML() }">
-		</MvIF>
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_ProductLookup_Dialog_HTML() }">
 	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_System_Update" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "html, text, compresswhitespace">
-	<MvIF EXPR = "{ ( l.tab NE 'TGR_SETT' ) AND ( l.tab NE 'TGR_PROD' ) AND ( l.tab NE 'TGR_STORE' )  }">
+	<MvIF EXPR = "{ ( l.tab NE 'TGR_SETT' ) AND ( l.tab NE 'TGR_PROD' )  }">
 		<MvFUNCTIONRETURN VALUE = 1>
 	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>
@@ -260,12 +214,11 @@
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "Module_JSON" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
-	<MvIF EXPR = "{ g.Module_Function EQ 'Product_Reviews_Load_Query'	}"><MvFUNCTIONRETURN VALUE = "{ Product_Reviews_Load_Query( l.module )		}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'Product_Reviews_Update'		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Update( l.module )		}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'Product_Reviews_Insert'		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Insert( l.module )		}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'Store_Reviews_Load_Query'		}"><MvFUNCTIONRETURN VALUE = "{ Store_Reviews_Load_Query( l.module )		}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Load_Query'			}"><MvFUNCTIONRETURN VALUE = "{ Product_Reviews_Load_Query( l.module )		}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Update'				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Update( l.module )		}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Insert'				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Insert( l.module )		}"></MvIF>
 	<MvIF EXPR = "{ g.Module_Function EQ 'Load_Additional_Fields'		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Load_Additional_Fields( l.module )		}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'Product_Reviews_Delete' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Delete( l.module ) 	}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Delete' 				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Delete( l.module ) 	}"></MvIF>
 </MvFUNCTION>
 
 <MvCOMMENT>

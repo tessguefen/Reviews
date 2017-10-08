@@ -1,6 +1,5 @@
 <MvCOMMENT>
 |
-|
 |	Product Reviews
 |		Product_Review_Read
 |		Product_Review_Load_ID
@@ -24,9 +23,6 @@
 |		AdditionalValues_Update
 |		AdditionalValues_Insert
 |		AdditionalValues_Delete_Review
-|
-|	Store Reviews
-|		Store_Reviews_Load_Query
 |
 </MvCOMMENT>
 

@@ -10,7 +10,7 @@ function Reviews_Load_Query( filter, sort, offset, count, callback, delegator ) 
 	return AJAX_Call_Module(	callback,
 								'admin',
 								'tgreviews',
-								type + '_Reviews_Load_Query',
+								'Reviews_Load_Query',
 								'&Filter=' + EncodeArray( filter ) +
 								'&Sort=' + encodeURIComponent( sort ) +
 								'&Offset=' + encodeURIComponent( offset ) +
@@ -22,7 +22,7 @@ function Reviews_Batchlist_Update( id, fieldlist, callback, delegator ) {
 	return AJAX_Call_Module_FieldList( callback,
 									   'admin',
 									   'tgreviews',
-									   type + '_Reviews_Update',
+									   'Reviews_Update',
 									   'Review_ID=' + encodeURIComponent( id ),
 									   fieldlist,
 									   delegator );
@@ -31,7 +31,7 @@ function Reviews_Batchlist_Insert( fieldlist, callback, delegator ) {
 	return AJAX_Call_Module_FieldList( callback,
 									   'admin',
 									   'tgreviews',
-									   type + '_Reviews_Insert',
+									   'Reviews_Insert',
 									   '',
 									   fieldlist,
 									   delegator );
@@ -40,7 +40,7 @@ function Reviews_Batchlist_Delete( id, callback, delegator ) {
 	return AJAX_Call_Module(	callback,
 								'admin',
 								'tgreviews',
-								type + '_Reviews_Delete',
+								'Reviews_Delete',
 								'Review_ID=' + encodeURIComponent( id ),
 								delegator );
 }
