@@ -8,10 +8,11 @@
 |		Product_Reviews_Insert
 |		Product_Reviews_Update_Lowlevel
 |		Product_Reviews_Update
-|		Product_Reviews_Delete_ID
+|		Product_Reviews_Delete
 |		Product_Reviews_Load_Query
 |		JSON_Product_Reviews_Update
 |		JSON_Product_Reviews_Insert
+|		JSON_Product_Reviews_Delete
 |		JSON_Load_Additional_Fields
 |		Load_Additional_Fields
 |		Load_Additional_Fields_Product_Review
@@ -22,6 +23,7 @@
 |		AdditionalValue_Load
 |		AdditionalValues_Update
 |		AdditionalValues_Insert
+|		AdditionalValues_Delete_Review
 |
 |	Store Reviews
 |		Store_Reviews_Load_Query
@@ -163,7 +165,7 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Product_Reviews_Delete_ID" PARAMETERS = "review_id" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Product_Reviews_Delete" PARAMETERS = "review_id" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ NOT Product_Review_Load_ID( l.review_id, l.review ) }">
 		<MvFUNCTIONRETURN VALUE = "0" />
 	</MvIF>
@@ -173,6 +175,10 @@
 			 FIELDS	= "l.review_id">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Library_Filename_Utilities ].Error( 'TGReviews-DELETE-0001', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT AdditionalValues_Delete_Review( l.review_id ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 
 	<MvFUNCTIONRETURN VALUE = 1>
@@ -334,6 +340,18 @@
 		</MvFOREACH>
 		]
 	}
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_Product_Reviews_Delete" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, compresswhitespace">
+	<MvIF EXPR = "{ ISNULL g.Review_ID }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'id', 'An Error has occured.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT Product_Reviews_Delete( g.Review_ID ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'id', 'An Error has occured.' ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Load_Additional_Fields" PARAMETERS = "fields var" STANDARDOUTPUTLEVEL = "">
@@ -531,6 +549,16 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
+<MvFUNCTION NAME = "AdditionalValues_Delete_Review" PARAMETERS = "review_id" STANDARDOUTPUTLEVEL = "">
+	<MvQUERY NAME	= "Merchant"
+			 QUERY	= "{ 'DELETE FROM ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalValues WHERE rating_id = ?' }"
+			 FIELDS	= "l.review_id">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Library_Filename_Utilities ].Error( 'TGReviews-DELETE-0002', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
 
 
 

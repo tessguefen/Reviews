@@ -70,7 +70,7 @@ Reviews_Batchlist.prototype.onCreateRootColumnList = function() {
 		columnlist.push(	new MMBatchList_Column_TextArea( 'Edit Summary', 'Summary', 'summary', 'summary' ) );
 
 		for ( i = 0, i_len = self.additional_fields.length; i < i_len; i++ ) {
-			columnlist.push( new MMBatchList_Column_Text( self.additional_fields[ i ].name, 'AdditionalFields_' + self.additional_fields[ i ].code, 'AdditionalFields:' + self.additional_fields[ i ].code ).SetAdvancedSearchEnabled(false) );
+			columnlist.push( new MMBatchList_Column_Text( self.additional_fields[ i ].name, 'AdditionalFields_' + self.additional_fields[ i ].code, 'AdditionalFields:' + self.additional_fields[ i ].code ).SetAdvancedSearchEnabled(false).SetSortByField( '' ) );
 		}
 
 
@@ -113,3 +113,7 @@ Reviews_Batchlist.prototype.onInsert = function( item, callback, delegator ) {
 	Reviews_Batchlist_Insert( item.record.mmbatchlist_fieldlist, callback, delegator );
 }
 
+
+Reviews_Batchlist.prototype.onDelete = function( item, callback, delegator ) {
+	Reviews_Batchlist_Delete( item.record.id, callback, delegator );
+}

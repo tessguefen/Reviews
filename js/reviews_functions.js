@@ -36,3 +36,11 @@ function Reviews_Batchlist_Insert( fieldlist, callback, delegator ) {
 									   fieldlist,
 									   delegator );
 }
+function Reviews_Batchlist_Delete( id, callback, delegator ) {
+	return AJAX_Call_Module(	callback,
+								'admin',
+								'tgreviews',
+								type + '_Reviews_Delete',
+								'Review_ID=' + encodeURIComponent( id ),
+								delegator );
+}
