@@ -196,6 +196,16 @@
 	<MvIF EXPR = "{ ( l.tab NE 'TGR_SETT' ) AND ( l.tab NE 'TGR_PROD' ) AND ( l.tab NE 'TGR_ADDL') }">
 		<MvFUNCTIONRETURN VALUE = 1>
 	</MvIF>
+	<MvIF EXPR = "{ ( l.tab EQ 'TGR_SETT' ) }">
+		Settings Here.<br />
+		Fields required? Should this be like a thing?<br />
+		Templates for.... Review FORM and Reviews.<br />
+		Emails: created on install, but u can change the screen? idk.<br />
+		[ notify store owner when things ]<br />
+		auto approve reviews???<br />
+		Send follow up emails???? based on order or ship date? scheduled task????
+
+	</MvIF>
 	<MvIF EXPR = "{ ( l.tab EQ 'TGR_PROD' ) }">
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_HTML() }">
 		<div id="jsReviews_Batchlist"></div>

@@ -1,6 +1,7 @@
 <MvCOMMENT>
 |
 |	Function List
+|
 |		Product_Review_Read
 |		Product_Review_Load_ID
 |		Product_Reviews_Insert_Lowlevel
@@ -72,8 +73,7 @@
 
 	<MvEVAL EXPR = "{ Product_Review_Read( l.review ) }">
 	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_Products_Load">
-
-
+		
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
