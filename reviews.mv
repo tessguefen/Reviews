@@ -174,24 +174,36 @@
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_ProductLookup_Dialog_JavaScript() }">
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_ProductLookup_Dialog_CSS() }">
 		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_ProductLookup.js' }"></script>
-		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_CSS() }">
 		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_Functions.js' }"></script>
 		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_Batchlist.js' }"></script>
 		<script language="JavaScript">
 			MMScreen_LoadFinished( function() { new Reviews_Batchlist(); } );
 		</script>
 	</MvIF>
+	<MvIF EXPR = "{ l.tab EQ 'TGR_ADDL' }">
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_JavaScript() }">
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_CSS() }">
+		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=AdditionalFields_Functions.js' }"></script>
+		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=AdditionalFields_Batchlist.js' }"></script>
+		<script language="JavaScript">
+			MMScreen_LoadFinished( function() { new AdditionalFields_Batchlist(); } );
+		</script>
+	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_System_Content" PARAMETERS = "module var, tab, load_fields" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
-	<MvIF EXPR = "{ ( l.tab NE 'TGR_SETT' ) AND ( l.tab NE 'TGR_PROD' ) }">
+	<MvIF EXPR = "{ ( l.tab NE 'TGR_SETT' ) AND ( l.tab NE 'TGR_PROD' ) AND ( l.tab NE 'TGR_ADDL') }">
 		<MvFUNCTIONRETURN VALUE = 1>
 	</MvIF>
 	<MvIF EXPR = "{ ( l.tab EQ 'TGR_PROD' ) }">
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_HTML() }">
 		<div id="jsReviews_Batchlist"></div>
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_ProductLookup_Dialog_HTML() }">
+	</MvIF>
+	<MvIF EXPR = "{ ( l.tab EQ 'TGR_ADDL' ) }">
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_HTML() }">
+		<div id="jsAdditionalFields_Batchlist"></div>
 	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
@@ -219,6 +231,11 @@
 	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Insert'				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Insert( l.module )		}"></MvIF>
 	<MvIF EXPR = "{ g.Module_Function EQ 'Load_Additional_Fields'		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Load_Additional_Fields( l.module )		}"></MvIF>
 	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Delete' 				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Delete( l.module ) 	}"></MvIF>
+
+	<MvIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Load_Query' 	}"><MvFUNCTIONRETURN VALUE = "{ AdditionalFields_Load_Query( l.module ) 	}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Update' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalFields_Update( l.module ) 	}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Insert' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalFields_Insert( l.module ) 	}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Delete' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalFields_Delete( l.module ) 	}"></MvIF>
 </MvFUNCTION>
 
 <MvCOMMENT>
@@ -238,6 +255,14 @@
 	<MvIF EXPR = "{ g.Filename EQ 'Reviews_ProductLookup.js' }">
 		<MvEVAL EXPR = "{ [ g.Module_Clientside ].Module_Content_Type( l.module, 'text/javascript' ) }">
 		<MvINCLUDE FILE = "js/reviews_productlookup.js">
+	</MvIF>
+	<MvIF EXPR = "{ g.Filename EQ 'AdditionalFields_Batchlist.js' }">
+		<MvEVAL EXPR = "{ [ g.Module_Clientside ].Module_Content_Type( l.module, 'text/javascript' ) }">
+		<MvINCLUDE FILE = "js/additionalfields_batchlist.js">
+	</MvIF>
+	<MvIF EXPR = "{ g.Filename EQ 'AdditionalFields_Functions.js' }">
+		<MvEVAL EXPR = "{ [ g.Module_Clientside ].Module_Content_Type( l.module, 'text/javascript' ) }">
+		<MvINCLUDE FILE = "js/additionalfields_functions.js">
 	</MvIF>
 </MvFUNCTION>
 
