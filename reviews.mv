@@ -105,7 +105,7 @@
 	<MvCOMMENT>
 	|
 	|	Create Store Keys.
-	|		TGRProduct, TGRStore, TGRAdditional
+	|		TGRProduct, TGRAdditional
 	|
 	</MvCOMMENT>
 
@@ -197,14 +197,7 @@
 		<MvFUNCTIONRETURN VALUE = 1>
 	</MvIF>
 	<MvIF EXPR = "{ ( l.tab EQ 'TGR_SETT' ) }">
-		Settings Here.<br />
-		Fields required? Should this be like a thing?<br />
-		Templates for.... Review FORM and Reviews.<br />
-		Emails: created on install, but u can change the screen? idk.<br />
-		[ notify store owner when things ]<br />
-		auto approve reviews???<br />
-		Send follow up emails???? based on order or ship date? scheduled task????
-
+		<MvFUNCTIONRETURN VALUE = "{ Settings_UI( l.module ) }">
 	</MvIF>
 	<MvIF EXPR = "{ ( l.tab EQ 'TGR_PROD' ) }">
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_HTML() }">
@@ -218,14 +211,14 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Module_System_Update" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "html, text, compresswhitespace">
-	<MvIF EXPR = "{ ( l.tab NE 'TGR_SETT' ) AND ( l.tab NE 'TGR_PROD' )  }">
-		<MvFUNCTIONRETURN VALUE = 1>
+<MvFUNCTION NAME = "Module_System_Update" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ ( g.Review_Tab EQ 'TGR_SETT' )  }">
+		<MvFUNCTIONRETURN VALUE = "{ Review_Settings_Update( g.required) }">
 	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Module_System_Validate" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "compresswhitespace">
+<MvFUNCTION NAME = "Module_System_Validate" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -279,3 +272,4 @@
 </MvFUNCTION>
 
 <MvINCLUDE FILE = "functions.mv">
+<MvINCLUDE FILE = "settings.mv">
