@@ -44,3 +44,23 @@ function Reviews_Batchlist_Delete( id, callback, delegator ) {
 								'Review_ID=' + encodeURIComponent( id ),
 								delegator );
 }
+
+function Reviews_Batchlist_Approved ( id, checked, callback, delegator ) {
+	return AJAX_Call_Module(	callback,
+								'admin',
+								'tgreviews',
+								'Review_Approved_Update',
+								'Review_ID='	+ encodeURIComponent( id ) +
+								'&Approved='	+ ( checked ? 1 : 0 ),
+								delegator );
+}
+
+function Reviews_Batchlist_Notify( id, checked, callback, delegator ) {
+	return AJAX_Call_Module(	callback,
+								'admin',
+								'tgreviews',
+								'Review_Notify_Update',
+								'Review_ID='	+ encodeURIComponent( id ) +
+								'&Notify='	+ ( checked ? 1 : 0 ),
+								delegator );
+}

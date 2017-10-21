@@ -15,6 +15,8 @@
 |		JSON_Product_Reviews_Insert
 |		JSON_Product_Reviews_Delete
 |		JSON_Load_Additional_Fields
+|		JSON_Review_Approved_Update
+|		JSON_Review_Notify_Update
 |
 |		Load_Additional_Fields
 |		Load_Additional_Fields_Product_Review
@@ -40,26 +42,26 @@
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "Product_Review_Read" PARAMETERS = "review var">
-	<MvASSIGN NAME = "l.review" MEMBER = "id"			VALUE = "{ Product_Review.d.id }">
-	<MvASSIGN NAME = "l.review" MEMBER = "created"		VALUE = "{ Product_Review.d.created }">
-	<MvASSIGN NAME = "l.review" MEMBER = "product_id"	VALUE = "{ Product_Review.d.product_id }">
-	<MvASSIGN NAME = "l.review" MEMBER = "cust_id"		VALUE = "{ Product_Review.d.cust_id }">
-	<MvASSIGN NAME = "l.review" MEMBER = "order_id"		VALUE = "{ Product_Review.d.order_id }">
-	<MvASSIGN NAME = "l.review" MEMBER = "approved"		VALUE = "{ Product_Review.d.approved }">
-	<MvASSIGN NAME = "l.review" MEMBER = "rating"		VALUE = "{ Product_Review.d.rating }">
-	<MvASSIGN NAME = "l.review" MEMBER = "name"			VALUE = "{ Product_Review.d.name }">
-	<MvASSIGN NAME = "l.review" MEMBER = "email"		VALUE = "{ Product_Review.d.email }">
-	<MvASSIGN NAME = "l.review" MEMBER = "location"		VALUE = "{ Product_Review.d.location }">
-	<MvASSIGN NAME = "l.review" MEMBER = "notify"		VALUE = "{ Product_Review.d.notify }">
-	<MvASSIGN NAME = "l.review" MEMBER = "title"		VALUE = "{ Product_Review.d.title }">
-	<MvASSIGN NAME = "l.review" MEMBER = "summary"		VALUE = "{ Product_Review.d.summary }">
+	<MvASSIGN NAME = "l.review" MEMBER = "id"			VALUE = "{ TGReviews_Products_Load.d.id }">
+	<MvASSIGN NAME = "l.review" MEMBER = "created"		VALUE = "{ TGReviews_Products_Load.d.created }">
+	<MvASSIGN NAME = "l.review" MEMBER = "product_id"	VALUE = "{ TGReviews_Products_Load.d.product_id }">
+	<MvASSIGN NAME = "l.review" MEMBER = "cust_id"		VALUE = "{ TGReviews_Products_Load.d.cust_id }">
+	<MvASSIGN NAME = "l.review" MEMBER = "order_id"		VALUE = "{ TGReviews_Products_Load.d.order_id }">
+	<MvASSIGN NAME = "l.review" MEMBER = "approved"		VALUE = "{ TGReviews_Products_Load.d.approved }">
+	<MvASSIGN NAME = "l.review" MEMBER = "rating"		VALUE = "{ TGReviews_Products_Load.d.rating }">
+	<MvASSIGN NAME = "l.review" MEMBER = "name"			VALUE = "{ TGReviews_Products_Load.d.name }">
+	<MvASSIGN NAME = "l.review" MEMBER = "email"		VALUE = "{ TGReviews_Products_Load.d.email }">
+	<MvASSIGN NAME = "l.review" MEMBER = "location"		VALUE = "{ TGReviews_Products_Load.d.location }">
+	<MvASSIGN NAME = "l.review" MEMBER = "notify"		VALUE = "{ TGReviews_Products_Load.d.notify }">
+	<MvASSIGN NAME = "l.review" MEMBER = "title"		VALUE = "{ TGReviews_Products_Load.d.title }">
+	<MvASSIGN NAME = "l.review" MEMBER = "summary"		VALUE = "{ TGReviews_Products_Load.d.summary }">
 </MvFUNCTION>
 
 
 <MvFUNCTION NAME = "Product_Review_Load_ID" PARAMETERS = "id, review var" STANDARDOUTPUTLEVEL = "">
 	<MvOPENVIEW NAME	= "Merchant"
 				VIEW 	= "TGReviews_Products_Load"
-				QUERY 	= "{ 'SELECT *  FROM ' $ g.Store_Table_Prefix $ 'TGReviews_Products  WHERE id = ? '}"
+				QUERY 	= "{ 'SELECT *  FROM ' $ g.Store_Table_Prefix $ 'TGReviews_Products WHERE id = ? '}"
 				FIELDS	= "l.id">
 
 	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
@@ -73,7 +75,11 @@
 
 	<MvEVAL EXPR = "{ Product_Review_Read( l.review ) }">
 	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_Products_Load">
-		
+
+	<MvIF EXPR = "{ NOT l.review:id }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -349,6 +355,58 @@
 		</MvFOREACH>
 		]
 	}
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_Review_Approved_Update" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, compresswhitespace">
+	<MvIF EXPR = "{ ISNULL g.Review_ID }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'id', 'Review ID must be present.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ ISNULL g.Approved }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'approved', 'Value for Approved may not be empty.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ ( g.Approved NE 1 ) AND ( g.Approved NE 0 ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'approved', 'Value for Approved must be 1 or 0.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT Product_Review_Load_ID( g.Review_ID, l.review ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'id', 'Review could not be loaded.' ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.review" MEMBER = "approved" VALUE = "{ g.Approved }">
+
+	<MvIF EXPR = "{ NOT Product_Reviews_Update( l.review ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( g.Review_Field_Error, g.Review_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_Review_Notify_Update" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, compresswhitespace">
+	<MvIF EXPR = "{ ISNULL g.Review_ID }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'id', 'Review ID must be present.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ ISNULL g.Notify }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'notify', 'Value for Notify may not be empty.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ ( g.Notify NE 1 ) AND ( g.Notify NE 0 ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'notify', 'Value for Notify must be 1 or 0.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT Product_Review_Load_ID( g.Review_ID, l.review ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'id', 'Review could not be loaded.' ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.review:notify" VALUE = "{ g.Notify }">
+
+	<MvIF EXPR = "{ NOT Product_Reviews_Update( l.review ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( g.Review_Field_Error, g.Review_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "JSON_Product_Reviews_Delete" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, compresswhitespace">

@@ -6,7 +6,7 @@
 	<MvASSIGN NAME = "l.module:api_ver"		VALUE = "9.00">
 	<MvASSIGN NAME = "l.module:description"	VALUE = "All the Reviews!">
 	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside">
-	<MvCOMMENT><MvASSIGN NAME = "l.module:features"	VALUE = "system, vis_system, component, data_store, vis_product, json, clientside, import, export"></MvCOMMENT>
+	<MvCOMMENT><MvASSIGN NAME = "l.module:features"	VALUE = "component, vis_product, import, export"></MvCOMMENT>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Install_Store" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
@@ -241,6 +241,8 @@
 	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Insert'				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Insert( l.module )		}"></MvIF>
 	<MvIF EXPR = "{ g.Module_Function EQ 'Load_Additional_Fields'		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Load_Additional_Fields( l.module )		}"></MvIF>
 	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Delete' 				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Delete( l.module ) 	}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'Review_Approved_Update' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Review_Approved_Update( l.module ) 	}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'Review_Notify_Update' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Review_Notify_Update( l.module ) 		}"></MvIF>
 
 	<MvIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Load_Query' 	}"><MvFUNCTIONRETURN VALUE = "{ AdditionalFields_Load_Query( l.module ) 	}"></MvIF>
 	<MvIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Update' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalFields_Update( l.module ) 	}"></MvIF>

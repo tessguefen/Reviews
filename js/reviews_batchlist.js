@@ -3,6 +3,7 @@ function Reviews_Batchlist() {
 	Load_Additional_Fields( function( response) {
 		if ( response.success ) {
 			self.additional_fields = response.data;
+			self.additional_fields_length = self.additional_fields.length;
 			MMBatchList.call( self, 'jsReviews_Batchlist' );
 			self.Feature_SearchBar_SetPlaceholderText( 'Search Reviews...' );
 			self.SetDefaultSort( 'id', '-' );
@@ -26,47 +27,53 @@ Reviews_Batchlist.prototype.onCreateRootColumnList = function() {
 
 		columnlist.push(	new MMBatchList_Column_CheckboxSlider('Approved', 'approved', 'approved', function( item, checked, delegator ) {
 								Reviews_Batchlist.Update_Approved( item, checked, delegator );
-							} )
-						);
-		columnlist.push(	new MMBatchList_Column_Name( 'Review ID', 'id', 'id')
+							} ),
+							
+							new MMBatchList_Column_Name( 'Review ID', 'id', 'id')
 							.SetAdvancedSearchEnabled(false)
 							.SetDisplayInMenu(false)
-							.SetDisplayInList(false)
-						);
-		columnlist.push(	new Reviews_ProductLookup_Column( 'Product Code', 'product_code', 'product_code') );
-		columnlist.push(	new MMBatchList_Column_Name( 'Product Name', 'product_name', 'product_name')
+							.SetDisplayInList(false),
+
+							new Reviews_ProductLookup_Column( 'Product Code', 'product_code', 'product_code'),
+
+							new MMBatchList_Column_Name( 'Product Name', 'product_name', 'product_name')
 							.SetOnDisplayEdit( function( record ) { return DrawMMBatchListString_Data( !record.product_name ? '' : record.product_name ); } )
-							.SetUpdateOnModifiedOnly( true )
-						);
-		columnlist.push(	new MMBatchList_Column_Name( 'Product ID', 'product_id', 'product_id')
-							.SetAdvancedSearchEnabled(false)
-							.SetDisplayInMenu(false)
-							.SetDisplayInList(false)
-						);
+							.SetUpdateOnModifiedOnly( true ),
 
-		columnlist.push(	new MMBatchList_Column_DateTime( 'Date', 'created', 'created') );
-		columnlist.push(	new MMBatchList_Column_Name( 'Customer ID', 'cust_id', 'cust_id')
+							new MMBatchList_Column_Name( 'Product ID', 'product_id', 'product_id')
 							.SetAdvancedSearchEnabled(false)
 							.SetDisplayInMenu(false)
-							.SetDisplayInList(false)
-						);
-		columnlist.push(	new MMBatchList_Column_Numeric( 'Order ID', 'order_id', 'order_id')
+							.SetDisplayInList(false),
+							
+							new MMBatchList_Column_DateTime( 'Date', 'created', 'created'),
+
+							new MMBatchList_Column_Name( 'Customer ID', 'cust_id', 'cust_id')
+							.SetAdvancedSearchEnabled(false)
+							.SetDisplayInMenu(false)
+							.SetDisplayInList(false),
+
+							new MMBatchList_Column_Numeric( 'Order ID', 'order_id', 'order_id')
 							.SetOnDisplayEdit( function( record ) { return DrawMMBatchListString_Data( record.order_id ); } )
-							.SetUpdateOnModifiedOnly( true )
-						);
+							.SetUpdateOnModifiedOnly( true ),
 
-		columnlist.push(	new MMBatchList_Column_Numeric( 'Rating', 'rating', 'rating' ) );
-		columnlist.push(	new MMBatchList_Column_Name( 'Name', 'name', 'name' ) );
-		columnlist.push(	new MMBatchList_Column_Name( 'Email', 'email', 'email' ) );
-		columnlist.push(	new MMBatchList_Column_Name( 'Location', 'location', 'location' ) );
-		columnlist.push(	new MMBatchList_Column_CheckboxSlider('Notify', 'notify', 'notify', function( item, checked, delegator ) {
+							new MMBatchList_Column_Numeric( 'Rating', 'rating', 'rating' ),
+
+							new MMBatchList_Column_Name( 'Name', 'name', 'name' ),
+
+							new MMBatchList_Column_Name( 'Email', 'email', 'email' ),
+
+							new MMBatchList_Column_Name( 'Location', 'location', 'location' ),
+
+							new MMBatchList_Column_CheckboxSlider('Notify', 'notify', 'notify', function( item, checked, delegator ) {
 								Reviews_Batchlist.Update_Notify( item, checked, delegator );
-							} )
-						);
-		columnlist.push(	new MMBatchList_Column_Name( 'Title', 'title', 'title') );
-		columnlist.push(	new MMBatchList_Column_TextArea( 'Edit Summary', 'Summary', 'summary', 'summary' ) );
+							} ),
 
-		for ( i = 0, i_len = self.additional_fields.length; i < i_len; i++ ) {
+							new MMBatchList_Column_Name( 'Title', 'title', 'title'),
+
+							new MMBatchList_Column_TextArea( 'Edit Summary', 'Summary', 'summary', 'summary' )
+						);
+
+		for ( i = 0, i_len = self.additional_fields_length; i < i_len; i++ ) {
 			columnlist.push( new MMBatchList_Column_Text( self.additional_fields[ i ].name, 'AdditionalFields_' + self.additional_fields[ i ].code, 'AdditionalFields:' + self.additional_fields[ i ].code ).SetAdvancedSearchEnabled(false).SetSortByField( '' ) );
 		}
 
@@ -94,7 +101,7 @@ Reviews_Batchlist.prototype.onCreate = function() {
 	record.product_id = 0;
 	record.product_code = '';
 	record.product_name = '';
-	for ( i = 0, i_len = self.additional_fields.length; i < i_len; i++ ) {
+	for ( i = 0, i_len = self.additional_fields_length; i < i_len; i++ ) {
 		var code = 'AdditionalFields_' + self.additional_fields[ i ].code;
 		record[code] = '';
 	}
@@ -104,10 +111,18 @@ Reviews_Batchlist.prototype.onCreate = function() {
 Reviews_Batchlist.prototype.onSave = function( item, callback, delegator ) {
 	Reviews_Batchlist_Update( item.record.id, item.record.mmbatchlist_fieldlist, callback, delegator );
 }
-Reviews_Batchlist.prototype.onInsert = function( item, callback, delegator ) {
-	Reviews_Batchlist_Insert( item.record.mmbatchlist_fieldlist, callback, delegator );
+
+Reviews_Batchlist.Update_Approved = function( item, checked, delegator ) {
+	Reviews_Batchlist_Approved( item.record.id, checked, function( response ) {}, delegator );
 }
 
+Reviews_Batchlist.Update_Notify = function( item, checked, delegator ) {
+	Reviews_Batchlist_Notify( item.record.id, checked, function( response ) {}, delegator );
+}
+
+Reviews_Batchlist.prototype.onDelete = function( item, callback, delegator ) {
+	Reviews_Batchlist_Delete( item.record.id, callback, delegator );
+}
 
 Reviews_Batchlist.prototype.onDelete = function( item, callback, delegator ) {
 	Reviews_Batchlist_Delete( item.record.id, callback, delegator );
