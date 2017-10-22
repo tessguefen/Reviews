@@ -172,8 +172,139 @@
 		<div style="clear:both;"></div>
 	<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
 
-	Templates for.... Review FORM and Reviews.<br />
-	Emails: created on install, but u can change the screen? idk.<br />
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'TGR_SETT', 'TGR_TEMPL' ) }">
+		<MvASSIGN NAME = "g.Reviews_Template:form_id" VALUE = "{ l.mod_settings:form_template }">
+		<MvASSIGN NAME = "g.Reviews_Template:reviews_id" VALUE = "{ l.mod_settings:reviews_template }">
+		
+		<MvHIDE FIELDS = "g.Reviews_Template:form_id,g.Reviews_Template:reviews_id" />
+
+		<MvIF EXPR = "{ g.Reviews_Template:form:template_clear_history }">
+			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplate_Delete_History( g.Reviews_Template:form_id ) }">
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+
+			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_Template_Current( g.Reviews_Template:form_id, l.form_template ) }">
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+
+			<MvASSIGN NAME = "g.Reviews_Template:form:template_version"				VALUE = "{ l.form_template:id }">
+			<MvASSIGN NAME = "g.Reviews_Template:form:template_version_selected"	VALUE = "{ l.form_template:id }">
+		<MvELSEIF EXPR = "{ g.Reviews_Template:form:template_recall }">
+			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_ID( g.Reviews_Template:form:template_version_selected, l.form_template ) }">
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+
+			<MvASSIGN NAME = "g.Reviews_Template:form"	VALUE = "{ l.form_template:settings }">
+		<MvELSEIF EXPR = "{ g.Reviews_Template:form_id NE 0 }">
+			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_Template_Current( g.Reviews_Template:form_id, l.form_template ) }">
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+		</MvIF>
+
+		<MvIF EXPR = "{ g.Reviews_Template:reviews:template_clear_history }">
+			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplate_Delete_History( g.Reviews_Template:reviews_id ) }">
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+
+			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_Template_Current( g.Reviews_Template:reviews_id, l.reviews_template ) }">
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+
+			<MvASSIGN NAME = "g.Reviews_Template:reviews:template_version"				VALUE = "{ l.reviews_template:id }">
+			<MvASSIGN NAME = "g.Reviews_Template:reviews:template_version_selected"	VALUE = "{ l.reviews_template:id }">
+		<MvELSEIF EXPR = "{ g.Reviews_Template:reviews:template_recall }">
+			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_ID( g.Reviews_Template:reviews:template_version_selected, l.reviews_template ) }">
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+
+			<MvASSIGN NAME = "g.Reviews_Template:reviews"	VALUE = "{ l.reviews_template:settings }">
+		<MvELSEIF EXPR = "{ g.Reviews_Template:reviews_id NE 0 }">
+			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_Template_Current( g.Reviews_Template:reviews_id, l.reviews_template ) }">
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+		</MvIF>
+
+		<MvASSIGN NAME = "g.Reviews_Template:form:notes"						VALUE = "">
+		<MvASSIGN NAME = "g.Reviews_Template:form:template_code"				VALUE = "{ l.form_template:source }">
+		<MvASSIGN NAME = "g.Reviews_Template:form:template_version"			VALUE = "{ l.form_template:id }">
+		<MvASSIGN NAME = "g.Reviews_Template:form:template_version_selected"	VALUE = "{ l.form_template:id }">
+
+		<MvASSIGN NAME = "g.Reviews_Template:reviews:notes"						VALUE = "">
+		<MvASSIGN NAME = "g.Reviews_Template:reviews:template_code"				VALUE = "{ l.reviews_template:source }">
+		<MvASSIGN NAME = "g.Reviews_Template:reviews:template_version"			VALUE = "{ l.reviews_template:id }">
+		<MvASSIGN NAME = "g.Reviews_Template:reviews:template_version_selected"	VALUE = "{ l.reviews_template:id }">
+
+		<table border=0 cellpadding=2 cellspacing = 0 width = "100%">
+			<tr>
+				<td valign="top" nowrap>&nbsp;</td>
+				<td><pre>&lt;mvt:item name="tgreviews" param="Form_Template()" /&gt;</pre></td>
+			</tr>
+			<tr>
+				<td valign="top" nowrap>&nbsp;</td>
+				<td width="100%">
+					<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawTemplateTextArea( 'Reviews_Template:form:template_code', g.Reviews_Template:form:template_code, 10, 58 ) }">
+				</td>
+			</tr>
+
+		<MvIF EXPR = "{ l.form_template:id NE 0 }">
+			<tr>
+				<td nowrap>Notes:</td>
+				<td width="100%">
+					<input type="text" name="Reviews_Template:form:notes" value="{ encodeentities( g.Reviews_Template:form:notes ) }" size=40>
+				</td>
+			</tr>
+
+			<tr>
+				<td nowrap>Versions:</td>
+				<td width="100%">
+					<input type="hidden" name="Reviews_Template:form:template_recall" value=0>
+					<input type="hidden" name="Reviews_Template:form:template_clear_history" value=0>
+					<MvHIDE FIELDS = "g.Reviews_Template:form:template_version">
+					<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_ManagedTemplate_Version_Select( g.Reviews_Template:form_id, 'Reviews_Template:form:template_version_selected', g.Reviews_Template:form:template_version_selected ) }">
+					<a href="#" onclick="{ 'Toggle( \'' $ 'Reviews_Template:form:template_recall' $ '\', 1 ); return false;' }">Recall</a>
+					<a href="#" onclick="{ 'Toggle_Prompt( \'Are you sure you wish to delete all saved configuration settings for the form template?\\r\\nThis action cannot be undone.\', \'Reviews_Template:form:template_clear_history' $ '\', 1 ); return false;' }">Clear History</a>
+				</td>
+			</tr>
+		</MvIF>
+
+		<tr>
+			<td colspan="2"><br /><br /></td>
+		</tr>
+
+		<tr>
+			<td valign="top" nowrap>&nbsp;</td>
+			<td><pre>&lt;mvt:item name="tgreviews" param="Reviews_Template()" /&gt;</pre></td>
+		</tr>
+		<tr>
+			<td valign="top" nowrap>&nbsp;</td>
+			<td width="100%">
+				<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawTemplateTextArea( 'Reviews_Template:reviews:template_code', g.Reviews_Template:reviews:template_code, 10, 58 ) }">
+			</td>
+		</tr>
+
+		<MvIF EXPR = "{ l.reviews_template:id NE 0 }">
+			<tr>
+				<td nowrap>Notes:</td>
+				<td width="100%">
+					<input type="text" name="Reviews_Template:reviews:notes" value="{ encodeentities( g.Reviews_Template:reviews:notes ) }" size=40>
+				</td>
+			</tr>
+
+			<tr>
+				<td nowrap>Versions:</td>
+				<td width="100%">
+					<input type="hidden" name="Reviews_Template:reviews:template_recall" value=0>
+					<input type="hidden" name="Reviews_Template:reviews:template_clear_history" value=0>
+					<MvHIDE FIELDS = "g.Reviews_Template:reviews:template_version">
+					<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_ManagedTemplate_Version_Select( g.Reviews_Template:reviews_id, 'Reviews_Template:reviews:template_version_selected', g.Reviews_Template:reviews:template_version_selected ) }">
+					<a href="#" onclick="{ 'Toggle( \'' $ 'Reviews_Template:reviews:template_recall' $ '\', 1 ); return false;' }">Recall</a>
+					<a href="#" onclick="{ 'Toggle_Prompt( \'Are you sure you wish to delete all saved configuration settings for the reviews template?\\r\\nThis action cannot be undone.\', \'Reviews_Template:reviews:template_clear_history' $ '\', 1 ); return false;' }">Clear History</a>
+				</td>
+			</tr>
+		</MvIF>
+
+		</table>
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
 	<MvFUNCTIONRETURN VALUE = 1 />
 </MvFUNCTION>
 
@@ -371,4 +502,69 @@
 		<MvFUNCTIONRETURN VALUE = 0 />
 	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1 />
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Reviews_Templates_Update" PARAMETERS = "templates var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_ID( l.templates:form:template_version, l.template ) OR
+					NOT [ g.Module_Feature_TUI_DB ].ManagedTemplate_Load_ID( l.templates:form_id, l.managedtemplate ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ crypto_md5( l.templates:form:template_code ) EQ crypto_md5( l.template:source ) }">
+		<MvIF EXPR = "{ l.template:id NE l.managedtemplate:current_id }">
+			<MvASSIGN NAME = "l.managedtemplate:current_id"	VALUE = "{ l.template:id }">
+
+			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Revert_ManagedTemplateVersion( l.managedtemplate, l.template, l.compile_error ) }">
+				<MvIF EXPR = "{ len( l.compile_error ) }">
+					<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Admin ].FieldError( l.item, 'Reviews_Template:form:template_code', l.compile_error ) }">
+					<MvFUNCTIONRETURN VALUE = 1>
+				</MvIF>
+
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+
+			<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( 'TGReviews-TEMPL-1001', l.module $ '  template reverted' ) }">
+		</MvIF>
+	<MvELSE>
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplateVersion( l.managedtemplate, l.templates:form:notes, l.templates:form:template_code, l.settings, l.compile_error ) }">
+			<MvIF EXPR = "{ len( l.compile_error ) }">
+				<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Admin ].FieldError( l.item, 'Reviews_Template:form:template_code', l.compile_error ) }">
+				<MvFUNCTIONRETURN VALUE = 1>
+			</MvIF>
+
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_ID( l.templates:reviews:template_version, l.template ) OR
+					NOT [ g.Module_Feature_TUI_DB ].ManagedTemplate_Load_ID( l.templates:reviews_id, l.managedtemplate ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ crypto_md5( l.templates:reviews:template_code ) EQ crypto_md5( l.template:source ) }">
+		<MvIF EXPR = "{ l.template:id NE l.managedtemplate:current_id }">
+			<MvASSIGN NAME = "l.managedtemplate:current_id"	VALUE = "{ l.template:id }">
+
+			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Revert_ManagedTemplateVersion( l.managedtemplate, l.template, l.compile_error ) }">
+				<MvIF EXPR = "{ len( l.compile_error ) }">
+					<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Admin ].FieldError( l.item, 'Reviews_Template:reviews:template_code', l.compile_error ) }">
+					<MvFUNCTIONRETURN VALUE = 1>
+				</MvIF>
+
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+
+			<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( 'TGReviews-TEMPL-1001', l.module $ '  template reverted' ) }">
+		</MvIF>
+	<MvELSE>
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplateVersion( l.managedtemplate, l.templates:reviews:notes, l.templates:reviews:template_code, l.settings, l.compile_error ) }">
+			<MvIF EXPR = "{ len( l.compile_error ) }">
+				<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Admin ].FieldError( l.item, 'Reviews_Template:reviews:template_code', l.compile_error ) }">
+				<MvFUNCTIONRETURN VALUE = 1>
+			</MvIF>
+
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+	</MvIF>
+
 </MvFUNCTION>

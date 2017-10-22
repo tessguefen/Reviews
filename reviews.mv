@@ -26,6 +26,18 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0001', 'An error occured while creating the table ' $ g.Store_Table_Prefix $ 'TGReviews_Settings. Please make sure this table was not already created.' ) }">
 	</MvIF>
 
+	<MvCOMMENT>
+	|
+	|	Insert Defaults to TGReviews_Settings
+	|		required
+	|		mail_after
+	|		merchant_email
+	|		customer_email
+	|		form_template
+	|		reviews_template
+	|
+	</MvCOMMENT>
+
 	<MvASSIGN NAME = "l.defaults:required:email" VALUE = 1 />
 	<MvASSIGN NAME = "l.defaults:required:location" VALUE = 0 />
 	<MvASSIGN NAME = "l.defaults:required:name" VALUE = 1 />
@@ -92,6 +104,28 @@
 								VALUES
 								( ?, ? )' }"
 				FIELDS	=	"l.customer_email_name, l.customer_email">
+
+	<MvASSIGN NAME = "l.form_template:code" VALUE = "tbd" />
+	<MvASSIGN NAME = "l.form_template:id" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplate( l.form_template:code, NULL, 'tgr_form.mvc' ) }">
+	<MvASSIGN NAME = "l.form_template:name" VALUE = "form_template">
+
+	<MvQUERY	NAME	=	"Merchant"
+				QUERY	=	"{	'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviews_Settings
+								( name, value )
+								VALUES
+								( ?, ? )' }"
+				FIELDS	=	"l.form_template:name, l.form_template:id">
+
+	<MvASSIGN NAME = "l.reviews_template:code" VALUE = "tbd" />
+	<MvASSIGN NAME = "l.reviews_template:id" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplate( l.reviews_template:code, NULL, 'tgr_reviews.mvc' ) }">
+	<MvASSIGN NAME = "l.reviews_template:name" VALUE = "reviews_template">
+
+	<MvQUERY	NAME	=	"Merchant"
+				QUERY	=	"{	'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviews_Settings
+								( name, value )
+								VALUES
+								( ?, ? )' }"
+				FIELDS	=	"l.reviews_template:name, l.reviews_template:id">
 
 	<MvCOMMENT>
 	|
@@ -191,6 +225,11 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Uninstall_Store" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.void" VALUE = "{ Module_Settings( l.mod_settings ) }">
+
+	<MvASSIGN NAME = "l.void"	VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_ManagedTemplate( l.mod_settings:form_template ) }">
+	<MvASSIGN NAME = "l.void"	VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_ManagedTemplate( l.mod_settings:reviews_template ) }">
+
 	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $  g.Store_Table_Prefix $ 'TGReviews_Settings' }">
 	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $  g.Store_Table_Prefix $ 'TGReviews_Products'}">
 	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $  g.Store_Table_Prefix $ 'TGReviews_AdditionalFields'}">
@@ -228,7 +267,7 @@
 
 
 <MvFUNCTION NAME = "Module_System_Tabs" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
-	<MvFUNCTIONRETURN VALUE = "TGR_SETT:Reviews: Settings,TGR_SETT/TGR_FIELDS:Field Settings,TGR_SETT/TGR_EMAIL:Email Notifications,TGR_ADDL:Reviews: Additional Fields,TGR_PROD:Reviews: Product Reviews">
+	<MvFUNCTIONRETURN VALUE = "TGR_SETT:Reviews: Settings,TGR_SETT/TGR_FIELDS:Field Settings,TGR_SETT/TGR_EMAIL:Email Notifications,TGR_SETT/TGR_TEMPL:Templates,TGR_ADDL:Reviews: Additional Fields,TGR_PROD:Reviews: Product Reviews">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_System_Head" PARAMETERS = "module var, tab" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
@@ -280,7 +319,8 @@
 
 <MvFUNCTION NAME = "Module_System_Update" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ ( g.Review_Tab EQ 'TGR_SETT' )  }">
-		<MvFUNCTIONRETURN VALUE = "{ Review_Settings_Update( g.Required, g.Mail_After, g.Merchant_Email, g.Customer_Email) }">
+		<MvASSIGN NAME = "l.void" VALUE = "{ Review_Settings_Update( g.Required, g.Mail_After, g.Merchant_Email, g.Customer_Email) }">
+		<MvASSIGN NAME = "l.void" VALUE = "{ Reviews_Templates_Update( g.Reviews_Template ) }">
 	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
