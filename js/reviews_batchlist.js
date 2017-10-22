@@ -54,7 +54,8 @@ Reviews_Batchlist.prototype.onCreateRootColumnList = function() {
 
 							new MMBatchList_Column_Numeric( 'Order ID', 'order_id', 'order_id')
 							.SetOnDisplayEdit( function( record ) { return DrawMMBatchListString_Data( record.order_id ); } )
-							.SetUpdateOnModifiedOnly( true ),
+							.SetUpdateOnModifiedOnly( true )
+							.SetDefaultActive( false ),
 
 							new MMBatchList_Column_Numeric( 'Rating', 'rating', 'rating' )
 							.SetOnDisplayData( function( record) { return DrawMMBatchListString_Data_NoEncoding( '&#9733;'.repeat( record.rating ) ) } ),

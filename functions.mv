@@ -39,6 +39,9 @@
 |		JSON_AdditionalFields_Insert
 |		JSON_AdditionalFields_Delete
 |
+|	Front-End Functions
+|		FrontEnd_Add_Review
+|
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "Product_Review_Read" PARAMETERS = "review var">
@@ -844,4 +847,110 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( g.Review_Field_Error, g.Review_Error ) }">
 	</MvIF>
 	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "FrontEnd_Add_Review" PARAMETERS = "" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "g.TGR_Product_Code" VALUE = "{ trim( g.TGR_Product_Code ) }" />
+	<MvASSIGN NAME = "g.TGR_Order_ID" VALUE = "{ trim( g.TGR_Order_ID ) }" />
+	<MvASSIGN NAME = "g.TGR_Rating" VALUE = "{ trim( g.TGR_Rating ) }" />
+	<MvASSIGN NAME = "g.TGR_Name" VALUE = "{ trim( g.TGR_Name ) }" />
+	<MvASSIGN NAME = "g.TGR_Email" VALUE = "{ trim( g.TGR_Email ) }" />
+	<MvASSIGN NAME = "g.TGR_Location" VALUE = "{ trim( g.TGR_Location ) }" />
+	<MvASSIGN NAME = "g.TGR_Notify" VALUE = "{ trim( g.TGR_Notify ) }" />
+	<MvASSIGN NAME = "g.TGR_Title" VALUE = "{ trim( g.TGR_Title ) }" />
+	<MvASSIGN NAME = "g.TGR_Summary" VALUE = "{ trim( g.TGR_Summary ) }" />
+
+	<MvIF EXPR = "{ ISNULL g.TGR_Product_Code }">
+		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Missing Product Code.">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].Product_Load_Code( g.TGR_Product_Code, l.product ) }">
+		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Product Code is Invalid.">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'required', l.required_fields ) }">
+	<MvASSIGN NAME = "l.required_fields" VALUE = "{ miva_array_deserialize( l.required_fields ) }">
+
+	<MvIF EXPR = "{ l.required_fields:email EQ 1 AND ISNULL g.TGR_email }">
+		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Email is required.">
+		<MvASSIGN NAME = "g.tgr_email_class" VALUE = "error">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvIF EXPR = "{ l.required_fields:location EQ 1 AND ISNULL g.TGR_location }">
+		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Location is required.">
+		<MvASSIGN NAME = "g.tgr_location_class" VALUE = "error">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvIF EXPR = "{ l.required_fields:name EQ 1 AND ISNULL g.TGR_name }">
+		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Name is required.">
+		<MvASSIGN NAME = "g.tgr_name_class" VALUE = "error">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvIF EXPR = "{ l.required_fields:summary EQ 1 AND ISNULL g.TGR_summary }">
+		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Summary is required.">
+		<MvASSIGN NAME = "g.tgr_summary_class" VALUE = "error">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvIF EXPR = "{ l.required_fields:title EQ 1 AND ISNULL g.TGR_title }">
+		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Title is required.">
+	<MvASSIGN NAME = "g.tgr_title_class" VALUE = "error">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvIF EXPR = "{ g.tgr_Email AND NOT [ g.Module_Library_Utilities ].Email_Validate( g.tgr_Email ) }">
+		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Please specify a valid email address.">
+		<MvASSIGN NAME = "g.tgr_email_class" VALUE = "error">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvIF EXPR = "{ ( g.TGR_Rating LT 1 ) OR ( g.TGR_Rating GT 5 ) OR NOT isdigit( g.TGR_Rating ) }">
+		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Rating must have a value of 1-5.">
+		<MvASSIGN NAME = "g.tgr_rating_class" VALUE = "error">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT isdigit( g.TGR_Order_ID ) }">
+		<MvASSIGN NAME = "g.TGR_Order_ID" VALUE = "" />
+	</MvIF>
+
+	<MvIF EXPR = "{ g.TGR_Notify NE 1 }">
+		<MvASSIGN NAME = "g.TGR_Notify" VALUE = "0" />
+	</MvIF>
+
+	<MvASSIGN NAME = "l.review" MEMBER = "created"		VALUE = "{ s.dyn_time_t }">
+	<MvASSIGN NAME = "l.review" MEMBER = "product_id"	VALUE = "{ l.product:id }">
+	<MvASSIGN NAME = "l.review" MEMBER = "cust_id"		VALUE = "{ g.Basket:cust_id }">
+	<MvASSIGN NAME = "l.review" MEMBER = "order_id"		VALUE = "{ g.TGR_Order_ID }">
+	<MvASSIGN NAME = "l.review" MEMBER = "rating"		VALUE = "{ g.TGR_Rating }">
+	<MvASSIGN NAME = "l.review" MEMBER = "name"			VALUE = "{ g.TGR_Name }">
+	<MvASSIGN NAME = "l.review" MEMBER = "email"		VALUE = "{ g.TGR_Email }">
+	<MvASSIGN NAME = "l.review" MEMBER = "location"		VALUE = "{ g.TGR_Location }">
+	<MvASSIGN NAME = "l.review" MEMBER = "notify"		VALUE = "{ g.TGR_Notify }">
+	<MvASSIGN NAME = "l.review" MEMBER = "title"		VALUE = "{ g.TGR_Title }">
+	<MvASSIGN NAME = "l.review" MEMBER = "summary"		VALUE = "{ g.TGR_Summary }">
+
+	<MvIF EXPR = "{ NOT Product_Reviews_Insert( l.review ) }">
+		<MvASSIGN NAME = "g.TGR_Error" VALUE = "{ g.Review_Error }">
+		<MvASSIGN NAME = "{ 'g.tgr_' $ g.Review_Field_Error $ '_class' }" VALUE = "error">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT ISNULL ( g.tgr_AdditionalFields ) }">
+		<MvIF EXPR = "{ NOT Product_Reviews_AdditionalValues_InsertUpdate_LowLevel( l.review:id, g.tgr_AdditionalFields ) }">
+			<MvASSIGN NAME = "g.TGR_Error" VALUE = "{ g.Review_Error }">
+			<MvASSIGN NAME = "{ 'g.tgr_AdditionalFields_' $ g.Review_Field_Error $ '_class' }" VALUE = "error">
+		</MvIF>
+	</MvIF>
+
+	<MvCOMMENT>
+	|
+	|	Check Settings for Triggers for Merchant.
+	|
+	</MvCOMMENT>
 </MvFUNCTION>
