@@ -35,6 +35,8 @@
 	|		customer_email
 	|		form_template
 	|		reviews_template
+	|		reviews_per_page
+	|		reviews_default_sorting
 	|
 	</MvCOMMENT>
 

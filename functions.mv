@@ -1011,6 +1011,7 @@
 	<MvASSIGN NAME = "g.TGR_Sort"			VALUE = "{ trim( g.TGR_Sort ) }">
 	<MvASSIGN NAME = "g.TGR_Offset"			VALUE = "{ trim( int( g.TGR_Offset ) ) }">
 	<MvASSIGN NAME = "g.TGR_Count"			VALUE = "{ trim( int( g.TGR_Count ) ) }">
+	<MvASSIGN NAME = "g.TGR_Rating"			VALUE = "{ trim( int( g.TGR_Rating ) ) }">
 	<MvASSIGN NAME = "g.TGR_Product_ID"		VALUE = "{ trim( int( l.product_id ) ) }">
 	<MvASSIGN NAME = "l.search_query"	VALUE = "">
 
@@ -1034,6 +1035,10 @@
 
 	<MvIF EXPR = "{ g.TGR_Product_ID GT 0 }">
 		<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'product_id = ? ', 'g.TGR_Product_ID' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ g.TGR_Rating GT 0 }">
+		<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'rating = ? ', 'g.TGR_Rating' ) }">
 	</MvIF>
 
 	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_OrderBy_Fields(l.search_query, g.TGR_Sort, 'id:s.id,created:s.created,product_id:s.product_id,cust_id:s.cust_id,order_id:s.order_id,approved:s.approved,rating:s.rating,name:s.name,email:s.email,location:s.location,notify:s.notify,title:s.title,summary:s.summary', 's.id' ) }">

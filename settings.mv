@@ -70,10 +70,10 @@
 						<td align="left" valign="middle">Default Sorting</td>
 						<td align="left" valign="middle">
 							<select name="reviews_default_sorting">
-								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( '-id', l.mod_settings:reviews_default_sorting, 'Newest' ) }">
-								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'id', l.mod_settings:reviews_default_sorting, 'Oldest' ) }">
-								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( '-rating', l.mod_settings:reviews_default_sorting, 'Highest Rated' ) }">
-								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'rating', l.mod_settings:reviews_default_sorting, 'Lowest Rated' ) }">
+								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( '-id', l.mod_settings:reviews_default_sorting, 'Most Recent Reviews' ) }">
+								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'id', l.mod_settings:reviews_default_sorting, 'Least Recent Reviews' ) }">
+								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( '-rating', l.mod_settings:reviews_default_sorting, 'Highest To Lowest Rating' ) }">
+								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'rating', l.mod_settings:reviews_default_sorting, 'Lowest to Highest Rating' ) }">
 							</select>
 						</td>
 					</tr>
