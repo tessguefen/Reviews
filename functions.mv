@@ -1189,7 +1189,7 @@
 			<MvASSIGN NAME = "l.output:pagination:current_page" VALUE = "{ l.page_count }">
 		</MvIF>
 		<MvASSIGN NAME = "l.output:pagination:pages" INDEX = "{ l.page_count }" MEMBER = "page_number" VALUE = "{ l.page_count }">
-		<MvASSIGN NAME = "l.output:pagination:pages" INDEX = "{ l.page_count }" MEMBER = "params" VALUE = "{ 'TGR_Sort=' $ encodeattribute( g.TGR_Sort ) $ '&TGR_Count=' $ encodeattribute( g.TGR_Count ) $ '&TGR_Offset=' $ l.curr_offset }">
+		<MvASSIGN NAME = "l.output:pagination:pages" INDEX = "{ l.page_count }" MEMBER = "params" VALUE = "{ 'TGR_Sort=' $ encodeattribute( g.TGR_Sort ) $ '&TGR_Count=' $ encodeattribute( g.TGR_Count ) $ '&TGR_Show_Rating=' $ encodeattribute( g.TGR_Show_Rating ) $ '&TGR_Offset=' $ l.curr_offset }">
 	</MvFOR>
 
 	<MvFUNCTIONRETURN VALUE = 1 />
