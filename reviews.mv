@@ -485,7 +485,8 @@
 					( l.function_name EQ 'reviews_template' )			OR
 					( l.function_name EQ 'date' )						OR
 					( l.function_name EQ 'product_rating' )				OR
-					( l.function_name EQ 'product_review_breakdowns' )
+					( l.function_name EQ 'product_review_breakdowns' )	OR
+					( l.function_name EQ 'product_review_count' )
 				}">
 		<MvASSIGN NAME = "l.new_param" VALUE = "{ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
 	</MvIF>

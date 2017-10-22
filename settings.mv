@@ -367,6 +367,10 @@
 						<td><MvEVAL EXPR = "{ Pretty_Code( 'Product_Review_Breakdowns', ' l.settings:product:id, l.settings:tgr_reviews:breakdown ') }"></td>
 						<td>Returns a breakdown of ratings for a product to a variable (2nd parameter). Array has 2 members: <pre style="display:inline;">count</pre> and <pre style="display:inline;">rating</pre></td>
 					</tr>
+					<tr>
+						<td><MvEVAL EXPR = "{ Pretty_Code( 'Product_Review_Count', ' l.settings:product:id, l.settings:tgr_reviews:review_count ') }"></td>
+						<td>Returns a total number of approved reviews for a product to a variable (2nd parameter).</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>

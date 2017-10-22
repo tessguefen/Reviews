@@ -1091,7 +1091,7 @@
 	<MvASSIGN NAME = "g.TGR_Sort"			VALUE = "{ trim( g.TGR_Sort ) }">
 	<MvASSIGN NAME = "g.TGR_Offset"			VALUE = "{ trim( int( g.TGR_Offset ) ) }">
 	<MvASSIGN NAME = "g.TGR_Count"			VALUE = "{ trim( int( g.TGR_Count ) ) }">
-	<MvASSIGN NAME = "g.TGR_Rating"			VALUE = "{ trim( int( g.TGR_Rating ) ) }">
+	<MvASSIGN NAME = "g.TGR_Show_Rating"	VALUE = "{ trim( int( g.TGR_Show_Rating ) ) }">
 	<MvASSIGN NAME = "g.TGR_Product_ID"		VALUE = "{ trim( int( l.product_id ) ) }">
 	<MvASSIGN NAME = "l.search_query"	VALUE = "">
 
@@ -1117,8 +1117,8 @@
 		<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'product_id = ? ', 'g.TGR_Product_ID' ) }">
 	</MvIF>
 
-	<MvIF EXPR = "{ g.TGR_Rating GT 0 }">
-		<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'rating = ? ', 'g.TGR_Rating' ) }">
+	<MvIF EXPR = "{ g.TGR_Show_Rating GT 0 }">
+		<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'rating = ? ', 'g.TGR_Show_Rating' ) }">
 	</MvIF>
 
 	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_OrderBy_Fields(l.search_query, g.TGR_Sort, 'id:s.id,created:s.created,product_id:s.product_id,cust_id:s.cust_id,order_id:s.order_id,approved:s.approved,rating:s.rating,name:s.name,email:s.email,location:s.location,notify:s.notify,title:s.title,summary:s.summary', 's.id' ) }">
@@ -1164,21 +1164,23 @@
 		</MvIF>
 		<MvSKIP NAME = "Merchant" VIEW = "TGReviews_Products" ROWS = 1>
 	</MvWHILE>
-	<MvASSIGN NAME = "l.output" MEMBER = "total_reviews" VALUE = "{ int( l.total_count ) }">
+	<MvASSIGN NAME = "l.output" MEMBER = "total_reviews_filtered" VALUE = "{ int( l.total_count ) }">
 	<MvASSIGN NAME = "l.output" MEMBER = "start_offset" VALUE = "{ int( g.TGR_Offset ) }">
 	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_Products">
 
 	<MvASSIGN NAME = "l.void" VALUE = "{ Product_Rating( l.module, l.param, l.all_settings, l.product_id, l.output:product_rating ) }">
+
+	<MvASSIGN NAME = "l.void" VALUE = "{ Product_Review_Count( l.module, l.param, l.all_settings, l.product_id, l.output:review_count) }">
 
 	<MvCOMMENT>
 	|
 	|	Pagination
 	|
 	</MvCOMMENT>
-	<MvIF EXPR = "{ l.output:total_reviews EQ 0 }">
+	<MvIF EXPR = "{ l.output:total_reviews_filtered EQ 0 }">
 		<MvFUNCTIONRETURN VALUE = 1 />
 	</MvIF>
-	<MvASSIGN NAME = "l.output:pagination" MEMBER ="total" VALUE = "{ ceil( l.output:total_reviews / g.TGR_Count ) }">
+	<MvASSIGN NAME = "l.output:pagination" MEMBER ="total" VALUE = "{ ceil( l.output:total_reviews_filtered / g.TGR_Count ) }">
 
 	<MvFOR INDEX = "l.page_count" COUNT = "{ l.output:pagination }">
 		<MvASSIGN NAME = "l.curr_offset" VALUE = "{ ( g.TGR_Count * l.page_count ) - g.TGR_Count }">
@@ -1235,6 +1237,36 @@
 	</MvWHILE>
 
 	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_Products">
+	<MvFUNCTIONRETURN VALUE = 1 />
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Product_Review_Count" PARAMETERS = "module var, param, all_settings var, product_id, return var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ miva_variable_value( 'g.Session:cache:TGR:Product_' $ l.product_id $ ':review_count' ) }">
+		<MvASSIGN NAME = "l.return" VALUE = "{ miva_variable_value( 'g.Session:cache:TGR:Product_' $ l.product_id $ ':review_count' ) }">
+		<MvFUNCTIONRETURN VALUE = 1 />
+	</MvIF>
+	<MvASSIGN NAME = "g.Temp_Product_ID" VALUE = "{ l.product_id }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SELECT( l.search_query,'s.*' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_FROM( l.search_query, g.Store_Table_Prefix $ 'TGReviews_Products', 's' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'approved = 1', '' ) }">
+
+	<MvIF EXPR = "{ g.TGR_Product_ID GT 0 }">
+		<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'product_id = ? ', 'g.Temp_Product_ID' ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.search_sql" VALUE = "{ [ g.Module_Library_DB].SQL_Query_Build( l.search_query, l.search_fields ) }">
+
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].SQL_Query_Count( l.search_query, l.return ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( 'TGReviews-LOAD-0010' ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "{ 'g.Session:cache:TGR:Product_' $ l.product_id $ ':review_count' }" VALUE = "{ l.return }">
+
+	<MvASSIGN NAME = "g.Temp_Product_ID" VALUE = "">
+
 	<MvFUNCTIONRETURN VALUE = 1 />
 </MvFUNCTION>
 

@@ -41,10 +41,10 @@
 </mvt:if>
 <mvt:if expr="l.settings:tgr_reviews:breakdown">
 	<table width="375">
-	<mvt:if expr="g.TGR_Rating GT 0">
+	<mvt:if expr="g.TGR_Show_Rating GT 0">
 		<tr>
 			<td colspan="2">
-				Currently Viewing Reviews with a rating of <strong>&mvte:global:TGR_Rating;</strong>. <a href="&mvt:product:link;">Click here to reset.</a>
+				Currently Viewing Reviews with a rating of <strong>&mvte:global:TGR_Show_Rating;</strong>. <a href="&mvt:product:link;">Click here to reset.</a>
 			</td>
 		</tr>
 	</mvt:if>
@@ -53,7 +53,7 @@
 		<tr alt="&mvt:breakdown:count; Reviews out of &mvt:tgr_reviews:total_reviews; are rated &mvt:breakdown:rating;" title="&mvt:breakdown:count; Reviews out of &mvt:tgr_reviews:total_reviews; are rated &mvt:breakdown:rating;">
 			<td>
 				<mvt:if expr="l.settings:breakdown:count GT 0">
-					<span><a href="&mvt:product:link;?TGR_Sort=&mvta:global:TGR_Sort;&TGR_Rating=&mvt:breakdown:rating;">&mvt:breakdown:rating; <span>&#9733;</span></a></span>
+					<span><a href="&mvt:product:link;?TGR_Sort=&mvta:global:TGR_Sort;&TGR_Show_Rating=&mvt:breakdown:rating;">&mvt:breakdown:rating; <span>&#9733;</span></a></span>
 				<mvt:else>
 					<span>&mvt:breakdown:rating; <span>&#9733;</span></span>
 				</mvt:if>
