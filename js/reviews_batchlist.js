@@ -120,8 +120,8 @@ Reviews_Batchlist.Update_Notify = function( item, checked, delegator ) {
 	Reviews_Batchlist_Notify( item.record.id, checked, function( response ) {}, delegator );
 }
 
-Reviews_Batchlist.prototype.onDelete = function( item, callback, delegator ) {
-	Reviews_Batchlist_Delete( item.record.id, callback, delegator );
+Reviews_Batchlist.prototype.onInsert = function( item, callback, delegator ) {
+	Reviews_Batchlist_Insert( item.record.mmbatchlist_fieldlist, callback, delegator );
 }
 
 Reviews_Batchlist.prototype.onDelete = function( item, callback, delegator ) {
