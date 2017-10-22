@@ -141,6 +141,9 @@
 				</thead>
 				<tbody>
 					<tr>
+						<td align="left" valign="middle" width="100%" colspan="2">Page Template Used: <strong>TGR_Merchant_Email</strong></td>
+					</tr>
+					<tr>
 						<td align="left" valign="middle" style="text-transform: capitalize;" colspan="2">
 							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawCheckbox( l.mod_settings:merchant_email:notify, 'merchant_email:notify', 1, 'Recieve Notifications for New Reviews?' ) }">
 						</td>

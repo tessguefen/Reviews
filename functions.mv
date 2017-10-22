@@ -1289,6 +1289,8 @@
 	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_Products">
 	<MvASSIGN NAME = "l.rating_num" VALUE = "1">
 
+	<MvDO FILE = "{ g.Module_Library_Utilities }" NAME = "l.void" VALUE = "{ QuickSortArray( l.return, ':rating', -1 ) }" />
+
 	<MvASSIGN NAME = "{ 'g.Session:cache:TGR:Product_' $ l.product_id $ ':breakdowns' }" VALUE = "{ l.return }">
 
 	<MvFUNCTIONRETURN VALUE = 1 />
