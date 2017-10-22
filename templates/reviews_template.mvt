@@ -1,1 +1,84 @@
-This is the reviews template.
+<mvt:item name="tgreviews" param="Product_Review_Breakdowns( l.settings:product:id, l.settings:tgr_reviews:breakdown )" />
+<mvt:assign name="g.mvt_debug" value="glosub( miva_array_serialize( l.settings:tgr_reviews ), ',', asciichar( 10 ) )" />
+<!--
+@@tgr_reviews
+=========================
+&mvt:global:mvt_debug;
+-->
+<mvt:if expr="l.settings:tgr_reviews:total_reviews EQ 0">
+	No Reviews Yet!
+	<mvt:exit />
+</mvt:if>
+<mvt:if expr="l.settings:tgr_reviews:pagination:total GT 1">
+	<table>
+		<tr>
+			<td>Pages:</td>
+			<td>
+				<mvt:foreach iterator="page" array="tgr_reviews:pagination:pages">
+					<mvt:if expr="POS1 GT 1">&nbsp;</mvt:if>
+					<mvt:if expr="l.settings:page:current EQ 1">
+						<span><strong>&mvt:page:page_number;</strong></span>
+					<mvt:else>
+						<span><a href="&mvte:product:link;?&mvt:page:params;">&mvt:page:page_number;</a></span>
+					</mvt:if>
+				</mvt:foreach>
+			</td>
+		</tr>
+	</table>
+</mvt:if>
+<mvt:if expr="l.settings:tgr_reviews:breakdown">
+	<table width="375">
+	<mvt:foreach iterator="breakdown" array="tgr_reviews:breakdown">
+		<mvt:assign name="l.settings:breakdown:percent" value="( l.settings:breakdown:count / l.settings:tgr_reviews:total_reviews ) * 100" />
+		<tr alt="&mvt:breakdown:count; Reviews out of &mvt:tgr_reviews:total_reviews; are rated &mvt:breakdown:rating;" title="&mvt:breakdown:count; Reviews out of &mvt:tgr_reviews:total_reviews; are rated &mvt:breakdown:rating;">
+			<td>&mvt:breakdown:rating; <span>&#9733;</span></td>
+			<td width="75%;">
+				<div style="height:5px; width: 100%; background: #ccc; position: relative;">
+					<div style="background:#000; height: 5px; width: &mvt:breakdown:percent;%; position: absolute; top: 0; left: 0;"></div>
+				</div>
+			</td>
+		</tr>
+	</mvt:foreach>
+	</table>
+</mvt:if>
+<div>
+	<mvt:foreach iterator="review" array="tgr_reviews:reviews">
+	<div>
+		<div>
+			Rating:
+			<mvt:assign name="l.settings:review:rating_output" value="l.settings:review:rating" />
+			<mvt:while expr="l.settings:review:rating_output GT 0">
+				<span>&#9733;</span>
+				<mvt:assign name="l.settings:review:rating_output" value="l.settings:review:rating_output - 1" />
+			</mvt:while>
+		</div>
+		<div>
+			Title: &mvte:review:title;
+		</div>
+		<div>
+			Name: &mvte:review:name;
+		</div>
+		<div>
+			Location: &mvte:review:location;
+		</div>
+		<div>
+			<mvt:item name="tgreviews" param="Date( 'F jS, Y', l.settings:review:created, l.settings:review:formatted_created )" />
+			Created: &mvt:review:formatted_created;
+		</div>
+		<mvt:if expr="miva_array_elements( l.settings:review:additional_fields ) GT 0">
+			<mvt:foreach iterator="addl_field" array="review:additional_fields">
+				<div style="padding-left: 20px;">
+					Additional Field<br />
+					Name: &mvte:addl_field:name;<br />
+					Code: &mvte:addl_field:code;<br />
+					Value: &mvte:addl_field:value;
+				</div>
+			</mvt:foreach>
+		</mvt:if>
+		<div>
+			Summary: &mvte:review:summary;
+		</div>
+	</div>
+	<hr />
+	</mvt:foreach>
+</div>
