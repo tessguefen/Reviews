@@ -3,10 +3,21 @@
 |	This file contains functions for the Admin > Setting interface.
 |
 |	Functions
+|		DrawTextField
 |		Settings_UI
 |		Module_Settings
+|		Load_Setting
+|		Settings_Update_LowLevel
+|		Review_Settings_Update
+|
+|		Settings_Update_Required
+|		Settings_Update_MailAfter
 |
 </MvCOMMENT>
+
+<MvFUNCTION NAME = "DrawTextField" PARAMETERS = "name, value, placeholder" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<input style="width:100%;padding: 5px;border: 1px solid #ccc;box-sizing: border-box;" type="text" name="{ encodeentities( l.name ) }" value="{ encodeentities( l.value ) }" placeholder="{ encodeentities( l.placeholder ) }" />
+</MvFUNCTION>
 
 <MvFUNCTION NAME = "Settings_UI" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html">
 	<input type="hidden" name="Review_Tab" value="TGR_SETT" />
@@ -19,37 +30,150 @@
 		</MvFOREACH>
 	</MvIF>
 
-	<MvASSIGN NAME = "l.mod_settings:required" VALUE = "{ miva_array_deserialize( l.mod_settings:required ) }">
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'TGR_SETT', 'TGR_FIELDS' ) }">
+		<MvASSIGN NAME = "l.mod_settings:required" VALUE = "{ miva_array_deserialize( l.mod_settings:required ) }">
 
-	<div class="mm9_table_container" style="width:375px">
-		<table class="mm9_table">
-			<thead>
-				<tr>
-					<td align="left" valign="middle" width="100%">Field</td>
-					<td align="center" valign="middle" nowrap="">Required</td>
-					<td align="center" valign="middle" nowrap="">Optional</td>
-				</tr>
-			</thead>
-			<tbody>
-				<MvFOREACH ITERATOR = "l.field" ARRAY = "l.fields" COUNT = "{ miva_struct_members( l.mod_settings:required, l.fields ) }">
-				<tr>
-					<td align="left" valign="middle" width="100%" style="text-transform: capitalize;"><MvEVAL EXPR = "{ l.field }"></td>
-					<td align="center" valign="middle" nowrap=""><MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( 'required:' $ l.field, '1', miva_variable_value( 'l.mod_settings:required:' $ l.field ), '' ) }"></td>
-					<td align="center" valign="middle" nowrap=""><MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( 'required:' $ l.field, '0', miva_variable_value( 'l.mod_settings:required:' $ l.field ), '' ) }"></td>
-				</tr>
-				</MvFOREACH>
-			</tbody>
-		</table>
-	</div>
+		<div class="mm9_table_container" style="width:375px">
+			<table class="mm9_table">
+				<thead>
+					<tr>
+						<td align="left" valign="middle" width="100%">Field</td>
+						<td align="center" valign="middle" nowrap="">Required</td>
+						<td align="center" valign="middle" nowrap="">Optional</td>
+					</tr>
+				</thead>
+				<tbody>
+					<MvFOREACH ITERATOR = "l.field" ARRAY = "l.fields" COUNT = "{ miva_struct_members( l.mod_settings:required, l.fields ) }">
+					<tr>
+						<td align="left" valign="middle" width="100%" style="text-transform: capitalize;"><MvEVAL EXPR = "{ l.field }"></td>
+						<td align="center" valign="middle" nowrap=""><MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( 'required:' $ l.field, '1', miva_variable_value( 'l.mod_settings:required:' $ l.field ), '' ) }"></td>
+						<td align="center" valign="middle" nowrap=""><MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( 'required:' $ l.field, '0', miva_variable_value( 'l.mod_settings:required:' $ l.field ), '' ) }"></td>
+					</tr>
+					</MvFOREACH>
+				</tbody>
+			</table>
+		</div>
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
 
-	<hr />
-	Settings Here.<br />
-	Fields required? Should this be like a thing?<br />
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'TGR_SETT', 'TGR_EMAIL' ) }">
+		<MvASSIGN NAME = "l.mod_settings:mail_after" VALUE = "{ miva_array_deserialize( l.mod_settings:mail_after ) }">
+		<div class="mm9_table_container" style="width:375px;float:left;margin:8px 8px 8px 0;">
+			<table class="mm9_table">
+				<thead>
+					<tr>
+						<td align="left" valign="middle" width="100%" colspan="2">Mail After Notification Email</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td align="left" valign="middle" style="text-transform: capitalize;" colspan="2">
+							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawCheckbox( l.mod_settings:mail_after:notify, 'mail_after:notify', 1, 'Enable Notification?' ) }">
+						</td>
+					</tr>
+					<tr>
+						<td align="left" valign="middle">Send After (Days)</td>
+						<td align="left" valign="middle" width="100%"><MvEVAL EXPR = "{ DrawTextField( 'mail_after:days', l.mod_settings:mail_after:days, 'Days' ) }"></td>
+					</tr>
+					<tr>
+						<td align="left" valign="middle">After</td>
+						<td align="left" valign="middle" width="100%">
+							<select name="mail_after:after">
+								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'order', l.mod_settings:mail_after:after, 'Order Date' ) }">
+								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'ship', l.mod_settings:mail_after:after, 'Shipment Date' ) }">
+							</select>
+						</td>
+					</tr>
+					<tr>
+						<td align="left" valign="middle">From</td>
+						<td align="left" valign="middle" width="100%"><MvEVAL EXPR = "{ DrawTextField( 'mail_after:from', l.mod_settings:mail_after:from, 'From' ) }"></td>
+					</tr>
+					<tr>
+						<td align="left" valign="middle">CC</td>
+						<td align="left" valign="middle" width="100%"><MvEVAL EXPR = "{ DrawTextField( 'mail_after:cc', l.mod_settings:mail_after:cc, 'CC' ) }"></td>
+					</tr>
+					<tr>
+						<td align="left" valign="middle">BCC</td>
+						<td align="left" valign="middle" width="100%"><MvEVAL EXPR = "{ DrawTextField( 'mail_after:bcc', l.mod_settings:mail_after:bcc, 'BCC' ) }"></td>
+					</tr>
+					<tr>
+						<td align="left" valign="middle">Subject</td>
+						<td align="left" valign="middle" width="100%"><MvEVAL EXPR = "{ DrawTextField( 'mail_after:subject', l.mod_settings:mail_after:subject, 'Subject' ) }"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<MvASSIGN NAME = "l.mod_settings:merchant_email" VALUE = "{ miva_array_deserialize( l.mod_settings:merchant_email ) }">
+		<div class="mm9_table_container" style="width:375px;float:left;margin:8px 8px 8px 0;">
+			<table class="mm9_table">
+				<thead>
+					<tr>
+						<td align="left" valign="middle" width="100%" colspan="2">Merchant Notification Email</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td align="left" valign="middle" style="text-transform: capitalize;" colspan="2">
+							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawCheckbox( l.mod_settings:merchant_email:notify, 'merchant_email:notify', 1, 'Recieve Notifications for New Reviews?' ) }">
+						</td>
+					</tr>
+					<tr>
+						<td align="left" valign="middle">To</td>
+						<td align="left" valign="middle" width="100%"><MvEVAL EXPR = "{ DrawTextField( 'merchant_email:to', l.mod_settings:merchant_email:to, 'To' ) }"></td>
+					</tr>
+					<tr>
+						<td align="left" valign="middle">From</td>
+						<td align="left" valign="middle" width="100%"><MvEVAL EXPR = "{ DrawTextField( 'merchant_email:from', l.mod_settings:merchant_email:from, 'From' ) }"></td>
+					</tr>
+					<tr>
+						<td align="left" valign="middle">CC</td>
+						<td align="left" valign="middle" width="100%"><MvEVAL EXPR = "{ DrawTextField( 'merchant_email:cc', l.mod_settings:merchant_email:cc, 'CC' ) }"></td>
+					</tr>
+					<tr>
+						<td align="left" valign="middle">BCC</td>
+						<td align="left" valign="middle" width="100%"><MvEVAL EXPR = "{ DrawTextField( 'merchant_email:bcc', l.mod_settings:merchant_email:bcc, 'BCC' ) }"></td>
+					</tr>
+					<tr>
+						<td align="left" valign="middle">Subject</td>
+						<td align="left" valign="middle" width="100%"><MvEVAL EXPR = "{ DrawTextField( 'merchant_email:subject', l.mod_settings:merchant_email:subject, 'Subject' ) }"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+
+		<MvASSIGN NAME = "l.mod_settings:customer_email" VALUE = "{ miva_array_deserialize( l.mod_settings:customer_email ) }">
+		<div class="mm9_table_container" style="width:375px;float:left;margin:8px 8px 8px 0;">
+			<table class="mm9_table">
+				<thead>
+					<tr>
+						<td align="left" valign="middle" width="100%" colspan="2">Customer Notification Email</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td align="left" valign="middle">From</td>
+						<td align="left" valign="middle" width="100%"><MvEVAL EXPR = "{ DrawTextField( 'customer_email:from', l.mod_settings:customer_email:from, 'From' ) }"></td>
+					</tr>
+					<tr>
+						<td align="left" valign="middle">CC</td>
+						<td align="left" valign="middle" width="100%"><MvEVAL EXPR = "{ DrawTextField( 'customer_email:cc', l.mod_settings:customer_email:cc, 'CC' ) }"></td>
+					</tr>
+					<tr>
+						<td align="left" valign="middle">BCC</td>
+						<td align="left" valign="middle" width="100%"><MvEVAL EXPR = "{ DrawTextField( 'customer_email:bcc', l.mod_settings:customer_email:bcc, 'BCC' ) }"></td>
+					</tr>
+					<tr>
+						<td align="left" valign="middle">Subject</td>
+						<td align="left" valign="middle" width="100%"><MvEVAL EXPR = "{ DrawTextField( 'customer_email:subject', l.mod_settings:customer_email:subject, 'Subject' ) }"></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div style="clear:both;"></div>
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
+
 	Templates for.... Review FORM and Reviews.<br />
 	Emails: created on install, but u can change the screen? idk.<br />
-	[ notify store owner when things ]<br />
-	auto approve reviews???<br />
-	Send follow up emails???? based on order or ship date? scheduled task????
 	<MvFUNCTIONRETURN VALUE = 1 />
 </MvFUNCTION>
 
@@ -83,43 +207,6 @@
 	<MvFUNCTIONRETURN VALUE = 1 />
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Review_Settings_Update" PARAMETERS = "required var" STANDARDOUTPUTLEVEL = "">
-	<MvIF EXPR = "{ l.required }">
-		<MvIF EXPR = "{ NOT Settings_Update_Required( l.required ) }">
-			<MvASSIGN NAME = "l.void" VALUE = "{ miva_array_insert_var( g.Review_Errors, 'Could not Update Required Fields.', -1 ) }">
-		</MvIF>
-	</MvIF>
-	<MvFUNCTIONRETURN VALUE = 1 />
-</MvFUNCTION>
-
-<MvFUNCTION NAME = "Settings_Update_Required" PARAMETERS = "required var" STANDARDOUTPUTLEVEL = "">
-	<MvIF EXPR = "{ NOT Load_Setting( 'required', l.prev_settings ) }">
-		<MvFUNCTIONRETURN VALUE = 0 />
-	</MvIF>
-	<MvASSIGN NAME = "l.prev_settings" VALUE = "{ miva_array_deserialize( l.prev_settings ) }">
-
-	<MvIF EXPR = "{ ( l.prev_settings:email NE l.required:email ) AND ( l.required:email EQ 1 OR l.required:email EQ 0) }">				<MvASSIGN NAME = "l.prev_settings:email" 	VALUE = "{ l.required:email }">		</MvIF>
-	<MvIF EXPR = "{ ( l.prev_settings:location NE l.required:location ) AND ( l.required:location EQ 1 OR l.required:location EQ 0) }">	<MvASSIGN NAME = "l.prev_settings:location" VALUE = "{ l.required:location }">	</MvIF>
-	<MvIF EXPR = "{ ( l.prev_settings:name NE l.required:name ) AND ( l.required:name EQ 1 OR l.required:name EQ 0) }"	>				<MvASSIGN NAME = "l.prev_settings:name" 	VALUE = "{ l.required:name }">		</MvIF>
-	<MvIF EXPR = "{ ( l.prev_settings:rating NE l.required:rating ) AND ( l.required:rating EQ 1 OR l.required:rating EQ 0) }">			<MvASSIGN NAME = "l.prev_settings:rating" 	VALUE = "{ l.required:rating }">	</MvIF>
-	<MvIF EXPR = "{ ( l.prev_settings:summary NE l.required:summary ) AND ( l.required:summary EQ 1 OR l.required:summary EQ 0) }">		<MvASSIGN NAME = "l.prev_settings:summary" 	VALUE = "{ l.required:summary }">	</MvIF>
-	<MvIF EXPR = "{ ( l.prev_settings:title NE l.required:title ) AND ( l.required:title EQ 1 OR l.required:title EQ 0) }">				<MvASSIGN NAME = "l.prev_settings:title" 	VALUE = "{ l.required:title }">		</MvIF>
-
-	<MvASSIGN NAME = "l.insert" VALUE = "{ miva_array_serialize( l.prev_settings ) }">
-	<MvASSIGN NAME = "l.setting_name" VALUE = "required" />
-
-	<MvQUERY NAME	= "Merchant"
-			 QUERY	= "{ 'UPDATE ' $ g.Store_Table_Prefix $ 'TGReviews_Settings
-					      SET
-							value	= ?
-					      WHERE
-						    name	= ?' }"
-			 FIELDS	= "l.insert, l.setting_name">
-	<MvIF EXPR = "{ g.MvQUERY_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Library_Filename_Utilities ].Error( 'TGReviews-UPDATE-0004', g.MvQUERY_Error ) }">
-	</MvIF>
-	<MvFUNCTIONRETURN VALUE = 1 />
-</MvFUNCTION>
 
 <MvFUNCTION NAME = "Load_Setting" PARAMETERS = "name, output var" STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN NAME = "g.name" VALUE = "{ l.name }">
@@ -152,5 +239,136 @@
 	</MvWHILE>
 
 	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_Settings">
+	<MvFUNCTIONRETURN VALUE = 1 />
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Settings_Update_LowLevel" PARAMETERS = "name, value" STANDARDOUTPUTLEVEL = "">
+	<MvQUERY NAME	= "Merchant"
+			 QUERY	= "{ 'UPDATE ' $ g.Store_Table_Prefix $ 'TGReviews_Settings
+					      SET
+							value	= ?
+					      WHERE
+						    name	= ?' }"
+			 FIELDS	= "l.value, l.name">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Library_Filename_Utilities ].Error( 'TGReviews-UPDATE-0004', g.MvQUERY_Error ) }">
+	</MvIF>
+	<MvFUNCTIONRETURN VALUE = 1 />
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Review_Settings_Update" PARAMETERS = "required var, mail_after var, merchant_email var, customer_email var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ l.required }">
+		<MvIF EXPR = "{ NOT Settings_Update_Required( l.required ) }">
+			<MvASSIGN NAME = "l.void" VALUE = "{ miva_array_insert( g.Review_Errors, 'Could not Update Required Fields.', -1 ) }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ l.mail_after }">
+		<MvIF EXPR = "{ NOT Settings_Update_MailAfter( l.mail_after ) }">
+			<MvASSIGN NAME = "l.void" VALUE = "{ miva_array_insert( g.Review_Errors, 'Could not Update Mail After Fields.', -1 ) }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ l.merchant_email }">
+		<MvIF EXPR = "{ NOT Settings_Update_MerchantEmail( l.merchant_email ) }">
+			<MvASSIGN NAME = "l.void" VALUE = "{ miva_array_insert( g.Review_Errors, 'Could not Update Mail After Fields.', -1 ) }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ l.customer_email }">
+		<MvIF EXPR = "{ NOT Settings_Update_CustomerEmail( l.customer_email ) }">
+			<MvASSIGN NAME = "l.void" VALUE = "{ miva_array_insert( g.Review_Errors, 'Could not Update Mail After Fields.', -1 ) }">
+		</MvIF>
+	</MvIF>
+	<MvFUNCTIONRETURN VALUE = 1 />
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Settings_Update_Required" PARAMETERS = "required var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT Load_Setting( 'required', l.prev_settings ) }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+	<MvASSIGN NAME = "l.prev_settings" VALUE = "{ miva_array_deserialize( l.prev_settings ) }">
+
+	<MvIF EXPR = "{ ( l.prev_settings:email NE l.required:email ) AND ( l.required:email EQ 1 OR l.required:email EQ 0) }">				<MvASSIGN NAME = "l.prev_settings:email" 	VALUE = "{ l.required:email }">		</MvIF>
+	<MvIF EXPR = "{ ( l.prev_settings:location NE l.required:location ) AND ( l.required:location EQ 1 OR l.required:location EQ 0) }">	<MvASSIGN NAME = "l.prev_settings:location" VALUE = "{ l.required:location }">	</MvIF>
+	<MvIF EXPR = "{ ( l.prev_settings:name NE l.required:name ) AND ( l.required:name EQ 1 OR l.required:name EQ 0) }"	>				<MvASSIGN NAME = "l.prev_settings:name" 	VALUE = "{ l.required:name }">		</MvIF>
+	<MvIF EXPR = "{ ( l.prev_settings:rating NE l.required:rating ) AND ( l.required:rating EQ 1 OR l.required:rating EQ 0) }">			<MvASSIGN NAME = "l.prev_settings:rating" 	VALUE = "{ l.required:rating }">	</MvIF>
+	<MvIF EXPR = "{ ( l.prev_settings:summary NE l.required:summary ) AND ( l.required:summary EQ 1 OR l.required:summary EQ 0) }">		<MvASSIGN NAME = "l.prev_settings:summary" 	VALUE = "{ l.required:summary }">	</MvIF>
+	<MvIF EXPR = "{ ( l.prev_settings:title NE l.required:title ) AND ( l.required:title EQ 1 OR l.required:title EQ 0) }">				<MvASSIGN NAME = "l.prev_settings:title" 	VALUE = "{ l.required:title }">		</MvIF>
+
+	<MvASSIGN NAME = "l.insert" VALUE = "{ miva_array_serialize( l.prev_settings ) }">
+
+	<MvIF EXPR = "{ NOT Settings_Update_LowLevel( 'required', l.insert ) }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1 />
+</MvFUNCTION>
+
+
+<MvFUNCTION NAME = "Settings_Update_MailAfter" PARAMETERS = "mail_after var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT Load_Setting( 'mail_after', l.prev_settings ) }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+	<MvASSIGN NAME = "l.prev_settings" VALUE = "{ miva_array_deserialize( l.prev_settings ) }">
+
+	<MvIF EXPR = "{ NOT ( ISNULL l.mail_after:days ) AND NOT isdigit( l.mail_after:days ) }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvIF EXPR = "{ l.prev_settings:after NE l.mail_after:after }">		<MvASSIGN NAME = "l.prev_settings:after" 	VALUE = "{ l.mail_after:after }">	</MvIF>
+	<MvIF EXPR = "{ l.prev_settings:days NE l.mail_after:days }">		<MvASSIGN NAME = "l.prev_settings:days" VALUE = "{ l.mail_after:days }">		</MvIF>
+	<MvIF EXPR = "{ l.prev_settings:from NE l.mail_after:from }"	>	<MvASSIGN NAME = "l.prev_settings:from" 	VALUE = "{ l.mail_after:from }">	</MvIF>
+	<MvIF EXPR = "{ l.prev_settings:notify NE l.mail_after:notify }">	<MvASSIGN NAME = "l.prev_settings:notify" 	VALUE = "{ l.mail_after:notify }">	</MvIF>
+	<MvIF EXPR = "{ l.prev_settings:cc NE l.mail_after:cc }">			<MvASSIGN NAME = "l.prev_settings:cc" 	VALUE = "{ l.mail_after:cc }">			</MvIF>
+	<MvIF EXPR = "{ l.prev_settings:bcc NE l.mail_after:bcc }">			<MvASSIGN NAME = "l.prev_settings:bcc" 	VALUE = "{ l.mail_after:bcc }">			</MvIF>
+	<MvIF EXPR = "{ l.prev_settings:subject NE l.mail_after:subject }">	<MvASSIGN NAME = "l.prev_settings:subject" 	VALUE = "{ l.mail_after:subject }">	</MvIF>
+
+	<MvASSIGN NAME = "l.insert" VALUE = "{ miva_array_serialize( l.prev_settings ) }">
+
+	<MvIF EXPR = "{ NOT Settings_Update_LowLevel( 'mail_after', l.insert ) }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+	<MvFUNCTIONRETURN VALUE = 1 />
+</MvFUNCTION>
+
+
+<MvFUNCTION NAME = "Settings_Update_MerchantEmail" PARAMETERS = "merchant_email var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT Load_Setting( 'merchant_email', l.prev_settings ) }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+	<MvASSIGN NAME = "l.prev_settings" VALUE = "{ miva_array_deserialize( l.prev_settings ) }">
+
+	<MvIF EXPR = "{ l.prev_settings:notify NE l.merchant_email:notify }">	<MvASSIGN NAME = "l.prev_settings:notify" 	VALUE = "{ l.merchant_email:notify }">	</MvIF>
+	<MvIF EXPR = "{ l.prev_settings:to NE l.merchant_email:to }">			<MvASSIGN NAME = "l.prev_settings:to" 	VALUE = "{ l.merchant_email:to }">			</MvIF>
+	<MvIF EXPR = "{ l.prev_settings:from NE l.merchant_email:from }">		<MvASSIGN NAME = "l.prev_settings:from" 	VALUE = "{ l.merchant_email:from }">	</MvIF>
+	<MvIF EXPR = "{ l.prev_settings:cc NE l.merchant_email:cc }">			<MvASSIGN NAME = "l.prev_settings:cc" 	VALUE = "{ l.merchant_email:cc }">			</MvIF>
+	<MvIF EXPR = "{ l.prev_settings:bcc NE l.merchant_email:bcc }">			<MvASSIGN NAME = "l.prev_settings:bcc" 	VALUE = "{ l.merchant_email:bcc }">			</MvIF>
+	<MvIF EXPR = "{ l.prev_settings:subject NE l.merchant_email:subject }">	<MvASSIGN NAME = "l.prev_settings:subject" 	VALUE = "{ l.merchant_email:subject }">	</MvIF>
+
+	<MvASSIGN NAME = "l.insert" VALUE = "{ miva_array_serialize( l.prev_settings ) }">
+
+	<MvIF EXPR = "{ NOT Settings_Update_LowLevel( 'merchant_email', l.insert ) }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+	<MvFUNCTIONRETURN VALUE = 1 />
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Settings_Update_CustomerEmail" PARAMETERS = "customer_email var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT Load_Setting( 'customer_email', l.prev_settings ) }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+	<MvASSIGN NAME = "l.prev_settings" VALUE = "{ miva_array_deserialize( l.prev_settings ) }">
+
+	<MvIF EXPR = "{ l.prev_settings:from NE l.customer_email:from }">		<MvASSIGN NAME = "l.prev_settings:from" 	VALUE = "{ l.customer_email:from }">	</MvIF>
+	<MvIF EXPR = "{ l.prev_settings:cc NE l.customer_email:cc }">			<MvASSIGN NAME = "l.prev_settings:cc" 	VALUE = "{ l.customer_email:cc }">			</MvIF>
+	<MvIF EXPR = "{ l.prev_settings:bcc NE l.customer_email:bcc }">			<MvASSIGN NAME = "l.prev_settings:bcc" 	VALUE = "{ l.customer_email:bcc }">			</MvIF>
+	<MvIF EXPR = "{ l.prev_settings:subject NE l.customer_email:subject }">	<MvASSIGN NAME = "l.prev_settings:subject" 	VALUE = "{ l.customer_email:subject }">	</MvIF>
+
+	<MvASSIGN NAME = "l.insert" VALUE = "{ miva_array_serialize( l.prev_settings ) }">
+
+	<MvIF EXPR = "{ NOT Settings_Update_LowLevel( 'customer_email', l.insert ) }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1 />
 </MvFUNCTION>

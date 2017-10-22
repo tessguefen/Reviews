@@ -26,6 +26,73 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0001', 'An error occured while creating the table ' $ g.Store_Table_Prefix $ 'TGReviews_Settings. Please make sure this table was not already created.' ) }">
 	</MvIF>
 
+	<MvASSIGN NAME = "l.defaults:required:email" VALUE = 1 />
+	<MvASSIGN NAME = "l.defaults:required:location" VALUE = 0 />
+	<MvASSIGN NAME = "l.defaults:required:name" VALUE = 1 />
+	<MvASSIGN NAME = "l.defaults:required:rating" VALUE = 1 />
+	<MvASSIGN NAME = "l.defaults:required:summary" VALUE = 1 />
+	<MvASSIGN NAME = "l.defaults:required:title" VALUE = 1 />
+
+	<MvASSIGN NAME = "l.required" VALUE = "{ miva_array_serialize( l.defaults:required ) }">
+	<MvASSIGN NAME = "l.required_name" VALUE = "required" />
+
+	<MvQUERY	NAME	=	"Merchant"
+				QUERY	=	"{	'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviews_Settings
+								( name, value )
+								VALUES
+								( ?, ? )' }"
+				FIELDS	=	"l.required_name, l.required">
+
+	<MvASSIGN NAME = "l.defaults:mail_after:notify" VALUE = 0 />
+	<MvASSIGN NAME = "l.defaults:mail_after:days" VALUE = 7 />
+	<MvASSIGN NAME = "l.defaults:mail_after:after" VALUE = "order" />
+	<MvASSIGN NAME = "l.defaults:mail_after:from" VALUE = "{ g.Store:email }" />
+	<MvASSIGN NAME = "l.defaults:mail_after:cc" VALUE = "" />
+	<MvASSIGN NAME = "l.defaults:mail_after:bcc" VALUE = "" />
+	<MvASSIGN NAME = "l.defaults:mail_after:subject" VALUE = "{ 'Please Review Your Recent Purchase on ' $ g.Store:name }" />
+
+	<MvASSIGN NAME = "l.mail_after" VALUE = "{ miva_array_serialize( l.defaults:mail_after ) }">
+	<MvASSIGN NAME = "l.mail_after_name" VALUE = "mail_after" />
+
+	<MvQUERY	NAME	=	"Merchant"
+				QUERY	=	"{	'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviews_Settings
+								( name, value )
+								VALUES
+								( ?, ? )' }"
+				FIELDS	=	"l.mail_after_name, l.mail_after">
+
+	<MvASSIGN NAME = "l.defaults:merchant_email:notify" VALUE = 0 />
+	<MvASSIGN NAME = "l.defaults:merchant_email:to" VALUE = "{ g.Store:email }" />
+	<MvASSIGN NAME = "l.defaults:merchant_email:from" VALUE = "{ g.Store:email }" />
+	<MvASSIGN NAME = "l.defaults:merchant_email:cc" VALUE = "" />
+	<MvASSIGN NAME = "l.defaults:merchant_email:bcc" VALUE = "" />
+	<MvASSIGN NAME = "l.defaults:merchant_email:subject" VALUE = "{ 'You have Received a Product Review on ' $ g.Store:name }" />
+
+	<MvASSIGN NAME = "l.merchant_email" VALUE = "{ miva_array_serialize( l.defaults:merchant_email ) }">
+	<MvASSIGN NAME = "l.merchant_email_name" VALUE = "merchant_email" />
+
+	<MvQUERY	NAME	=	"Merchant"
+				QUERY	=	"{	'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviews_Settings
+								( name, value )
+								VALUES
+								( ?, ? )' }"
+				FIELDS	=	"l.merchant_email_name, l.merchant_email">
+
+	<MvASSIGN NAME = "l.defaults:customer_email:from" VALUE = "{ g.Store:email }" />
+	<MvASSIGN NAME = "l.defaults:customer_email:cc" VALUE = "" />
+	<MvASSIGN NAME = "l.defaults:customer_email:bcc" VALUE = "" />
+	<MvASSIGN NAME = "l.defaults:customer_email:subject" VALUE = "{ 'Your Recent Product Review on ' $ g.Store:name }" />
+
+	<MvASSIGN NAME = "l.customer_email" VALUE = "{ miva_array_serialize( l.defaults:customer_email ) }">
+	<MvASSIGN NAME = "l.customer_email_name" VALUE = "customer_email" />
+
+	<MvQUERY	NAME	=	"Merchant"
+				QUERY	=	"{	'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviews_Settings
+								( name, value )
+								VALUES
+								( ?, ? )' }"
+				FIELDS	=	"l.customer_email_name, l.customer_email">
+
 	<MvCOMMENT>
 	|
 	|	Create Product Reviews table.
@@ -161,7 +228,7 @@
 
 
 <MvFUNCTION NAME = "Module_System_Tabs" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
-	<MvFUNCTIONRETURN VALUE = "TGR_SETT:Reviews: Settings,TGR_ADDL:Reviews: Additional Fields,TGR_PROD:Reviews: Product Reviews">
+	<MvFUNCTIONRETURN VALUE = "TGR_SETT:Reviews: Settings,TGR_SETT/TGR_FIELDS:Field Settings,TGR_SETT/TGR_EMAIL:Email Notifications,TGR_ADDL:Reviews: Additional Fields,TGR_PROD:Reviews: Product Reviews">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_System_Head" PARAMETERS = "module var, tab" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
@@ -213,7 +280,7 @@
 
 <MvFUNCTION NAME = "Module_System_Update" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ ( g.Review_Tab EQ 'TGR_SETT' )  }">
-		<MvFUNCTIONRETURN VALUE = "{ Review_Settings_Update( g.required) }">
+		<MvFUNCTIONRETURN VALUE = "{ Review_Settings_Update( g.Required, g.Mail_After, g.Merchant_Email, g.Customer_Email) }">
 	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
