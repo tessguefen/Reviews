@@ -43,6 +43,7 @@
 |		FrontEnd_Add_Review
 |		Trigger_Merchant_Email
 |		Form_Template
+|		Reviews_Template
 |
 </MvCOMMENT>
 
@@ -980,16 +981,21 @@
 
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Form_Template" PARAMETERS = "module var, param" STANDARDOUTPUTLEVEL = "text, html">
+<MvFUNCTION NAME = "Form_Template" PARAMETERS = "module var, param, all_settings var" STANDARDOUTPUTLEVEL = "text, html">
 	<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'form_template', l.form_template_id ) }">
 	<MvIF EXPR = "{ l.form_template_id GT 0 }">
 		<MvIF EXPR = "{ [ g.Module_Feature_TUI_DB ].ManagedTemplate_Load_ID( l.form_template_id, l.form_template ) }">
+			<MvFOREACH ITERATOR = "l.field" ARRAY = "l.fields" COUNT = "{ Load_Additional_Fields( l.fields ) }">
+				<MvASSIGN NAME = "l.field_count" VALUE = "{ l.field_count + 1 }" />
+				<MvASSIGN NAME = "l.all_settings:tgr_additional_fields" INDEX = "{ l.field_count }" MEMBER = "name" VALUE = "{ l.field:name }">
+				<MvASSIGN NAME = "l.all_settings:tgr_additional_fields" INDEX = "{ l.field_count }" MEMBER = "code" VALUE = "{ l.field:code }">
+			</MvFOREACH>
 			<MvEVAL EXPR = "{ [ g.Store_Template_Path $ l.form_template:filename ].Template_Render( l.null, l.all_settings ) }">
 		</MvIF>
 	</MvIF>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Reviews_Template" PARAMETERS = "module var, param" STANDARDOUTPUTLEVEL = "text, html">
+<MvFUNCTION NAME = "Reviews_Template" PARAMETERS = "module var, param, all_settings var" STANDARDOUTPUTLEVEL = "text, html">
 	<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'reviews_template', l.reviews_template_id ) }">
 	<MvIF EXPR = "{ l.reviews_template_id GT 0 }">
 		<MvIF EXPR = "{ [ g.Module_Feature_TUI_DB ].ManagedTemplate_Load_ID( l.reviews_template_id, l.reviews_template ) }">

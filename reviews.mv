@@ -105,7 +105,9 @@
 								( ?, ? )' }"
 				FIELDS	=	"l.customer_email_name, l.customer_email">
 
-	<MvASSIGN NAME = "l.form_template:code" VALUE = "tbd" />
+	<MvCAPTURE VARIABLE = "l.form_template:code">
+		<MvINCLUDE FILE = "templates/form_template.mvt" INTERPRET = "OFF">
+	</MvCAPTURE>
 	<MvASSIGN NAME = "l.form_template:id" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplate( l.form_template:code, NULL, 'tgr_form.mvc' ) }">
 	<MvASSIGN NAME = "l.form_template:name" VALUE = "form_template">
 
@@ -116,7 +118,9 @@
 								( ?, ? )' }"
 				FIELDS	=	"l.form_template:name, l.form_template:id">
 
-	<MvASSIGN NAME = "l.reviews_template:code" VALUE = "tbd" />
+	<MvCAPTURE VARIABLE = "l.reviews_template:code">
+		<MvINCLUDE FILE = "templates/reviews_template.mvt" INTERPRET = "OFF">
+	</MvCAPTURE>
 	<MvASSIGN NAME = "l.reviews_template:id" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplate( l.reviews_template:code, NULL, 'tgr_reviews.mvc' ) }">
 	<MvASSIGN NAME = "l.reviews_template:name" VALUE = "reviews_template">
 
@@ -436,7 +440,7 @@
 	<MvIF EXPR = "{ ( l.function_name EQ 'form_template' )		OR
 					( l.function_name EQ 'reviews_template' )
 				}">
-		<MvASSIGN NAME = "l.new_param" VALUE = "{ l.function_name $ '( l.module, l.param, ' $ l.parameters $ ' )' }">
+		<MvASSIGN NAME = "l.new_param" VALUE = "{ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
 	</MvIF>
 	
 	<MvCOMMENT>
