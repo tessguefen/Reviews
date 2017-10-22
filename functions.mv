@@ -4,6 +4,7 @@
 |
 |		Product_Review_Read
 |		Product_Review_Load_ID
+|		Product_Review_WithFields_Load_ID
 |		Product_Reviews_Insert_Lowlevel
 |		Product_Reviews_Insert
 |		Product_Reviews_Update_Lowlevel
@@ -87,6 +88,26 @@
 	<MvIF EXPR = "{ NOT l.review:id }">
 		<MvFUNCTIONRETURN VALUE = 0 />
 	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Product_Review_WithFields_Load_ID" PARAMETERS = "id, review var">
+	<MvIF EXPR = "{ NOT Product_Review_Load_ID( l.id, l.review ) }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvASSIGN NAME = "l.void" VALUE = "{ [ g.Module_Library_DB ].Product_Load_ID( l.review:product_id, l.review:product ) }">
+
+	<MvFOREACH ITERATOR = "l.field" ARRAY = "l.fields" COUNT = "{ Load_Additional_Fields_Product_Review( l.id, l.fields) }">
+		<MvIF EXPR = "{ ISNULL l.field:value }">
+			<MvFOREACHCONTINUE />
+		</MvIF>
+		<MvASSIGN NAME = "l.addl_count" VALUE = "{ l.addl_count + 1 }" />
+		<MvASSIGN NAME = "l.review:additional_fields" INDEX = "{ l.addl_count }" MEMBER = "code" VALUE = "{ l.field:code }">
+		<MvASSIGN NAME = "l.review:additional_fields" INDEX = "{ l.addl_count }" MEMBER = "name" VALUE = "{ l.field:name }">
+		<MvASSIGN NAME = "l.review:additional_fields" INDEX = "{ l.addl_count }" MEMBER = "value" VALUE = "{ l.field:value }">
+	</MvFOREACH>
 
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
@@ -869,7 +890,7 @@
 		<MvFUNCTIONRETURN VALUE = 0 />
 	</MvIF>
 
-	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].Product_Load_Code( g.TGR_Product_Code, l.product ) }">
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].Product_Load_Code( g.TGR_Product_Code, l.review:product ) }">
 		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Product Code is Invalid.">
 		<MvFUNCTIONRETURN VALUE = 0 />
 	</MvIF>
@@ -930,7 +951,7 @@
 	</MvIF>
 
 	<MvASSIGN NAME = "l.review" MEMBER = "created"		VALUE = "{ s.dyn_time_t }">
-	<MvASSIGN NAME = "l.review" MEMBER = "product_id"	VALUE = "{ l.product:id }">
+	<MvASSIGN NAME = "l.review" MEMBER = "product_id"	VALUE = "{ l.review:product:id }">
 	<MvASSIGN NAME = "l.review" MEMBER = "cust_id"		VALUE = "{ g.Basket:cust_id }">
 	<MvASSIGN NAME = "l.review" MEMBER = "order_id"		VALUE = "{ g.TGR_Order_ID }">
 	<MvASSIGN NAME = "l.review" MEMBER = "rating"		VALUE = "{ g.TGR_Rating }">
@@ -960,7 +981,7 @@
 	|
 	</MvCOMMENT>
 
-	<MvASSIGN NAME = "l.void" VALUE = "{ Trigger_Merchant_Email( l.review ) }">
+	<MvASSIGN NAME = "l.void" VALUE = "{ Trigger_Merchant_Email( l.review:id ) }">
 
 	<MvASSIGN NAME = "g.TGR_Product_Code" VALUE = "" />
 	<MvASSIGN NAME = "g.TGR_Order_ID" VALUE = "" />
@@ -979,8 +1000,67 @@
 	<MvFUNCTIONRETURN VALUE = 1 />
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Trigger_Merchant_Email" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Trigger_Merchant_Email" PARAMETERS = "review_id" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'merchant_email', l.merchant_email ) }">
+	<MvASSIGN NAME = "l.merchant_email" VALUE = "{ miva_array_deserialize( l.merchant_email ) }">
 
+	<MvIF EXPR = "{ l.merchant_email:notify NE 1 }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvIF EXPR = "{ ISNULL l.merchant_email:to OR ISNULL l.merchant_email:from OR ISNULL l.merchant_email:subject }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT Product_Review_WithFields_Load_ID( l.review_id, l.review ) }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvDO FILE = "{ g.Module_Feature_TUI_DB }" NAME = "l.loaded" VALUE = "{ Page_Load_Code( 'TGR_Merchant_Email', l.page) }">
+
+	<MvIF EXPR = "{ [ g.Module_Feature_TUI_DB ].ManagedTemplate_Load_ID( l.page:templ_id, l.merchant_email_tmpl ) }">
+
+		<MvCOMMENT>
+		|
+		| Load and initialize items
+		|
+		</MvCOMMENT>
+
+		<MvASSIGN NAME = "l.item_pos"			VALUE = 1>
+		<MvASSIGN NAME = "l.item_count"			VALUE = "{ [ g.Module_Feature_TUI_DB ].ItemModuleList_Load_Page_Render( l.page:id,			l.page:settings:_mgr ) }">
+		<MvASSIGN NAME = "l.extension_count"	VALUE = "{ [ g.Module_Feature_TUI_DB ].ItemExtensionModuleList_Load_Page_Render( l.page:id,	l.page:settings:_mgr ) }">
+
+		<MvWHILE EXPR = "{ l.item_pos LE l.item_count }">
+			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Initialize_Item_LowLevel( l.page:settings, l.page:settings:_mgr:items[ l.item_pos ] ) }">
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+
+			<MvIF EXPR = "{ g.TemplateManager_Exception }">
+				<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-1000', 'Item \'' $ l.page:settings:_mgr:items[ l.item_pos ]:item_code $ '\' threw exception \'' $ g.TemplateManager_Exception_Code $ '\' during initialization' ) }">
+			</MvIF>
+
+			<MvASSIGN NAME = "l.item_pos"	VALUE = "{ l.item_pos + 1 }">
+		</MvWHILE>
+		<MvASSIGN NAME = "l.all_settings" VALUE = "{ l.page:settings }">
+		<MvASSIGN NAME = "l.all_settings:review" VALUE = "{ l.review }">
+
+		<MvCAPTURE VARIABLE = "l.email:message">
+			<MvDO FILE = "{ g.Store_Template_Path $ l.merchant_email_tmpl:filename }" NAME = "l.success" VALUE = "{ Template_Render( l.settings, l.all_settings ) }">
+		</MvCAPTURE>
+
+		<MvIF EXPR = "{ ISNULL trim( l.email:message ) }">
+			<MvFUNCTIONRETURN VALUE = 0 />
+		</MvIF>
+
+		<MvASSIGN NAME ="l.email:headers" VALUE = "{ 'Content-Type: text/html; charset=ISO-8859-1' $ asciichar( 13 ) $ asciichar( 10 ) $ asciichar( 13 ) $ asciichar( 10 ) }">
+		<MvASSIGN NAME = "l.email:to" VALUE = "{ l.merchant_email:to }">
+		<MvASSIGN NAME = "l.email:from" VALUE = "{ l.merchant_email:from }">
+		<MvASSIGN NAME = "l.email:cc" VALUE = "{ l.merchant_email:cc }">
+		<MvASSIGN NAME = "l.email:bcc" VALUE = "{ l.merchant_email:bcc }">
+		<MvASSIGN NAME = "l.email:subject" VALUE = "{ l.merchant_email:subject }">
+
+		<MvDO FILE = "{ g.Module_Library_Utilities }" NAME = "l.email_sent"  VALUE = "{ v9_SendEmail( l.email ) }">
+	</MvIF>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Form_Template" PARAMETERS = "module var, param, all_settings var" STANDARDOUTPUTLEVEL = "text, html">

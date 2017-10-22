@@ -154,6 +154,23 @@
 								( ?, ? )' }"
 				FIELDS	=	"l.reviews_default_sorting_name, l.reviews_default_sorting">
 
+	<MvASSIGN NAME = "l.merchant_email_page:admin"		VALUE = "0">
+	<MvASSIGN NAME = "l.merchant_email_page:code"		VALUE = "TGR_Merchant_Email">
+	<MvASSIGN NAME = "l.merchant_email_page:name"		VALUE = "Reviews Email Template: Merchant Notification">
+	<MvASSIGN NAME = "l.merchant_email_page:ui_id"		VALUE = "0">
+	<MvASSIGN NAME = "l.merchant_email_page:settings"	VALUE = "">
+	<MvCAPTURE VARIABLE = "l.merchant_email_page:data">
+		<MvINCLUDE FILE = "templates/merchant_email.mvt" INTERPRET = "OFF">
+	</MvCAPTURE>
+
+	<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_Page_LowLevel( l.merchant_email_page, l.merchant_email_page:data ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0013:', 'An error occured while creating the page TGR_Merchant_Email' ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Page_Assign_Item( l.merchant_email_page, 'store' ) }">
+	<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Page_Assign_Item( l.merchant_email_page, 'urls' ) }">
+	<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Page_Assign_Item( l.merchant_email_page, 'sitemap_exclude' ) }">
+
 	<MvCOMMENT>
 	|
 	|	Create Product Reviews table.
@@ -178,7 +195,7 @@
 								summary		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_MEMO()			$ '
 							)' }">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0002', 'An error occured while creating the table ' $ g.Store_Table_Prefix $ 'TGReviews_Products. Please make sure this table was not already created.' ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-002', 'An error occured while creating the table ' $ g.Store_Table_Prefix $ 'TGReviews_Products. Please make sure this table was not already created.' ) }">
 	</MvIF>
 
 
@@ -256,6 +273,10 @@
 
 	<MvASSIGN NAME = "l.void"	VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_ManagedTemplate( l.mod_settings:form_template ) }">
 	<MvASSIGN NAME = "l.void"	VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_ManagedTemplate( l.mod_settings:reviews_template ) }">
+
+	<MvIF EXPR = "{ [ g.Module_Feature_TUI_DB ].Page_Load_Code( 'TGR_Merchant_Email', l.merchant_email_page ) }">
+		<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_Page( l.merchant_email_page ) }">
+	</MvIF>
 
 	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $  g.Store_Table_Prefix $ 'TGReviews_Settings' }">
 	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $  g.Store_Table_Prefix $ 'TGReviews_Products'}">
