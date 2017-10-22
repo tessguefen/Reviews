@@ -1083,6 +1083,8 @@
 	<MvASSIGN NAME = "l.output" MEMBER = "start_offset" VALUE = "{ int( g.TGR_Offset ) }">
 	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_Products">
 
+	<MvASSIGN NAME = "l.void" VALUE = "{ Product_Rating( l.module, l.param, l.all_settings, l.product_id, l.output:product_rating ) }">
+
 	<MvCOMMENT>
 	|
 	|	Pagination
@@ -1102,6 +1104,107 @@
 		<MvASSIGN NAME = "l.output:pagination:pages" INDEX = "{ l.page_count }" MEMBER = "page_number" VALUE = "{ l.page_count }">
 		<MvASSIGN NAME = "l.output:pagination:pages" INDEX = "{ l.page_count }" MEMBER = "params" VALUE = "{ 'TGR_Sort=' $ encodeattribute( g.TGR_Sort ) $ '&TGR_Count=' $ encodeattribute( g.TGR_Count ) $ '&TGR_Offset=' $ l.curr_offset }">
 	</MvFOR>
+
+	<MvFUNCTIONRETURN VALUE = 1 />
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Product_Rating" PARAMETERS = "module var, param, all_settings var, product_id, return var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ miva_variable_value( 'g.Session:cache:TGR:Product_' $ l.product_id $ ':rating' ) }">
+		<MvASSIGN NAME = "l.return" VALUE = "{ miva_variable_value( 'g.Session:cache:TGR:Product_' $ l.product_id $ ':rating' ) }">
+		<MvFUNCTIONRETURN VALUE = 1 />
+	</MvIF>
+
+	<MvASSIGN NAME = "g.TGR_Product_ID" VALUE = "{ l.product_id }">
+
+	<MvIF EXPR = "{ NOT g.TGR_Product_ID }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvASSIGN NAME = "l.search_query" VALUE = "">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SELECT( l.search_query,'AVG( rating ) as rating' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_FROM( l.search_query, g.Store_Table_Prefix $ 'TGReviews_Products', 's' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'product_id = ?', 'g.TGR_Product_ID' ) }">
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'approved = 1', '' ) }">
+
+	<MvASSIGN NAME = "l.search_sql" VALUE = "{ [ g.Module_Library_DB].SQL_Query_Build( l.search_query, l.search_fields ) }">
+
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].SQL_Query_Count( l.search_query, l.total_count ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Library_Filename_Utilities ].Error( 'TGReviews-LOAD-0011', g.MvOPENVIEW_Error ) }">
+	<MvELSEIF EXPR = "{ NOT [ g.Module_Library_Native_DBAPI ].DB_OPENVIEW_Range('Merchant', 'TGReviews_Products', l.search_sql, l.search_fields, g.Offset, g.Count) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Library_Filename_Utilities ].Error( 'TGReviews-LOAD-0012', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.rating_num" VALUE = "1">
+
+	<MvWHILE EXPR = "{ ( NOT TGReviews_Products.d.EOF ) AND ( ( g.Count EQ 0 ) OR (l.rating_num LT ( g.Count + 1) ) ) }">
+
+		<MvASSIGN NAME = "l.return"  VALUE = "{ TGReviews_Products.d.rating }">
+		<MvASSIGN NAME = "{ 'g.Session:cache:TGR:Product_' $ l.product_id $ ':rating' }" VALUE = "{ l.return }">
+
+		<MvASSIGN NAME = "l.rating_num" VALUE = "{ l.rating_num + 1 }">
+
+		<MvSKIP NAME = "Merchant" VIEW = "TGReviews_Products" ROWS = 1>
+	</MvWHILE>
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_Products">
+	<MvFUNCTIONRETURN VALUE = 1 />
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Product_Review_Breakdowns" PARAMETERS = "module var, param, all_settings var, product_id, return var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ miva_variable_value( 'g.Session:cache:TGR:Product_' $ l.product_id $ ':breakdowns' ) }">
+		<MvASSIGN NAME = "l.return" VALUE = "{ miva_variable_value( 'g.Session:cache:TGR:Product_' $ l.product_id $ ':breakdowns' ) }">
+		<MvFUNCTIONRETURN VALUE = 1 />
+	</MvIF>
+
+	<MvASSIGN NAME = "g.TGR_Product_ID" VALUE = "{ l.product_id }">
+
+	<MvIF EXPR = "{ NOT g.TGR_Product_ID }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvFOR INDEX = "l.rating_num" COUNT = "5">
+		<MvASSIGN NAME = "l.return" INDEX = "{ l.rating_num }" MEMBER = "rating" VALUE = "{ l.rating_num }">
+		<MvASSIGN NAME = "l.return" INDEX = "{ l.rating_num }" MEMBER = "count" VALUE = "0">
+	</MvFOR>
+
+	<MvASSIGN NAME = "l.search_query" VALUE = "">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SELECT( l.search_query,'count( rating) as rating_count, rating' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_FROM( l.search_query, g.Store_Table_Prefix $ 'TGReviews_Products', 's' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'product_id = ?', 'g.TGR_Product_ID' ) }">
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'approved = 1', '' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_GROUP_BY( l.search_query, 'rating' ) }">
+
+	<MvASSIGN NAME = "l.search_sql" VALUE = "{ [ g.Module_Library_DB].SQL_Query_Build( l.search_query, l.search_fields ) }">
+
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].SQL_Query_Count( l.search_query, l.total_count ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Library_Filename_Utilities ].Error( 'TGReviews-LOAD-0011', g.MvOPENVIEW_Error ) }">
+	<MvELSEIF EXPR = "{ NOT [ g.Module_Library_Native_DBAPI ].DB_OPENVIEW_Range('Merchant', 'TGReviews_Products', l.search_sql, l.search_fields, g.Offset, g.Count) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Library_Filename_Utilities ].Error( 'TGReviews-LOAD-0012', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.rating_num" VALUE = "1">
+
+	<MvWHILE EXPR = "{ ( NOT TGReviews_Products.d.EOF ) AND ( ( g.Count EQ 0 ) OR (l.rating_num LT ( g.Count + 1) ) ) }">
+
+		<MvASSIGN NAME = "l.return" INDEX = "{ TGReviews_Products.d.rating }" MEMBER = "rating" VALUE = "{ TGReviews_Products.d.rating }">
+		<MvASSIGN NAME = "l.return" INDEX = "{ TGReviews_Products.d.rating }" MEMBER = "count" VALUE = "{ TGReviews_Products.d.rating_count }">
+
+		<MvASSIGN NAME = "l.rating_num" VALUE = "{ l.rating_num + 1 }">
+
+		<MvSKIP NAME = "Merchant" VIEW = "TGReviews_Products" ROWS = 1>
+	</MvWHILE>
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_Products">
+	<MvASSIGN NAME = "l.rating_num" VALUE = "1">
+
+	<MvASSIGN NAME = "{ 'g.Session:cache:TGR:Product_' $ l.product_id $ ':breakdowns' }" VALUE = "{ l.return }">
 
 	<MvFUNCTIONRETURN VALUE = 1 />
 </MvFUNCTION>

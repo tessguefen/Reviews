@@ -301,7 +301,7 @@
 
 		<tr>
 			<td valign="top" nowrap>&nbsp;</td>
-			<td><MvEVAL EXPR = "{ Pretty_Code( 'Reviews_Template', 'product_id') }"></td>
+			<td><MvEVAL EXPR = "{ Pretty_Code( 'Reviews_Template', ' l.settings:product:id ') }"></td>
 		</tr>
 		<tr>
 			<td valign="top" nowrap>&nbsp;</td>
@@ -332,6 +332,41 @@
 		</MvIF>
 
 		</table>
+
+		<br /><br />
+
+		<div class="mm9_table_container">
+			<table class="mm9_table">
+				<thead>
+					<tr>
+						<td align="left" valign="middle">Function</td>
+						<td align="left" valign="middle">Information</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><MvEVAL EXPR = "{ Pretty_Code( 'Form_Template', '') }"></td>
+						<td>Render the Form Template.</td>
+					</tr>
+					<tr>
+						<td><MvEVAL EXPR = "{ Pretty_Code( 'Reviews_Template', ' l.settings:product:id ') }"></td>
+						<td>Render the Reviews Template. Returns <pre style="display:inline;">reviews array</pre> in <pre style="display:inline;">l.settings:tgr_reviews</pre></td>
+					</tr>
+					<tr>
+						<td><MvEVAL EXPR = "{ Pretty_Code( 'Date', ' \'F jS, Y\', l.settings:review:created, l.settings:review:formatted_created ') }"></td>
+						<td>Format a timestamp, and save to a variable (3rd parameter). Uses PHP's date function as a reference.</td>
+					</tr>
+					<tr>
+						<td><MvEVAL EXPR = "{ Pretty_Code( 'Product_Rating', ' l.settings:product:id, l.settings:product:product_rating ') }"></td>
+						<td>Returns the average product rating value to a variable (2nd parameter).</td>
+					</tr>
+					<tr>
+						<td><MvEVAL EXPR = "{ Pretty_Code( 'Product_Review_Breakdowns', ' l.settings:product:id, l.settings:tgr_reviews:breakdown ') }"></td>
+						<td>Returns a breakdown of ratings for a product to a variable (2nd parameter). Array has 2 members: <pre style="display:inline;">count</pre> and <pre style="display:inline;">rating</pre></td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
 	<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
 	<MvFUNCTIONRETURN VALUE = 1 />
 </MvFUNCTION>

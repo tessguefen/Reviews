@@ -131,6 +131,27 @@
 								( ?, ? )' }"
 				FIELDS	=	"l.reviews_template:name, l.reviews_template:id">
 
+
+	<MvASSIGN NAME = "l.reviews_per_page" VALUE = "5" />
+	<MvASSIGN NAME = "l.reviews_per_page_name" VALUE = "reviews_per_page" />
+
+	<MvQUERY	NAME	=	"Merchant"
+				QUERY	=	"{	'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviews_Settings
+								( name, value )
+								VALUES
+								( ?, ? )' }"
+				FIELDS	=	"l.reviews_per_page_name, l.reviews_per_page">
+
+	<MvASSIGN NAME = "l.reviews_default_sorting" VALUE = "-id" />
+	<MvASSIGN NAME = "l.reviews_default_sorting_name" VALUE = "reviews_default_sorting" />
+
+	<MvQUERY	NAME	=	"Merchant"
+				QUERY	=	"{	'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviews_Settings
+								( name, value )
+								VALUES
+								( ?, ? )' }"
+				FIELDS	=	"l.reviews_default_sorting_name, l.reviews_default_sorting">
+
 	<MvCOMMENT>
 	|
 	|	Create Product Reviews table.
@@ -274,7 +295,7 @@
 
 
 <MvFUNCTION NAME = "Module_System_Tabs" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
-	<MvFUNCTIONRETURN VALUE = "TGR_SETT:Reviews: Settings,TGR_SETT/TGR_FIELDS:General Settings,TGR_SETT/TGR_EMAIL:Email Notifications,TGR_SETT/TGR_TEMPL:Templates,TGR_ADDL:Reviews: Additional Fields,TGR_PROD:Reviews: Product Reviews">
+	<MvFUNCTIONRETURN VALUE = "TGR_SETT:Reviews: Settings,TGR_SETT/TGR_FIELDS:General Settings,TGR_SETT/TGR_EMAIL:Email Notifications,TGR_SETT/TGR_TEMPL:Templates & Items,TGR_ADDL:Reviews: Additional Fields,TGR_PROD:Reviews: Product Reviews">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_System_Head" PARAMETERS = "module var, tab" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
@@ -437,9 +458,11 @@
 	|
 	</MvCOMMENT>
 
-	<MvIF EXPR = "{ ( l.function_name EQ 'form_template' )		OR
-					( l.function_name EQ 'reviews_template' )	OR
-					( l.function_name EQ 'date' )
+	<MvIF EXPR = "{ ( l.function_name EQ 'form_template' )				OR
+					( l.function_name EQ 'reviews_template' )			OR
+					( l.function_name EQ 'date' )						OR
+					( l.function_name EQ 'product_rating' )				OR
+					( l.function_name EQ 'product_review_breakdowns' )
 				}">
 		<MvASSIGN NAME = "l.new_param" VALUE = "{ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
 	</MvIF>
