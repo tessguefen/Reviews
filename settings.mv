@@ -237,7 +237,7 @@
 		<table border=0 cellpadding=2 cellspacing = 0 width = "100%">
 			<tr>
 				<td valign="top" nowrap>&nbsp;</td>
-				<td><pre>&lt;mvt:item name="tgreviews" param="Form_Template()" /&gt;</pre></td>
+				<td><MvEVAL EXPR = "{ Pretty_Code( 'Form_Template', '') }"></td>
 			</tr>
 			<tr>
 				<td valign="top" nowrap>&nbsp;</td>
@@ -273,7 +273,7 @@
 
 		<tr>
 			<td valign="top" nowrap>&nbsp;</td>
-			<td><pre>&lt;mvt:item name="tgreviews" param="Reviews_Template()" /&gt;</pre></td>
+			<td><MvEVAL EXPR = "{ Pretty_Code( 'Reviews_Template', '') }"></td>
 		</tr>
 		<tr>
 			<td valign="top" nowrap>&nbsp;</td>

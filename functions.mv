@@ -41,6 +41,8 @@
 |
 |	Front-End Functions
 |		FrontEnd_Add_Review
+|		Trigger_Merchant_Email
+|		Form_Template
 |
 </MvCOMMENT>
 
@@ -255,8 +257,7 @@
 					"product_code" : "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( TGReviews_Products.d.product_code ) }">",
 					"product_name" : "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( TGReviews_Products.d.product_name ) }">"
 					<MvFOREACH ITERATOR = "l.field" ARRAY = "l.fields" COUNT = "{ Load_Additional_Fields_Product_Review( TGReviews_Products.d.id, l.fields) }">
-						,
-						"AdditionalFields_<MvEVAL EXPR = "{ l.field:code }">": "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( l.field:value ) }">"
+						,"AdditionalFields_<MvEVAL EXPR = "{ l.field:code }">": "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( l.field:value ) }">"
 					</MvFOREACH>
 					<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_ArrayElement_End() }">
 					<MvSKIP NAME = "Merchant" VIEW = "TGReviews_Products" ROWS = 1>
@@ -870,11 +871,29 @@
 		<MvFUNCTIONRETURN VALUE = 0 />
 	</MvIF>
 
+	<MvIF EXPR = "{ ( g.TGR_Rating LT 1 ) OR ( g.TGR_Rating GT 5 ) OR NOT isdigit( g.TGR_Rating ) }">
+		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Rating must have a value of 1-5.">
+		<MvASSIGN NAME = "g.tgr_rating_class" VALUE = "error">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
 	<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'required', l.required_fields ) }">
 	<MvASSIGN NAME = "l.required_fields" VALUE = "{ miva_array_deserialize( l.required_fields ) }">
 
+	<MvIF EXPR = "{ l.required_fields:name EQ 1 AND ISNULL g.TGR_name }">
+		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Name is required.">
+		<MvASSIGN NAME = "g.tgr_name_class" VALUE = "error">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
 	<MvIF EXPR = "{ l.required_fields:email EQ 1 AND ISNULL g.TGR_email }">
 		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Email is required.">
+		<MvASSIGN NAME = "g.tgr_email_class" VALUE = "error">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvIF EXPR = "{ g.tgr_Email AND NOT [ g.Module_Library_Utilities ].Email_Validate( g.tgr_Email ) }">
+		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Please specify a valid email address.">
 		<MvASSIGN NAME = "g.tgr_email_class" VALUE = "error">
 		<MvFUNCTIONRETURN VALUE = 0 />
 	</MvIF>
@@ -885,9 +904,9 @@
 		<MvFUNCTIONRETURN VALUE = 0 />
 	</MvIF>
 
-	<MvIF EXPR = "{ l.required_fields:name EQ 1 AND ISNULL g.TGR_name }">
-		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Name is required.">
-		<MvASSIGN NAME = "g.tgr_name_class" VALUE = "error">
+	<MvIF EXPR = "{ l.required_fields:title EQ 1 AND ISNULL g.TGR_title }">
+		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Title is required.">
+		<MvASSIGN NAME = "g.tgr_title_class" VALUE = "error">
 		<MvFUNCTIONRETURN VALUE = 0 />
 	</MvIF>
 
@@ -897,29 +916,13 @@
 		<MvFUNCTIONRETURN VALUE = 0 />
 	</MvIF>
 
-	<MvIF EXPR = "{ l.required_fields:title EQ 1 AND ISNULL g.TGR_title }">
-		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Title is required.">
-	<MvASSIGN NAME = "g.tgr_title_class" VALUE = "error">
-		<MvFUNCTIONRETURN VALUE = 0 />
-	</MvIF>
-
-	<MvIF EXPR = "{ g.tgr_Email AND NOT [ g.Module_Library_Utilities ].Email_Validate( g.tgr_Email ) }">
-		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Please specify a valid email address.">
-		<MvASSIGN NAME = "g.tgr_email_class" VALUE = "error">
-		<MvFUNCTIONRETURN VALUE = 0 />
-	</MvIF>
-
-	<MvIF EXPR = "{ ( g.TGR_Rating LT 1 ) OR ( g.TGR_Rating GT 5 ) OR NOT isdigit( g.TGR_Rating ) }">
-		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Rating must have a value of 1-5.">
-		<MvASSIGN NAME = "g.tgr_rating_class" VALUE = "error">
-		<MvFUNCTIONRETURN VALUE = 0 />
-	</MvIF>
-
 	<MvIF EXPR = "{ NOT isdigit( g.TGR_Order_ID ) }">
 		<MvASSIGN NAME = "g.TGR_Order_ID" VALUE = "" />
 	</MvIF>
 
 	<MvIF EXPR = "{ g.TGR_Notify NE 1 }">
+		<MvASSIGN NAME = "g.TGR_Notify" VALUE = "0" />
+	<MvELSEIF EXPR = "{ ISNULL g.TGR_Email }">
 		<MvASSIGN NAME = "g.TGR_Notify" VALUE = "0" />
 	</MvIF>
 
@@ -953,4 +956,44 @@
 	|	Check Settings for Triggers for Merchant.
 	|
 	</MvCOMMENT>
+
+	<MvASSIGN NAME = "l.void" VALUE = "{ Trigger_Merchant_Email( l.review ) }">
+
+	<MvASSIGN NAME = "g.TGR_Product_Code" VALUE = "" />
+	<MvASSIGN NAME = "g.TGR_Order_ID" VALUE = "" />
+	<MvASSIGN NAME = "g.TGR_Rating" VALUE = "" />
+	<MvASSIGN NAME = "g.TGR_Name" VALUE = "" />
+	<MvASSIGN NAME = "g.TGR_Email" VALUE = "" />
+	<MvASSIGN NAME = "g.TGR_Location" VALUE = "" />
+	<MvASSIGN NAME = "g.TGR_Notify" VALUE = "" />
+	<MvASSIGN NAME = "g.TGR_Title" VALUE = "" />
+	<MvASSIGN NAME = "g.TGR_Summary" VALUE = "" />
+	<MvASSIGN NAME = "g.TGR_AdditionalFields" VALUE = "" />
+
+	<MvASSIGN NAME = "g.TGR_Review_ID" VALUE = "{ l.review:id }" />
+	<MvASSIGN NAME = "g.TGR_Review_Success" VALUE = "1" />
+
+	<MvFUNCTIONRETURN VALUE = 1 />
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Trigger_Merchant_Email" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
+
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Form_Template" PARAMETERS = "module var, param" STANDARDOUTPUTLEVEL = "text, html">
+	<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'form_template', l.form_template_id ) }">
+	<MvIF EXPR = "{ l.form_template_id GT 0 }">
+		<MvIF EXPR = "{ [ g.Module_Feature_TUI_DB ].ManagedTemplate_Load_ID( l.form_template_id, l.form_template ) }">
+			<MvEVAL EXPR = "{ [ g.Store_Template_Path $ l.form_template:filename ].Template_Render( l.null, l.all_settings ) }">
+		</MvIF>
+	</MvIF>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Reviews_Template" PARAMETERS = "module var, param" STANDARDOUTPUTLEVEL = "text, html">
+	<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'reviews_template', l.reviews_template_id ) }">
+	<MvIF EXPR = "{ l.reviews_template_id GT 0 }">
+		<MvIF EXPR = "{ [ g.Module_Feature_TUI_DB ].ManagedTemplate_Load_ID( l.reviews_template_id, l.reviews_template ) }">
+			<MvEVAL EXPR = "{ [ g.Store_Template_Path $ l.reviews_template:filename ].Template_Render( l.null, l.all_settings ) }">
+		</MvIF>
+	</MvIF>
 </MvFUNCTION>
