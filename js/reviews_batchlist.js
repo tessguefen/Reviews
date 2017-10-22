@@ -76,7 +76,7 @@ Reviews_Batchlist.prototype.onCreateRootColumnList = function() {
 						);
 
 		for ( i = 0, i_len = self.additional_fields_length; i < i_len; i++ ) {
-			columnlist.push( new MMBatchList_Column_Text( self.additional_fields[ i ].name, 'AdditionalFields_' + self.additional_fields[ i ].code, 'AdditionalFields:' + self.additional_fields[ i ].code ).SetAdvancedSearchEnabled(false).SetSortByField( '' ) );
+			columnlist.push( new MMBatchList_Column_Text( 'Field: ' + self.additional_fields[ i ].name, 'AdditionalFields_' + self.additional_fields[ i ].code, 'AdditionalFields:' + self.additional_fields[ i ].code ).SetAdvancedSearchEnabled(false).SetSortByField( '' ) );
 		}
 
 
