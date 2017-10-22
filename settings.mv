@@ -33,7 +33,7 @@
 	<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'TGR_SETT', 'TGR_FIELDS' ) }">
 		<MvASSIGN NAME = "l.mod_settings:required" VALUE = "{ miva_array_deserialize( l.mod_settings:required ) }">
 
-		<div class="mm9_table_container" style="width:375px">
+		<div class="mm9_table_container" style="width:375px;float:left;margin:8px 8px 8px 0;">
 			<table class="mm9_table">
 				<thead>
 					<tr>
@@ -53,6 +53,34 @@
 				</tbody>
 			</table>
 		</div>
+
+		<div class="mm9_table_container" style="width:375px;float:left;margin:8px 8px 8px 0;">
+			<table class="mm9_table">
+				<thead>
+					<tr>
+						<td align="left" valign="middle" width="100%" colspan="2">Review Settings</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td align="left" valign="middle">Reviews Per Page</td>
+						<td align="left" valign="middle"><MvEVAL EXPR = "{ DrawTextField( 'reviews_per_page', l.mod_settings:reviews_per_page, 'Reviews Per Page' ) }"></td>
+					</tr>
+					<tr>
+						<td align="left" valign="middle">Default Sorting</td>
+						<td align="left" valign="middle">
+							<select name="reviews_default_sorting">
+								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( '-id', l.mod_settings:reviews_default_sorting, 'Newest' ) }">
+								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'id', l.mod_settings:reviews_default_sorting, 'Oldest' ) }">
+								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( '-rating', l.mod_settings:reviews_default_sorting, 'Highest Rated' ) }">
+								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'rating', l.mod_settings:reviews_default_sorting, 'Lowest Rated' ) }">
+							</select>
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<div style="clear:both;"></div>
 	<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
 
 	<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'TGR_SETT', 'TGR_EMAIL' ) }">
@@ -273,7 +301,7 @@
 
 		<tr>
 			<td valign="top" nowrap>&nbsp;</td>
-			<td><MvEVAL EXPR = "{ Pretty_Code( 'Reviews_Template', '') }"></td>
+			<td><MvEVAL EXPR = "{ Pretty_Code( 'Reviews_Template', 'product_id') }"></td>
 		</tr>
 		<tr>
 			<td valign="top" nowrap>&nbsp;</td>
@@ -318,9 +346,9 @@
 	<MvASSIGN NAME = "l.search_sql" VALUE = "{ [ g.Module_Library_DB].SQL_Query_Build( l.search_query, l.search_fields ) }">
 
 	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].SQL_Query_Count( l.search_query, l.total_count ) }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error(g.Error_Code, g.Error_Message ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( 'TGReviews-LOAD-0007' ) }">
 	<MvELSEIF EXPR = "{ NOT [ g.Module_Library_Native_DBAPI ].DB_OPENVIEW_Range('Merchant', 'TGReviews_Settings', l.search_sql, l.search_fields, g.Offset, g.Count) }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( 'TGReviews-LOAD-1005',g.MvOPENVIEW_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Library_Filename_Utilities ].Error( 'TGReviews-LOAD-0008', g.MvOPENVIEW_Error ) }">
 	</MvIF>
 
 	<MvASSIGN NAME = "l.setting_num" VALUE = "1">
@@ -387,7 +415,7 @@
 	<MvFUNCTIONRETURN VALUE = 1 />
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Review_Settings_Update" PARAMETERS = "required var, mail_after var, merchant_email var, customer_email var" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Review_Settings_Update" PARAMETERS = "required var, mail_after var, merchant_email var, customer_email var, per_page, default_sorting" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ l.required }">
 		<MvIF EXPR = "{ NOT Settings_Update_Required( l.required ) }">
 			<MvASSIGN NAME = "l.void" VALUE = "{ miva_array_insert( g.Review_Errors, 'Could not Update Required Fields.', -1 ) }">
@@ -409,6 +437,26 @@
 	<MvIF EXPR = "{ l.customer_email }">
 		<MvIF EXPR = "{ NOT Settings_Update_CustomerEmail( l.customer_email ) }">
 			<MvASSIGN NAME = "l.void" VALUE = "{ miva_array_insert( g.Review_Errors, 'Could not Update Mail After Fields.', -1 ) }">
+		</MvIF>
+	</MvIF>
+	<MvIF EXPR = "{ l.per_page }">
+		<MvASSIGN NAME = "l.per_page" VALUE = "{ int( l.per_page ) }">
+		<MvIF EXPR = "{ NOT Settings_Update_LowLevel( 'reviews_per_page', l.per_page ) }">
+			<MvASSIGN NAME = "l.void" VALUE = "{ miva_array_insert( g.Review_Errors, 'Could not Update Reviews Per Page.', -1 ) }">
+		</MvIF>
+	</MvIF>
+	<MvIF EXPR = "{ l.default_sorting }">
+		<MvIF EXPR = "{ 
+			l.default_sorting NE '-id'		AND
+			l.default_sorting NE 'id'		AND
+			l.default_sorting NE '-rating'	AND
+			l.default_sorting NE 'rating'
+		 }">
+			<MvASSIGN NAME = "l.void" VALUE = "{ miva_array_insert( g.Review_Errors, 'Invalid selection for Reviews Default Sorting.', -1 ) }">
+		<MvELSE>
+			<MvIF EXPR = "{ NOT Settings_Update_LowLevel( 'reviews_default_sorting', l.default_sorting ) }">
+				<MvASSIGN NAME = "l.void" VALUE = "{ miva_array_insert( g.Review_Errors, 'Could not Update Reviews Default Sorting.', -1 ) }">
+			</MvIF>
 		</MvIF>
 	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1 />
@@ -516,7 +564,7 @@
 
 			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Revert_ManagedTemplateVersion( l.managedtemplate, l.template, l.compile_error ) }">
 				<MvIF EXPR = "{ len( l.compile_error ) }">
-					<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Admin ].FieldError( l.item, 'Reviews_Template:form:template_code', l.compile_error ) }">
+					<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Admin ].FieldError( g.Tab, 'Reviews_Template:form:template_code', l.compile_error ) }">
 					<MvFUNCTIONRETURN VALUE = 1>
 				</MvIF>
 
@@ -528,7 +576,7 @@
 	<MvELSE>
 		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplateVersion( l.managedtemplate, l.templates:form:notes, l.templates:form:template_code, l.settings, l.compile_error ) }">
 			<MvIF EXPR = "{ len( l.compile_error ) }">
-				<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Admin ].FieldError( l.item, 'Reviews_Template:form:template_code', l.compile_error ) }">
+				<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Admin ].FieldError( g.Tab, 'Reviews_Template:form:template_code', l.compile_error ) }">
 				<MvFUNCTIONRETURN VALUE = 1>
 			</MvIF>
 
@@ -547,7 +595,7 @@
 
 			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Revert_ManagedTemplateVersion( l.managedtemplate, l.template, l.compile_error ) }">
 				<MvIF EXPR = "{ len( l.compile_error ) }">
-					<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Admin ].FieldError( l.item, 'Reviews_Template:reviews:template_code', l.compile_error ) }">
+					<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Admin ].FieldError( g.Tab, 'Reviews_Template:reviews:template_code', l.compile_error ) }">
 					<MvFUNCTIONRETURN VALUE = 1>
 				</MvIF>
 
@@ -559,7 +607,7 @@
 	<MvELSE>
 		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplateVersion( l.managedtemplate, l.templates:reviews:notes, l.templates:reviews:template_code, l.settings, l.compile_error ) }">
 			<MvIF EXPR = "{ len( l.compile_error ) }">
-				<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Admin ].FieldError( l.item, 'Reviews_Template:reviews:template_code', l.compile_error ) }">
+				<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Admin ].FieldError( g.Tab, 'Reviews_Template:reviews:template_code', l.compile_error ) }">
 				<MvFUNCTIONRETURN VALUE = 1>
 			</MvIF>
 
