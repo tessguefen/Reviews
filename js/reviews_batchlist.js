@@ -56,7 +56,8 @@ Reviews_Batchlist.prototype.onCreateRootColumnList = function() {
 							.SetOnDisplayEdit( function( record ) { return DrawMMBatchListString_Data( record.order_id ); } )
 							.SetUpdateOnModifiedOnly( true ),
 
-							new MMBatchList_Column_Numeric( 'Rating', 'rating', 'rating' ),
+							new MMBatchList_Column_Numeric( 'Rating', 'rating', 'rating' )
+							.SetOnDisplayData( function( record) { return DrawMMBatchListString_Data_NoEncoding( '&#9733;'.repeat( record.rating ) ) } ),
 
 							new MMBatchList_Column_Name( 'Name', 'name', 'name' ),
 
