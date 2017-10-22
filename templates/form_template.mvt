@@ -1,5 +1,61 @@
-<h4>Please Ignore</h4>
-<style>.error {color: red; border-color: red;}</style>
+<style>
+.error {color: red; border-color: red;}
+.tgr-stars label {
+	color: #ccc;
+	font-size: 1.5rem;
+	cursor: pointer;
+	-webkit-transition: color 250ms ease;
+	-moz-transition: color 250ms ease;
+	-o-transition: color 250ms ease;
+	transition: color 250ms ease;
+}
+#tgrStar-1:checked ~ .tgr-stars #star--tgrStar-1,
+#tgrStar-2:checked ~ .tgr-stars #star--tgrStar-1,
+#tgrStar-2:checked ~ .tgr-stars #star--tgrStar-2,
+#tgrStar-3:checked ~ .tgr-stars #star--tgrStar-1,
+#tgrStar-3:checked ~ .tgr-stars #star--tgrStar-2,
+#tgrStar-3:checked ~ .tgr-stars #star--tgrStar-3,
+#tgrStar-4:checked ~ .tgr-stars #star--tgrStar-1,
+#tgrStar-4:checked ~ .tgr-stars #star--tgrStar-2,
+#tgrStar-4:checked ~ .tgr-stars #star--tgrStar-3,
+#tgrStar-4:checked ~ .tgr-stars #star--tgrStar-4,
+#tgrStar-5:checked ~ .tgr-stars #star--tgrStar-1,
+#tgrStar-5:checked ~ .tgr-stars #star--tgrStar-2,
+#tgrStar-5:checked ~ .tgr-stars #star--tgrStar-3,
+#tgrStar-5:checked ~ .tgr-stars #star--tgrStar-4,
+#tgrStar-5:checked ~ .tgr-stars #star--tgrStar-5,
+#tgrStar-1:hover ~ .tgr-stars #star--tgrStar-1,
+#tgrStar-2:hover ~ .tgr-stars #star--tgrStar-1,
+#tgrStar-2:hover ~ .tgr-stars #star--tgrStar-2,
+#tgrStar-3:hover ~ .tgr-stars #star--tgrStar-1,
+#tgrStar-3:hover ~ .tgr-stars #star--tgrStar-2,
+#tgrStar-3:hover ~ .tgr-stars #star--tgrStar-3,
+#tgrStar-4:hover ~ .tgr-stars #star--tgrStar-1,
+#tgrStar-4:hover ~ .tgr-stars #star--tgrStar-2,
+#tgrStar-4:hover ~ .tgr-stars #star--tgrStar-3,
+#tgrStar-4:hover ~ .tgr-stars #star--tgrStar-4,
+#tgrStar-5:hover ~ .tgr-stars #star--tgrStar-1,
+#tgrStar-5:hover ~ .tgr-stars #star--tgrStar-2,
+#tgrStar-5:hover ~ .tgr-stars #star--tgrStar-3,
+#tgrStar-5:hover ~ .tgr-stars #star--tgrStar-4,
+#tgrStar-5:hover ~ .tgr-stars #star--tgrStar-5 {
+	color: #000;
+}
+
+#tgrStar-1:hover ~ .tgr-stars #star--tgrStar-2,
+#tgrStar-1:hover ~ .tgr-stars #star--tgrStar-3,
+#tgrStar-1:hover ~ .tgr-stars #star--tgrStar-4,
+#tgrStar-1:hover ~ .tgr-stars #star--tgrStar-5,
+#tgrStar-2:hover ~ .tgr-stars #star--tgrStar-3,
+#tgrStar-2:hover ~ .tgr-stars #star--tgrStar-4,
+#tgrStar-2:hover ~ .tgr-stars #star--tgrStar-5,
+#tgrStar-3:hover ~ .tgr-stars #star--tgrStar-4,
+#tgrStar-3:hover ~ .tgr-stars #star--tgrStar-5,
+#tgrStar-4:hover ~ .tgr-stars #star--tgrStar-5 {
+	color: #ccc;
+}
+
+</style>
 <mvt:if expr="g.TGR_Error">
 	<div>ERROR: &mvte:global:TGR_Error;</div>
 </mvt:if>
@@ -10,7 +66,20 @@
 	<input type="hidden" name="TGR_Order_ID" value="2" />
 	<div>
 		Rating:<br />
-		<input type="text" class="&mvte:global:TGR_Rating_class;" name="TGR_Rating" value="&mvte:global:TGR_Rating;" />
+		<mvt:assign name="l.settings:stars" value="miva_array_deserialize( '1,2,3,4,5' )" />
+		<mvt:if expr="ISNULL g.TGR_Rating"><mvt:assign name="g.TGR_Rating" value="5" /></mvt:if>
+		<mvt:foreach iterator="star" array="stars">
+			<mvt:assign name="l.settings:checked" value="''" />
+			<mvt:if expr="g.TGR_Rating EQ l.settings:star">
+				<mvt:assign name="l.settings:checked" value="' checked'" />
+			</mvt:if>
+			<input type="radio" name="TGR_Rating" value="&mvt:star;" id="tgrStar-&mvt:star;" style="display:none;"&mvt:checked; />
+		</mvt:foreach>
+		<div class="tgr-stars">
+			<mvt:foreach iterator="star" array="stars">
+				<label id="star--tgrStar-&mvt:star;" for="tgrStar-&mvt:star;" title="&mvt:star; Star<mvt:if expr="l.settings:star GT 1">s</mvt:if>"><span>&#9733;</span></label>
+			</mvt:foreach>
+		</div>
 	</div>
 	<div>
 		Name:<br />
