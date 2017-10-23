@@ -43,6 +43,8 @@
 |	Front-End Functions
 |		FrontEnd_Add_Review
 |		Trigger_Merchant_Email
+|		Trigger_Customer_Email
+|		Trigger_Email
 |		Form_Template
 |		Reviews_Template
 |		Reviews_Load_Query
@@ -64,6 +66,7 @@
 	<MvASSIGN NAME = "l.review" MEMBER = "notify"		VALUE = "{ TGReviews_Products_Load.d.notify }">
 	<MvASSIGN NAME = "l.review" MEMBER = "title"		VALUE = "{ TGReviews_Products_Load.d.title }">
 	<MvASSIGN NAME = "l.review" MEMBER = "summary"		VALUE = "{ TGReviews_Products_Load.d.summary }">
+	<MvASSIGN NAME = "l.review" MEMBER = "notified"		VALUE = "{ TGReviews_Products_Load.d.notified }">
 </MvFUNCTION>
 
 
@@ -114,13 +117,14 @@
 
 <MvFUNCTION NAME = "Product_Reviews_Insert_Lowlevel" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.review:id" VALUE = "{ [ g.Module_Library_DB ].StoreKey_Generate( 'TGRProduct' ) }">
+	<MvASSIGN NAME = "l.review:notified" VALUE = "0" />
 
 	<MvQUERY NAME	= "Merchant"
 			 QUERY	= "{ 'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviews_Products
-					      ( id, created, product_id, cust_id, order_id, approved, rating, name, email, location, notify, title, summary )
+					      ( id, created, product_id, cust_id, order_id, approved, rating, name, email, location, notify, title, summary, notified )
 						  VALUES
-						  ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )' }"
-			 FIELDS	= "l.review:id, l.review:created, l.review:product_id, l.review:cust_id, l.review:order_id, l.review:approved, l.review:rating, l.review:name, l.review:email, l.review:location, l.review:notify, l.review:title, l.review:summary">
+						  ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )' }"
+			 FIELDS	= "l.review:id, l.review:created, l.review:product_id, l.review:cust_id, l.review:order_id, l.review:approved, l.review:rating, l.review:name, l.review:email, l.review:location, l.review:notify, l.review:title, l.review:summary, l.review:notified">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Library_Filename_Utilities ].Error( 'TGReviews-INSERT-0001', g.MvQUERY_Error ) }">
 	</MvIF>
@@ -172,13 +176,16 @@
 							location	= ?,
 							notify		= ?,
 							title		= ?,
-							summary		= ?
+							summary		= ?,
+							notified	= ?
 					      WHERE
 						    id			= ?' }"
-			 FIELDS	= "l.review:created, l.review:product_id, l.review:cust_id, l.review:order_id, l.review:approved, l.review:rating, l.review:name, l.review:email, l.review:location, l.review:notify, l.review:title, l.review:summary, l.review:id">
+			 FIELDS	= "l.review:created, l.review:product_id, l.review:cust_id, l.review:order_id, l.review:approved, l.review:rating, l.review:name, l.review:email, l.review:location, l.review:notify, l.review:title, l.review:summary, l.review:notified, l.review:id">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Library_Filename_Utilities ].Error( 'TGReviews-UPDATE-0001', g.MvQUERY_Error ) }">
 	</MvIF>
+
+	<MvASSIGN NAME = "l.void" VALUE = "{ Trigger_Customer_Email( l.review ) }">
 
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
@@ -1011,14 +1018,37 @@
 	<MvIF EXPR = "{ ISNULL l.merchant_email:to OR ISNULL l.merchant_email:from OR ISNULL l.merchant_email:subject }">
 		<MvFUNCTIONRETURN VALUE = 0 />
 	</MvIF>
+	<MvFUNCTIONRETURN VALUE = "{ Trigger_Email( l.review_id, 0, 'TGR_Merchant_Email', l.merchant_email ) }">
+</MvFUNCTION>
 
-	<MvIF EXPR = "{ NOT Product_Review_WithFields_Load_ID( l.review_id, l.review ) }">
+<MvFUNCTION NAME = "Trigger_Customer_Email" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'customer_email', l.customer_email ) }">
+	<MvASSIGN NAME = "l.customer_email" VALUE = "{ miva_array_deserialize( l.customer_email ) }">
+	<MvASSIGN NAME = "l.customer_email:to" VALUE = "{ l.review:email }">
+
+	<MvIF EXPR = "{ ( ISNULL l.customer_email:to ) OR ( ISNULL l.customer_email:from ) OR ( ISNULL l.customer_email:subject ) }">
 		<MvFUNCTIONRETURN VALUE = 0 />
 	</MvIF>
 
-	<MvDO FILE = "{ g.Module_Feature_TUI_DB }" NAME = "l.loaded" VALUE = "{ Page_Load_Code( 'TGR_Merchant_Email', l.page) }">
+	<MvIF EXPR = "{ ( l.review:approved EQ 1 ) AND ( l.review:notify EQ 1 ) AND ( l.review:notified EQ 0 ) }">
+		<MvIF EXPR = "{ Trigger_Email( l.review:id, 0, 'TGR_Customer_Email', l.customer_email ) }">
+			<MvASSIGN NAME = "l.review:notified" VALUE = "{ s.dyn_time_t }" />
+			<MvASSIGN NAME = "l.void" VALUE = "{ Product_Reviews_Update( l.review ) }">
+		</MvIF>
+	</MvIF>
+	<MvFUNCTIONRETURN VALUE = 1 />
+</MvFUNCTION>
 
-	<MvIF EXPR = "{ [ g.Module_Feature_TUI_DB ].ManagedTemplate_Load_ID( l.page:templ_id, l.merchant_email_tmpl ) }">
+<MvFUNCTION NAME = "Trigger_Email" PARAMETERS = "review_id, order_id, page_code, email var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ l.review_id GT 0 }">
+		<MvIF EXPR = "{ NOT Product_Review_WithFields_Load_ID( l.review_id, l.review ) }">
+			<MvFUNCTIONRETURN VALUE = 0 />
+		</MvIF>
+	</MvIF>
+
+	<MvDO FILE = "{ g.Module_Feature_TUI_DB }" NAME = "l.loaded" VALUE = "{ Page_Load_Code( l.page_code, l.page) }">
+
+	<MvIF EXPR = "{ [ g.Module_Feature_TUI_DB ].ManagedTemplate_Load_ID( l.page:templ_id, l.email_tmpl ) }">
 
 		<MvCOMMENT>
 		|
@@ -1045,7 +1075,7 @@
 		<MvASSIGN NAME = "l.all_settings:review" VALUE = "{ l.review }">
 
 		<MvCAPTURE VARIABLE = "l.email:message">
-			<MvDO FILE = "{ g.Store_Template_Path $ l.merchant_email_tmpl:filename }" NAME = "l.success" VALUE = "{ Template_Render( l.settings, l.all_settings ) }">
+			<MvDO FILE = "{ g.Store_Template_Path $ l.email_tmpl:filename }" NAME = "l.success" VALUE = "{ Template_Render( l.settings, l.all_settings ) }">
 		</MvCAPTURE>
 
 		<MvIF EXPR = "{ ISNULL trim( l.email:message ) }">
@@ -1053,14 +1083,10 @@
 		</MvIF>
 
 		<MvASSIGN NAME ="l.email:headers" VALUE = "{ 'Content-Type: text/html; charset=ISO-8859-1' $ asciichar( 13 ) $ asciichar( 10 ) $ asciichar( 13 ) $ asciichar( 10 ) }">
-		<MvASSIGN NAME = "l.email:to" VALUE = "{ l.merchant_email:to }">
-		<MvASSIGN NAME = "l.email:from" VALUE = "{ l.merchant_email:from }">
-		<MvASSIGN NAME = "l.email:cc" VALUE = "{ l.merchant_email:cc }">
-		<MvASSIGN NAME = "l.email:bcc" VALUE = "{ l.merchant_email:bcc }">
-		<MvASSIGN NAME = "l.email:subject" VALUE = "{ l.merchant_email:subject }">
 
 		<MvDO FILE = "{ g.Module_Library_Utilities }" NAME = "l.email_sent"  VALUE = "{ v9_SendEmail( l.email ) }">
 	</MvIF>
+	<MvFUNCTIONRETURN VALUE = 1 />
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Form_Template" PARAMETERS = "module var, param, all_settings var" STANDARDOUTPUTLEVEL = "text, html">
@@ -1203,17 +1229,16 @@
 
 	<MvASSIGN NAME = "g.TGR_Product_ID" VALUE = "{ l.product_id }">
 
-	<MvIF EXPR = "{ NOT g.TGR_Product_ID }">
-		<MvFUNCTIONRETURN VALUE = 0 />
-	</MvIF>
-
 	<MvASSIGN NAME = "l.search_query" VALUE = "">
 
 	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SELECT( l.search_query,'AVG( rating ) as rating' ) }">
 
 	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_FROM( l.search_query, g.Store_Table_Prefix $ 'TGReviews_Products', 's' ) }">
 
-	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'product_id = ?', 'g.TGR_Product_ID' ) }">
+	<MvIF EXPR = "{ g.TGR_Product_ID }">
+		<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'product_id = ?', 'g.TGR_Product_ID' ) }">
+	</MvIF>
+
 	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'approved = 1', '' ) }">
 
 	<MvASSIGN NAME = "l.search_sql" VALUE = "{ [ g.Module_Library_DB].SQL_Query_Build( l.search_query, l.search_fields ) }">
@@ -1228,7 +1253,7 @@
 
 	<MvWHILE EXPR = "{ ( NOT TGReviews_Products.d.EOF ) AND ( ( g.Count EQ 0 ) OR (l.rating_num LT ( g.Count + 1) ) ) }">
 
-		<MvASSIGN NAME = "l.return"  VALUE = "{ TGReviews_Products.d.rating }">
+		<MvASSIGN NAME = "l.return"  VALUE = "{ rnd( TGReviews_Products.d.rating, 2 ) }">
 		<MvASSIGN NAME = "{ 'g.Session:cache:TGR:Product_' $ l.product_id $ ':rating' }" VALUE = "{ l.return }">
 
 		<MvASSIGN NAME = "l.rating_num" VALUE = "{ l.rating_num + 1 }">
@@ -1278,10 +1303,6 @@
 
 	<MvASSIGN NAME = "g.TGR_Product_ID" VALUE = "{ l.product_id }">
 
-	<MvIF EXPR = "{ NOT g.TGR_Product_ID }">
-		<MvFUNCTIONRETURN VALUE = 0 />
-	</MvIF>
-
 	<MvFOR INDEX = "l.rating_num" COUNT = "5">
 		<MvASSIGN NAME = "l.return" INDEX = "{ l.rating_num }" MEMBER = "rating" VALUE = "{ l.rating_num }">
 		<MvASSIGN NAME = "l.return" INDEX = "{ l.rating_num }" MEMBER = "count" VALUE = "0">
@@ -1293,7 +1314,10 @@
 
 	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_FROM( l.search_query, g.Store_Table_Prefix $ 'TGReviews_Products', 's' ) }">
 
-	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'product_id = ?', 'g.TGR_Product_ID' ) }">
+	<MvIF EXPR = "{ g.TGR_Product_ID }">
+		<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'product_id = ?', 'g.TGR_Product_ID' ) }">
+	</MvIF>
+
 	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'approved = 1', '' ) }">
 
 	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_GROUP_BY( l.search_query, 'rating' ) }">

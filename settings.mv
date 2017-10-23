@@ -182,6 +182,9 @@
 				</thead>
 				<tbody>
 					<tr>
+						<td align="left" valign="middle" width="100%" colspan="2">Page Template Used: <strong>TGR_Customer_Email</strong></td>
+					</tr>
+					<tr>
 						<td align="left" valign="middle">From</td>
 						<td align="left" valign="middle" width="100%"><MvEVAL EXPR = "{ DrawTextField( 'customer_email:from', l.mod_settings:customer_email:from, 'From' ) }"></td>
 					</tr>
@@ -353,7 +356,7 @@
 					</tr>
 					<tr>
 						<td><MvEVAL EXPR = "{ Pretty_Code( 'Reviews_Template', ' l.settings:product:id ') }"></td>
-						<td>Render the Reviews Template. Returns <pre style="display:inline;">reviews array</pre> in <pre style="display:inline;">l.settings:tgr_reviews</pre></td>
+						<td>Render the Reviews Template. Returns <pre style="display:inline;">reviews array</pre> in <pre style="display:inline;">l.settings:tgr_reviews</pre>. If you do not pass an id (i.e. put 0, or an empty string), it will return all approved reviews for the store.</td>
 					</tr>
 					<tr>
 						<td><MvEVAL EXPR = "{ Pretty_Code( 'Date', ' \'F jS, Y\', l.settings:review:created, l.settings:review:formatted_created ') }"></td>
