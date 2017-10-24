@@ -94,6 +94,9 @@
 				</thead>
 				<tbody>
 					<tr>
+						<td align="left" valign="middle" width="100%" colspan="2">Page Template Used: <strong>TGR_MailAfter_Email</strong></td>
+					</tr>
+					<tr>
 						<td align="left" valign="middle" style="text-transform: capitalize;" colspan="2">
 							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawCheckbox( l.mod_settings:mail_after:notify, 'mail_after:notify', 1, 'Enable Notification?' ) }">
 						</td>
@@ -375,7 +378,7 @@
 						<td>Returns a total number of approved reviews for a product to a variable (2nd parameter).</td>
 					</tr>
 					<tr>
-						<td><MvEVAL EXPR = "{ Pretty_Code( 'Test_MailAfter_Email', ' 12345, hello@email.com ') }"></td>
+						<td><MvEVAL EXPR = "{ Pretty_Code( 'Test_MailAfter_Email', ' 12345, \'hello@email.com\' ') }"></td>
 						<td>This will trigger the email for any order you specify, to the email you specify. This is specifcally made to test the email template. Please note: BCC and CC will not carry through. If you have left a review on a product in the order, it will skip that product.</td>
 					</tr>
 				</tbody>
