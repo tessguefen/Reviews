@@ -6,5 +6,3 @@
 
 # Notes
 - Add Auto Approve?
-- Create table for `orders`, 1 column
-- add verified ? e.g. has purchased the product in the store (based on email/ cust_id)
