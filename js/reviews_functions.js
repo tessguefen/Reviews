@@ -14,7 +14,8 @@ function Reviews_Load_Query( filter, sort, offset, count, callback, delegator ) 
 								'&Filter=' + EncodeArray( filter ) +
 								'&Sort=' + encodeURIComponent( sort ) +
 								'&Offset=' + encodeURIComponent( offset ) +
-								'&Count=' + encodeURIComponent( count ),
+								'&Count=' + encodeURIComponent( count ) +
+								'&Product_ID=' + encodeURIComponent( TGR_Product_ID ),
 								delegator );
 }
 

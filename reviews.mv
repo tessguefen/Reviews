@@ -5,8 +5,8 @@
 	<MvASSIGN NAME = "l.module:version"		VALUE = "1.000">
 	<MvASSIGN NAME = "l.module:api_ver"		VALUE = "9.00">
 	<MvASSIGN NAME = "l.module:description"	VALUE = "All the Reviews!">
-	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside, component, fields_prod, fulfill, scheduledtask">
-	<MvCOMMENT><MvASSIGN NAME = "l.module:features"	VALUE = "vis_product, import, export"></MvCOMMENT>
+	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside, component, fields_prod, fulfill, scheduledtask, vis_product">
+	<MvCOMMENT><MvASSIGN NAME = "l.module:features"	VALUE = " import, export"></MvCOMMENT>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Install_Store" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
@@ -428,6 +428,8 @@
 		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_Functions.js' }"></script>
 		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_Batchlist.js' }"></script>
 		<script language="JavaScript">
+			var TGR_Product_ID = 0;
+			var TGR_Product_Code = '';
 			MMScreen_LoadFinished( function() { new Reviews_Batchlist(); } );
 		</script>
 	</MvIF>
@@ -745,6 +747,61 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ScheduledTaskModule_Provision_Settings" PARAMETERS = "module var, task var, provide_xml var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvCOMMENT>
+| ====================================================================================
+| VIS_PRODUCT
+| ====================================================================================
+</MvCOMMENT>
+
+
+<MvFUNCTION NAME = "Module_Product_Tabs" PARAMETERS = "module var, product var" STANDARDOUTPUTLEVEL = "compresswhitespace">
+	<MvFUNCTIONRETURN VALUE = "TGR_PROD:Product Reviews">
+</MvFUNCTION>
+
+
+<MvFUNCTION NAME = "Module_Product_Head" PARAMETERS = "module var, tab, product var" STANDARDOUTPUTLEVEL = "html, text">
+	<MvIF EXPR = "{ l.tab NE 'TGR_PROD' }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_JavaScript() }">
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_CSS() }">
+	<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_Functions.js' }"></script>
+	<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_Batchlist.js' }"></script>
+	<script language="JavaScript">
+		var TGR_Product_ID = <MvEVAL EXPR = "{ l.product:id }">;
+		var TGR_Product_Code = "<MvEVAL EXPR = "{ encodejavascriptstring( l.product:code ) }">";
+		MMScreen_LoadFinished( function() { new Reviews_Batchlist(); } );
+	</script>
+	<MvFUNCTIONRETURN VALUE = 1 />
+</MvFUNCTION>
+
+
+<MvFUNCTION NAME = "Module_Product_Content" PARAMETERS = "module var, tab, load_fields, product var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+<MvIF EXPR = "{ l.tab NE 'TGR_PROD'}">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_HTML() }">
+	<div id="jsReviews_Batchlist"></div>
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+
+<MvFUNCTION NAME = "Module_Product_Update" PARAMETERS = "module var, product var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvFUNCTIONRETURN VALUE = 1 />
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_Product_Insert" PARAMETERS = "module var, product var" STANDARDOUTPUTLEVEL = "compresswhitespace">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_Product_Delete" PARAMETERS = "module var, product var" STANDARDOUTPUTLEVEL = "compresswhitespace">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_Product_Validate" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
