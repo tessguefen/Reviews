@@ -3,15 +3,18 @@
 |	This file contains functions for the Admin > Setting interface.
 |
 |	Functions
-|		DrawTextField
-|		Settings_UI
-|		Module_Settings
-|		Load_Setting
-|		Settings_Update_LowLevel
-|		Review_Settings_Update
+|		DrawTextField( name, value, placeholder )
+|		Settings_UI( module var )
+|		Module_Settings( settings var )
+|		Load_Setting( name, output var )
+|		Settings_Update_LowLevel( name, value )
+|		Review_Settings_Update( required var, mail_after var, merchant_email var, customer_email var, per_page, default_sorting )
 |
-|		Settings_Update_Required
-|		Settings_Update_MailAfter
+|		Settings_Update_Required( required var )
+|		Settings_Update_MailAfter( mail_after var )
+|		Settings_Update_MerchantEmail( merchant_email var )
+|		Settings_Update_CustomerEmail( customer_email var )
+|		Reviews_Templates_Update( templates var )
 |
 </MvCOMMENT>
 
@@ -20,9 +23,17 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Settings_UI" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html">
+	<MvCOMMENT>
+	|
+	|	This is used under `Module_System_Content` to render the Settings tab.
+	|
+	</MvCOMMENT>
+
 	<input type="hidden" name="Review_Tab" value="TGR_SETT" />
+
 	<MvIF EXPR = "{ NOT Module_Settings( l.mod_settings ) }">
-		An Error occured while retrieving the module settings. :( <br />
+		An Error occur
+		ed while retrieving the module settings. :( <br />
 	</MvIF>
 	<MvIF EXPR = "{ g.Review_Errors }">
 		<MvFOREACH ITERATOR = "l.error" ARRAY = "g.Review_Errors">
@@ -389,6 +400,11 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Settings" PARAMETERS = "settings var" STANDARDOUTPUTLEVEL = "">
+	<MvCOMMENT>
+	|
+	|	Returns all module settings to `settings var`. Every member of the return variable is a setting name.
+	|
+	</MvCOMMENT>
 	<MvASSIGN NAME = "l.search_query" VALUE = "">
 
 	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SELECT( l.search_query,'s.*' ) }">
@@ -420,6 +436,11 @@
 
 
 <MvFUNCTION NAME = "Load_Setting" PARAMETERS = "name, output var" STANDARDOUTPUTLEVEL = "">
+	<MvCOMMENT>
+	|
+	|	Load a specific settings `name` and return to `output var`
+	|
+	</MvCOMMENT>
 	<MvASSIGN NAME = "g.name" VALUE = "{ l.name }">
 
 	<MvASSIGN NAME = "l.search_query" VALUE = "">
@@ -454,6 +475,11 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Settings_Update_LowLevel" PARAMETERS = "name, value" STANDARDOUTPUTLEVEL = "">
+	<MvCOMMENT>
+	|
+	|	Lowlevel version of other `Settings Update` Functions.
+	|
+	</MvCOMMENT>
 	<MvQUERY NAME	= "Merchant"
 			 QUERY	= "{ 'UPDATE ' $ g.Store_Table_Prefix $ 'TGReviews_Settings
 					      SET
@@ -468,6 +494,12 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Review_Settings_Update" PARAMETERS = "required var, mail_after var, merchant_email var, customer_email var, per_page, default_sorting" STANDARDOUTPUTLEVEL = "">
+	<MvCOMMENT>
+	|
+	|	This is used  by `Module_System_Update` to update all the settings of the module.
+	|
+	</MvCOMMENT>
+
 	<MvIF EXPR = "{ l.required }">
 		<MvIF EXPR = "{ NOT Settings_Update_Required( l.required ) }">
 			<MvASSIGN NAME = "l.void" VALUE = "{ miva_array_insert( g.Review_Errors, 'Could not Update Required Fields.', -1 ) }">
