@@ -5,7 +5,7 @@
 	<MvASSIGN NAME = "l.module:version"		VALUE = "1.000">
 	<MvASSIGN NAME = "l.module:api_ver"		VALUE = "9.00">
 	<MvASSIGN NAME = "l.module:description"	VALUE = "All the Reviews!">
-	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside, component">
+	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside, component, fields_prod">
 	<MvCOMMENT><MvASSIGN NAME = "l.module:features"	VALUE = "vis_product, import, export"></MvCOMMENT>
 </MvFUNCTION>
 
@@ -218,7 +218,8 @@
 								notify		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_BOOL()	 		$ ',
 								title		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 255 ) 		$ ',
 								summary		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_MEMO()			$ ',
-								notified	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ '
+								notified	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+								verified	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_BOOL()			$ '
 							)' }">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
 		<MvASSIGN NAME = "l.void" VALUE = "{ Module_Uninstall_Store( l.module ) }">
@@ -435,6 +436,7 @@
 	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Delete' 				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Delete( l.module ) 	}"></MvIF>
 	<MvIF EXPR = "{ g.Module_Function EQ 'Review_Approved_Update' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Review_Approved_Update( l.module ) 	}"></MvIF>
 	<MvIF EXPR = "{ g.Module_Function EQ 'Review_Notify_Update' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Review_Notify_Update( l.module ) 		}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'Review_Verified_Update'		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Review_Verified_Update( l.module ) 	}"></MvIF>
 
 	<MvIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Load_Query' 	}"><MvFUNCTIONRETURN VALUE = "{ AdditionalFields_Load_Query( l.module ) 	}"></MvIF>
 	<MvIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Update' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalFields_Update( l.module ) 	}"></MvIF>
@@ -573,6 +575,36 @@
 		L_asm_success:
 	</MvASSEMBLY>
 
+</MvFUNCTION>
+
+<MvCOMMENT>
+| ========================================================================================================================
+|	FIELDS_PROD
+| ========================================================================================================================
+</MvCOMMENT>
+
+<MvFUNCTION NAME = "Module_Product_Fields" PARAMETERS = "module var, fields var" STANDARDOUTPUTLEVEL = "">
+
+	<MvASSIGN NAME = "l.fields" INDEX = "1" MEMBER = "code" VALUE = "tgr_rating">
+	<MvASSIGN NAME = "l.fields" INDEX = "1" MEMBER = "name" VALUE = "Product Rating">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_Product_Field_Name" PARAMETERS = "module var, code" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ l.code EQ 'tgr_rating' }">
+		<MvFUNCTIONRETURN VALUE = "Product Rating">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = "">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_Product_Field_Value" PARAMETERS = "module var, product_id, code" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.void" VALUE = "{ Product_Rating( l.module, l.param, l.all_settings, l.product_id, l.rating ) }">
+	<MvFUNCTIONRETURN VALUE = "{ l.rating }" />
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_Product_Set_Field" PARAMETERS = "module var, product_id, code, value" STANDARDOUTPUTLEVEL = "">
 </MvFUNCTION>
 
 <MvINCLUDE FILE = "functions.mv">

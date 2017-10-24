@@ -64,3 +64,13 @@ function Reviews_Batchlist_Notify( id, checked, callback, delegator ) {
 								'&Notify='	+ ( checked ? 1 : 0 ),
 								delegator );
 }
+
+function Reviews_Batchlist_Verified( id, checked, callback, delegator ) {
+	return AJAX_Call_Module(	callback,
+								'admin',
+								'tgreviews',
+								'Review_Verified_Update',
+								'Review_ID='	+ encodeURIComponent( id ) +
+								'&Verified='	+ ( checked ? 1 : 0 ),
+								delegator );
+}

@@ -72,7 +72,16 @@ Reviews_Batchlist.prototype.onCreateRootColumnList = function() {
 
 							new MMBatchList_Column_Name( 'Title', 'title', 'title'),
 
-							new MMBatchList_Column_TextArea( 'Edit Summary', 'Summary', 'summary', 'summary' )
+							new MMBatchList_Column_TextArea( 'Edit Summary', 'Summary', 'summary', 'summary' ),
+
+							new MMBatchList_Column_DateTime( 'Notified', 'notified', 'notified')
+							.SetDefaultActive( false )
+							.SetOnDisplayEdit( function( record ) { return DrawMMBatchListDateTime_Data( record.notified ); } ),
+
+							new MMBatchList_Column_CheckboxSlider('Verified Buyer', 'verified', 'verified', function( item, checked, delegator ) {
+								Reviews_Batchlist.Update_Verified( item, checked, delegator );
+							} )
+
 						);
 
 		for ( i = 0, i_len = self.additional_fields_length; i < i_len; i++ ) {
@@ -120,6 +129,10 @@ Reviews_Batchlist.Update_Approved = function( item, checked, delegator ) {
 
 Reviews_Batchlist.Update_Notify = function( item, checked, delegator ) {
 	Reviews_Batchlist_Notify( item.record.id, checked, function( response ) {}, delegator );
+}
+
+Reviews_Batchlist.Update_Verified = function( item, checked, delegator ) {
+	Reviews_Batchlist_Verified( item.record.id, checked, function( response ) {}, delegator );
 }
 
 Reviews_Batchlist.prototype.onInsert = function( item, callback, delegator ) {
