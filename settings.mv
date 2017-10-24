@@ -374,6 +374,10 @@
 						<td><MvEVAL EXPR = "{ Pretty_Code( 'Product_Review_Count', ' l.settings:product:id, l.settings:tgr_reviews:review_count ') }"></td>
 						<td>Returns a total number of approved reviews for a product to a variable (2nd parameter).</td>
 					</tr>
+					<tr>
+						<td><MvEVAL EXPR = "{ Pretty_Code( 'Test_MailAfter_Email', ' 12345, hello@email.com ') }"></td>
+						<td>This will trigger the email for any order you specify, to the email you specify. This is specifcally made to test the email template. Please note: BCC and CC will not carry through. If you have left a review on a product in the order, it will skip that product.</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>

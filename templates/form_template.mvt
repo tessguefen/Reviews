@@ -63,7 +63,7 @@
 <form method="POST" action="&mvt:product:link;">
 	<input type="hidden" name="Action" value="TGRADD" />
 	<input type="hidden" name="TGR_Product_Code" value="&mvte:product:code;" />
-	<input type="hidden" name="TGR_Order_ID" value="2" />
+	<input type="hidden" name="TGR_Order_ID" value="&mvte:global:TGR_Order_ID;" />
 	<div>
 		Rating:<br />
 		<mvt:assign name="l.settings:stars" value="miva_array_deserialize( '1,2,3,4,5' )" />

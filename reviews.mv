@@ -5,7 +5,7 @@
 	<MvASSIGN NAME = "l.module:version"		VALUE = "1.000">
 	<MvASSIGN NAME = "l.module:api_ver"		VALUE = "9.00">
 	<MvASSIGN NAME = "l.module:description"	VALUE = "All the Reviews!">
-	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside, component, fields_prod">
+	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside, component, fields_prod, fulfill, scheduledtask">
 	<MvCOMMENT><MvASSIGN NAME = "l.module:features"	VALUE = "vis_product, import, export"></MvCOMMENT>
 </MvFUNCTION>
 
@@ -196,6 +196,24 @@
 	<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Page_Assign_Item( l.customer_email_page, 'urls' ) }">
 	<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Page_Assign_Item( l.customer_email_page, 'sitemap_exclude' ) }">
 
+	<MvASSIGN NAME = "l.mail_after_page:admin"		VALUE = "0">
+	<MvASSIGN NAME = "l.mail_after_page:code"		VALUE = "TGR_MailAfter_Email">
+	<MvASSIGN NAME = "l.mail_after_page:name"		VALUE = "Reviews Email Template: Mail After Email">
+	<MvASSIGN NAME = "l.mail_after_page:ui_id"		VALUE = "0">
+	<MvASSIGN NAME = "l.mail_after_page:settings"	VALUE = "">
+	<MvCAPTURE VARIABLE = "l.mail_after_page:data">
+		<MvINCLUDE FILE = "templates/mailafter_email.mvt" INTERPRET = "OFF">
+	</MvCAPTURE>
+
+	<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_Page_LowLevel( l.mail_after_page, l.mail_after_page:data ) }">
+		<MvASSIGN NAME = "l.void" VALUE = "{ Module_Uninstall_Store( l.module ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0013:', 'An error occured while creating the page TGR_Merchant_Email' ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Page_Assign_Item( l.mail_after_page, 'store' ) }">
+	<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Page_Assign_Item( l.mail_after_page, 'urls' ) }">
+	<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Page_Assign_Item( l.mail_after_page, 'sitemap_exclude' ) }">
+
 	<MvCOMMENT>
 	|
 	|	Create Product Reviews table.
@@ -281,6 +299,30 @@
 
 	<MvCOMMENT>
 	|
+	|	Create TGReviews_Orders Table (for order followup email)
+	|
+	</MvCOMMENT>
+
+	<MvQUERY	NAME = "Merchant"
+				QUERY = "{ 'CREATE TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Orders
+							(
+								order_id			' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 ) $ '
+							)
+				' }">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvASSIGN NAME = "l.void" VALUE = "{ Module_Uninstall_Store( l.module ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0013', 'An error occured while creating the table ' $ g.Store_Table_Prefix $ 'TGReviews_Orders. Please make sure this table was not already created.' ) }">
+	</MvIF>
+
+	<MvQUERY	NAME	= "Merchant"
+				QUERY	= "{ 'CREATE UNIQUE INDEX ' $ g.Store_Table_Prefix $ 'TGReviews_Orders ON ' $ g.Store_Table_Prefix $ 'TGReviews_Orders ( order_id )' }">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvASSIGN NAME = "l.void" VALUE = "{ Module_Uninstall_Store( l.module ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0014', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvCOMMENT>
+	|
 	|	Create Store Keys.
 	|		TGRProduct, TGRAdditional
 	|
@@ -320,10 +362,19 @@
 		<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_Page( l.merchant_email_page ) }">
 	</MvIF>
 
-	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $  g.Store_Table_Prefix $ 'TGReviews_Settings' }">
-	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $  g.Store_Table_Prefix $ 'TGReviews_Products'}">
-	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $  g.Store_Table_Prefix $ 'TGReviews_AdditionalFields'}">
-	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $  g.Store_Table_Prefix $ 'TGReviews_AdditionalValues'}">
+	<MvIF EXPR = "{ [ g.Module_Feature_TUI_DB ].Page_Load_Code( 'TGR_Customer_Email', l.merchant_email_page ) }">
+		<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_Page( l.merchant_email_page ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ [ g.Module_Feature_TUI_DB ].Page_Load_Code( 'TGR_MailAfter_Email', l.mail_after_page ) }">
+		<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_Page( l.mail_after_page ) }">
+	</MvIF>
+
+	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Settings' }">
+	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Products'}">
+	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalFields'}">
+	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalValues'}">
+	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Orders' }">
 
 	<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Library_DB ].StoreKey_Delete( 'TGRProduct' ) }">
 	<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Library_DB ].StoreKey_Delete( 'TGRAdditional' ) }">
@@ -332,9 +383,9 @@
 
 
 <MvCOMMENT>
-| 
-|	system
-| 
+| ====================================================================================
+|	SYSTEM
+| ====================================================================================
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "SystemModule_Action" PARAMETERS = "module var, action" STANDARDOUTPUTLEVEL = "">
@@ -352,10 +403,11 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
+
 <MvCOMMENT>
-|
-|	vis_system
-|
+| ====================================================================================
+|	VIS_SYSTEM
+| ====================================================================================
 </MvCOMMENT>
 
 
@@ -423,12 +475,15 @@
 </MvFUNCTION>
 
 <MvCOMMENT>
-|
-|	json
-|
+| ====================================================================================
+|	JSON
+| ====================================================================================
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "Module_JSON" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ g.Session_Type NE 'admin' }">
+		<MvFUNCTIONRETURN>
+	</MvIF>
 	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Load_Query'			}"><MvFUNCTIONRETURN VALUE = "{ Product_Reviews_Load_Query( l.module )		}"></MvIF>
 	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Update'				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Update( l.module )		}"></MvIF>
 	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Insert'				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Insert( l.module )		}"></MvIF>
@@ -445,9 +500,9 @@
 </MvFUNCTION>
 
 <MvCOMMENT>
-|
-|	clientside
-|
+| ====================================================================================
+|	CLIENTSIDE
+| ====================================================================================
 </MvCOMMENT>
 <MvFUNCTION NAME = "Module_Clientside" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, compresswhitespace" ERROROUTPUTLEVEL = "">
 	<MvIF EXPR = "{ g.Filename EQ 'Reviews_Batchlist.js' }">
@@ -473,9 +528,9 @@
 </MvFUNCTION>
 
 <MvCOMMENT>
-| ============================
+| ====================================================================================
 |	COMPONENT
-| ============================
+| ====================================================================================
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "ComponentModule_Initialize" PARAMETERS = "module var, item, all_settings var, settings var" STANDARDOUTPUTLEVEL = "">
@@ -529,7 +584,8 @@
 					( l.function_name EQ 'date' )						OR
 					( l.function_name EQ 'product_rating' )				OR
 					( l.function_name EQ 'product_review_breakdowns' )	OR
-					( l.function_name EQ 'product_review_count' )
+					( l.function_name EQ 'product_review_count' )		OR
+					( l.function_name EQ 'test_mailafter_email' )
 				}">
 		<MvASSIGN NAME = "l.new_param" VALUE = "{ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
 	</MvIF>
@@ -578,9 +634,9 @@
 </MvFUNCTION>
 
 <MvCOMMENT>
-| ========================================================================================================================
+| ====================================================================================
 |	FIELDS_PROD
-| ========================================================================================================================
+| ====================================================================================
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "Module_Product_Fields" PARAMETERS = "module var, fields var" STANDARDOUTPUTLEVEL = "">
@@ -606,6 +662,92 @@
 
 <MvFUNCTION NAME = "Module_Product_Set_Field" PARAMETERS = "module var, product_id, code, value" STANDARDOUTPUTLEVEL = "">
 </MvFUNCTION>
+
+<MvCOMMENT>
+| ====================================================================================
+|	FULFILL
+| ====================================================================================
+</MvCOMMENT>
+
+<MvFUNCTION NAME = "FulfillmentModule_ProcessOrder" PARAMETERS = "module var, order var" STANDARDOUTPUTLEVEL = "">
+	<MvCOMMENT>
+	|
+	|	Send order:id to Reviews Order table.
+	|
+	</MvCOMMENT>
+	<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'mail_after', l.mail_after ) }">
+	<MvASSIGN NAME = "l.mail_after" VALUE = "{ miva_array_deserialize( l.mail_after ) }">
+
+	<MvIF EXPR = "{ l.mail_after:notify NE 1 }">
+		<MvFUNCTIONRETURN VALUE = 1 />
+	</MvIF>
+
+	<MvASSIGN NAME = "l.order_source"		VALUE = "{ tolower( l.order:source ) }">
+	<MvIF EXPR = "{ [ g.Module_Library_Utilities ].Value_In_List( l.order_source, 'subscription,marketplaces_ebay,marketplaces_amazon,marketplaces_etsy' ) }">
+		<MvFUNCTIONRETURN VALUE = 1 />
+	</MvIF>
+
+	<MvASSIGN NAME = "l.void" VALUE = "{ Reviews_Add_Order( l.order:id ) }">
+
+	<MvFUNCTIONRETURN VALUE = 1 />
+</MvFUNCTION>
+
+<MvCOMMENT>
+| ====================================================================================
+| SCHEDULEDTASK
+| ====================================================================================
+</MvCOMMENT>
+
+<MvFUNCTION NAME = "ScheduledTaskModule_Capabilities" PARAMETERS = "module var, capabilities var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.capabilities:provision_settings" VALUE = 0>
+	<MvASSIGN NAME = "l.capabilities:provision" VALUE = 0>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ScheduledTaskModule_Operations" PARAMETERS = "module var, operations var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.operations" INDEX = "1" MEMBER = "code"		VALUE = "tgr_order_emails">
+	<MvASSIGN NAME = "l.operations" INDEX = "1" MEMBER = "descrip"	VALUE = "Trigger 'Mail After' Emails for Reviews">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ScheduledTaskModule_Fields" PARAMETERS = "module var, task var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = "">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ScheduledTaskModule_Invalid" PARAMETERS = "module var, field_id" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 0>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ScheduledTaskModule_Prompt" PARAMETERS = "module var, field_id" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = "">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ScheduledTaskModule_Field" PARAMETERS = "module var, field_id" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ScheduledTaskModule_Validate" PARAMETERS = "module var, task var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ScheduledTaskModule_Update" PARAMETERS = "module var, task var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ScheduledTaskModule_Delete" PARAMETERS = "module var, task var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ScheduledTaskModule_Execute" PARAMETERS = "module var, task var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ l.task:operation EQ 'tgr_order_emails' }">
+		<MvFUNCTIONRETURN VALUE = "{ Trigger_MailAfter_Email() }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-MOD-1000', 'Unsupported operation' ) }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ScheduledTaskModule_Provision_Settings" PARAMETERS = "module var, task var, provide_xml var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
 
 <MvINCLUDE FILE = "functions.mv">
 <MvINCLUDE FILE = "settings.mv">
