@@ -399,6 +399,8 @@
 		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_Functions.js' }"></script>
 		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_Batchlist.js' }"></script>
 		<script language="JavaScript">
+			<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'auto_approve', l.auto_approve ) }">
+			<MvIF EXPR = "{ l.auto_approve EQ 1 }">var TGR_Auto_Approve = 1;<MvELSE>var TGR_Auto_Approve = 0;</MvIF>
 			var TGR_Product_ID = 0;
 			var TGR_Product_Code = '';
 			MMScreen_LoadFinished( function() { new Reviews_Batchlist(); } );

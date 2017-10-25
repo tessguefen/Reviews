@@ -110,7 +110,7 @@ Reviews_Batchlist.prototype.onCreate = function() {
 	var i, i_len;
 	var record;
 	record = new Object();
-	record.approved = 0;
+	record.approved = TGR_Auto_Approve;
 	record.question = '';
 	record.created = Date.now() / 1000 | 0;
 	record.cust_id = 0;
