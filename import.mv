@@ -37,9 +37,10 @@
 	</MvIF>
 
 	<MvFOREACH ITERATOR = "l.field" ARRAY = "l.members" COUNT = "{ miva_struct_members( l.record, l.members ) }">
-		<MvIF EXPR = "{ ( 'field_' CIN l.field ) AND miva_variable_value( 'l.record:' $ l.field ) }">
-			<MvASSIGN NAME = "l.clean_field" VALUE = "{ glosub( l.field, 'field_', '' ) }">
-			<MvASSIGN NAME = "l.record_fields"  MEMBER = "{ l.clean_field }" VALUE = "{ miva_variable_value( 'l.record:' $ l.field ) }">
+		<MvASSIGN NAME = "l.value" VALUE = "{ miva_variable_value( 'l.record:' $ l.field ) }">
+		<MvIF EXPR = "{ ( 'field_' CIN l.field ) AND l.value }">
+			<MvASSIGN NAME = "l.clean_field" VALUE = "{ substring_var( l.field, 7, ( len_var( l.field ) - 6 ) ) }" />
+			<MvASSIGN NAME = "l.record_fields"  MEMBER = "{ l.clean_field }" VALUE = "{ l.value }">
 		</MvIF>
 	</MvFOREACH>
 

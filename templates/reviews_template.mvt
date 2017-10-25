@@ -60,6 +60,14 @@
 	<tr>
 		<td valign="middle" align="center" style="background: #000; color: #fff;">
 			<mvt:item name="tgreviews" param="Product_Rating( l.settings:product:id, l.settings:tgr_reviews:avg_rating )" />
+			<span style="font-size: 1.25rem;">
+				<mvt:assign name="l.settings:star_width" value="( l.settings:tgr_reviews:avg_rating / 5 ) * 100" />
+				<span style="position: relative; color: rgba(255,255,255,.5); height: 22px;">
+					&#9733;&#9733;&#9733;&#9733;&#9733;
+					<span style="height: 22px; overflow: hidden; position: absolute; top: -4px; left: 0; white-space: nowrap; color: #fff; width:&mvt:star_width;%; overflow:hidden;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+				</span>
+			</span>
+			<div style="clear: left;"></div>
 			<span style="font-size: 1.25rem;"><strong>&mvt:tgr_reviews:avg_rating;</strong>/5 Star<mvt:if expr="l.settings:tgr_reviews:avg_rating GT 1">s</mvt:if></span><br />
 			out of &mvt:tgr_reviews:review_count; Review<mvt:if expr="l.settings:tgr_reviews:review_count GT 1">s</mvt:if>
 		</td>
