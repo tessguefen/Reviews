@@ -51,13 +51,6 @@
 	<MvASSIGN NAME = "l.required" VALUE = "{ miva_array_serialize( l.defaults:required ) }">
 	<MvASSIGN NAME = "l.required_name" VALUE = "required" />
 
-	<MvQUERY	NAME	=	"Merchant"
-				QUERY	=	"{	'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviews_Settings
-								( name, value )
-								VALUES
-								( ?, ? )' }"
-				FIELDS	=	"l.required_name, l.required">
-
 	<MvASSIGN NAME = "l.defaults:mail_after:notify" VALUE = 0 />
 	<MvASSIGN NAME = "l.defaults:mail_after:days" VALUE = 7 />
 	<MvASSIGN NAME = "l.defaults:mail_after:after" VALUE = "order" />
@@ -69,12 +62,6 @@
 	<MvASSIGN NAME = "l.mail_after" VALUE = "{ miva_array_serialize( l.defaults:mail_after ) }">
 	<MvASSIGN NAME = "l.mail_after_name" VALUE = "mail_after" />
 
-	<MvQUERY	NAME	=	"Merchant"
-				QUERY	=	"{	'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviews_Settings
-								( name, value )
-								VALUES
-								( ?, ? )' }"
-				FIELDS	=	"l.mail_after_name, l.mail_after">
 
 	<MvASSIGN NAME = "l.defaults:merchant_email:notify" VALUE = 0 />
 	<MvASSIGN NAME = "l.defaults:merchant_email:to" VALUE = "{ g.Store:email }" />
@@ -86,12 +73,6 @@
 	<MvASSIGN NAME = "l.merchant_email" VALUE = "{ miva_array_serialize( l.defaults:merchant_email ) }">
 	<MvASSIGN NAME = "l.merchant_email_name" VALUE = "merchant_email" />
 
-	<MvQUERY	NAME	=	"Merchant"
-				QUERY	=	"{	'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviews_Settings
-								( name, value )
-								VALUES
-								( ?, ? )' }"
-				FIELDS	=	"l.merchant_email_name, l.merchant_email">
 
 	<MvASSIGN NAME = "l.defaults:customer_email:from" VALUE = "{ g.Store:email }" />
 	<MvASSIGN NAME = "l.defaults:customer_email:cc" VALUE = "" />
@@ -106,25 +87,11 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0013:', 'An error occured while creating the item tgreviews.' ) }">
 	</MvIF>
 
-	<MvQUERY	NAME	=	"Merchant"
-				QUERY	=	"{	'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviews_Settings
-								( name, value )
-								VALUES
-								( ?, ? )' }"
-				FIELDS	=	"l.customer_email_name, l.customer_email">
-
 	<MvCAPTURE VARIABLE = "l.form_template:code">
 		<MvINCLUDE FILE = "templates/form_template.mvt" INTERPRET = "OFF">
 	</MvCAPTURE>
 	<MvASSIGN NAME = "l.form_template:id" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplate( l.form_template:code, NULL, 'tgr_form.mvc' ) }">
 	<MvASSIGN NAME = "l.form_template:name" VALUE = "form_template">
-
-	<MvQUERY	NAME	=	"Merchant"
-				QUERY	=	"{	'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviews_Settings
-								( name, value )
-								VALUES
-								( ?, ? )' }"
-				FIELDS	=	"l.form_template:name, l.form_template:id">
 
 	<MvCAPTURE VARIABLE = "l.reviews_template:code">
 		<MvINCLUDE FILE = "templates/reviews_template.mvt" INTERPRET = "OFF">
@@ -132,33 +99,37 @@
 	<MvASSIGN NAME = "l.reviews_template:id" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplate( l.reviews_template:code, NULL, 'tgr_reviews.mvc' ) }">
 	<MvASSIGN NAME = "l.reviews_template:name" VALUE = "reviews_template">
 
-	<MvQUERY	NAME	=	"Merchant"
-				QUERY	=	"{	'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviews_Settings
-								( name, value )
-								VALUES
-								( ?, ? )' }"
-				FIELDS	=	"l.reviews_template:name, l.reviews_template:id">
-
-
 	<MvASSIGN NAME = "l.reviews_per_page" VALUE = "5" />
 	<MvASSIGN NAME = "l.reviews_per_page_name" VALUE = "reviews_per_page" />
-
-	<MvQUERY	NAME	=	"Merchant"
-				QUERY	=	"{	'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviews_Settings
-								( name, value )
-								VALUES
-								( ?, ? )' }"
-				FIELDS	=	"l.reviews_per_page_name, l.reviews_per_page">
 
 	<MvASSIGN NAME = "l.reviews_default_sorting" VALUE = "-id" />
 	<MvASSIGN NAME = "l.reviews_default_sorting_name" VALUE = "reviews_default_sorting" />
 
+	<MvASSIGN NAME = "l.auto_approve" VALUE = "0" />
+	<MvASSIGN NAME = "l.auto_approve_name" VALUE = "auto_approve" />
+
 	<MvQUERY	NAME	=	"Merchant"
 				QUERY	=	"{	'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviews_Settings
 								( name, value )
 								VALUES
+								( ?, ? ),
+								( ?, ? ),
+								( ?, ? ),
+								( ?, ? ),
+								( ?, ? ),
+								( ?, ? ),
+								( ?, ? ),
+								( ?, ? ),
 								( ?, ? )' }"
-				FIELDS	=	"l.reviews_default_sorting_name, l.reviews_default_sorting">
+				FIELDS	=	"	l.required_name, l.required,
+								l.mail_after_name, l.mail_after,
+								l.merchant_email_name, l.merchant_email,
+								l.customer_email_name, l.customer_email,
+								l.form_template:name, l.form_template:id,
+								l.reviews_template:name, l.reviews_template:id,
+								l.reviews_per_page_name, l.reviews_per_page,
+								l.reviews_default_sorting_name, l.reviews_default_sorting,
+								l.auto_approve_name, l.auto_approve">
 
 	<MvASSIGN NAME = "l.merchant_email_page:admin"		VALUE = "0">
 	<MvASSIGN NAME = "l.merchant_email_page:code"		VALUE = "TGR_Merchant_Email">
@@ -466,7 +437,7 @@
 
 <MvFUNCTION NAME = "Module_System_Update" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ ( g.Review_Tab EQ 'TGR_SETT' )  }">
-		<MvASSIGN NAME = "l.void" VALUE = "{ Review_Settings_Update( g.Required, g.Mail_After, g.Merchant_Email, g.Customer_Email, g.Reviews_Per_Page, g.Reviews_Default_Sorting) }">
+		<MvASSIGN NAME = "l.void" VALUE = "{ Review_Settings_Update( g.Required, g.Mail_After, g.Merchant_Email, g.Customer_Email, g.Reviews_Per_Page, g.Reviews_Default_Sorting, g.Auto_Approve) }">
 		<MvASSIGN NAME = "l.void" VALUE = "{ Reviews_Templates_Update( g.Reviews_Template ) }">
 	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>

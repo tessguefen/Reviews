@@ -1030,6 +1030,12 @@
 		</MvIF>
 	</MvIF>
 
+	<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'auto_approve', l.auto_approve ) }">
+	<MvIF EXPR = "{ l.auto_approve EQ 1 }">
+		<MvASSIGN NAME = "l.review" MEMBER = "approved" VALUE = "1">
+		<MvASSIGN NAME = "l.void" VALUE = "{ Product_Reviews_Update( l.review ) }">
+	</MvIF>
+
 	<MvCOMMENT>
 	|
 	|	Check Settings for Triggers for Merchant.
@@ -1509,7 +1515,7 @@
 	<MvIF EXPR = "{ ISNULL l.merchant_email:to OR ISNULL l.merchant_email:from OR ISNULL l.merchant_email:subject }">
 		<MvFUNCTIONRETURN VALUE = 0 />
 	</MvIF>
-	<MvFUNCTIONRETURN VALUE = "{ Trigger_Email( l.review_id, 0, 'TGR_Merchant_Email', l.merchant_email ) }">
+	<MvFUNCTIONRETURN VALUE = "{ Trigger_Email( l.review_id, l.order, 'TGR_Merchant_Email', l.merchant_email ) }">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Trigger_Customer_Email" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
@@ -1522,7 +1528,7 @@
 	</MvIF>
 
 	<MvIF EXPR = "{ ( l.review:approved EQ 1 ) AND ( l.review:notify EQ 1 ) AND ( l.review:notified EQ 0 ) }">
-		<MvIF EXPR = "{ Trigger_Email( l.review:id, 0, 'TGR_Customer_Email', l.customer_email ) }">
+		<MvIF EXPR = "{ Trigger_Email( l.review:id, l.order, 'TGR_Customer_Email', l.customer_email ) }">
 			<MvASSIGN NAME = "l.review:notified" VALUE = "{ s.dyn_time_t }" />
 			<MvASSIGN NAME = "l.void" VALUE = "{ Product_Reviews_Update( l.review ) }">
 		</MvIF>

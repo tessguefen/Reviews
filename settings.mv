@@ -8,7 +8,7 @@
 |		Module_Settings( settings var )
 |		Load_Setting( name, output var )
 |		Settings_Update_LowLevel( name, value )
-|		Review_Settings_Update( required var, mail_after var, merchant_email var, customer_email var, per_page, default_sorting )
+|		Review_Settings_Update( required var, mail_after var, merchant_email var, customer_email var, per_page, default_sorting, auto_approve )
 |
 |		Settings_Update_Required( required var )
 |		Settings_Update_MailAfter( mail_after var )
@@ -88,6 +88,11 @@
 							</select>
 						</td>
 					</tr>
+					<tr>
+						<td align="left" valign="middle" style="text-transform: capitalize;" colspan="2">
+							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawCheckbox( l.mod_settings:auto_approve, 'auto_approve', 1, 'Auto Approve Reviews' ) }">
+						</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>
@@ -109,7 +114,7 @@
 					</tr>
 					<tr>
 						<td align="left" valign="middle" style="text-transform: capitalize;" colspan="2">
-							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawCheckbox( l.mod_settings:mail_after:notify, 'mail_after:notify', 1, 'Enable Notification?' ) }">
+							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawCheckbox( l.mod_settings:mail_after:notify, 'mail_after:notify', 1, 'Enable Notification' ) }">
 						</td>
 					</tr>
 					<tr>
@@ -159,7 +164,7 @@
 					</tr>
 					<tr>
 						<td align="left" valign="middle" style="text-transform: capitalize;" colspan="2">
-							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawCheckbox( l.mod_settings:merchant_email:notify, 'merchant_email:notify', 1, 'Recieve Notifications for New Reviews?' ) }">
+							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawCheckbox( l.mod_settings:merchant_email:notify, 'merchant_email:notify', 1, 'Recieve Notifications for New Reviews' ) }">
 						</td>
 					</tr>
 					<tr>
@@ -493,7 +498,7 @@
 	<MvFUNCTIONRETURN VALUE = 1 />
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Review_Settings_Update" PARAMETERS = "required var, mail_after var, merchant_email var, customer_email var, per_page, default_sorting" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Review_Settings_Update" PARAMETERS = "required var, mail_after var, merchant_email var, customer_email var, per_page, default_sorting, auto_approve" STANDARDOUTPUTLEVEL = "">
 	<MvCOMMENT>
 	|
 	|	This is used  by `Module_System_Update` to update all the settings of the module.
@@ -529,6 +534,12 @@
 			<MvASSIGN NAME = "l.void" VALUE = "{ miva_array_insert( g.Review_Errors, 'Could not Update Reviews Per Page.', -1 ) }">
 		</MvIF>
 	</MvIF>
+
+	<MvASSIGN NAME = "l.auto_approve" VALUE = "{ int( l.auto_approve ) }">
+	<MvIF EXPR = "{ NOT Settings_Update_LowLevel( 'auto_approve', l.auto_approve ) }">
+		<MvASSIGN NAME = "l.void" VALUE = "{ miva_array_insert( g.Review_Errors, 'Could not Update Auto Approve.', -1 ) }">
+	</MvIF>
+	
 	<MvIF EXPR = "{ l.default_sorting }">
 		<MvIF EXPR = "{ 
 			l.default_sorting NE '-id'		AND
