@@ -1,6 +1,6 @@
 <MvCOMMENT>
 | ========================================================================================================================
-|   PLACES IMPORT FUNCTIONS
+|   REVIEW IMPORT FUNCTIONS
 | ========================================================================================================================
 </MvCOMMENT>
 <MvFUNCTION NAME = "Reviews_Import" PARAMETERS = "import var, session var, record var, run_data var" STANDARDOUTPUTLEVEL = "">
@@ -23,6 +23,11 @@
 
 	<MvIF EXPR = "{ Product_Review_Similar( l.record ) }">
 		<MvEVAL EXPR = "{ Record_Skip( l.session, 'Similar Review found (product code, title, summary & email match)' ) }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvIF EXPR = "{ l.record:rating LT 1 OR l.record:rating GT 5 }">
+		<MvEVAL EXPR = "{ Record_Skip( l.session, 'Rating must be 1-5.' ) }">
 		<MvFUNCTIONRETURN VALUE = 1>
 	</MvIF>
 
