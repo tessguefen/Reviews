@@ -5,60 +5,63 @@
 |		Product_Review_Read( review var, view )
 |		Product_Review_Load_ID( id, review var )
 |		Product_Review_WithFields_Load_ID( id, review var )
-|		Product_Reviews_Insert_Lowlevel
-|		Product_Reviews_Insert
-|		Product_Reviews_Update_Lowlevel
-|		Product_Reviews_Update
-|		Product_Reviews_Delete
-|		Product_Reviews_Load_Query
+|		Product_Reviews_Insert_Lowlevel( review var )
+|		Product_Reviews_Insert( review var )
+|		Product_Reviews_Update_Lowlevel( review var )
+|		Product_Reviews_Update( review var )
+|		Product_Reviews_Delete( review_id )
 |
-|		JSON_Product_Reviews_Update
-|		JSON_Product_Reviews_Insert
-|		JSON_Product_Reviews_Delete
-|		JSON_Load_Additional_Fields
-|		JSON_Review_Approved_Update
-|		JSON_Review_Notify_Update
-|		JSON_Review_Verified_Update
+|		JSON_Product_Reviews_Load_Query( module var )
+|		JSON_Product_Reviews_Update( module var )
+|		JSON_Product_Reviews_Insert( module var )
+|		JSON_Product_Reviews_Delete( module var )
+|		JSON_Load_Additional_Fields( module var )
+|		JSON_Review_Approved_Update( module var )
+|		JSON_Review_Notify_Update( module var )
+|		JSON_Review_Verified_Update( module var )
 |
-|		Load_Additional_Fields
-|		Load_Additional_Fields_Product_Review
-|		Load_Additional_Value
-|		Product_Reviews_AdditionalValues_Insert_LowLevel
+|		Load_Additional_Fields( fields var )
+|		Load_Additional_Fields_Product_Review( review_id, fields var )
+|		Load_Additional_Value( reivew_id, field_id )
 |
-|		AdditionalField_Load_ID
-|		AdditionalField_Load_Code
-|		AdditionalValue_Load
-|		AdditionalValues_Update
-|		AdditionalValues_Insert
-|		AdditionalValues_Delete_Review
+|		AdditionalField_Load_ID( id, outputvar )
+|		AdditionalField_Load_Code( code, output var )
+|		AdditionalValue_Load( field_id, review_id, output var )
+|		AdditionalValues_Update( field_id, review_id, value )
+|		AdditionalValues_Insert( field_id, review_id, value )
+|		AdditionalValues_Delete_Review( review_id )
 |
-|		AdditionalFields_Update
-|		AdditionalFields_Insert
-|		AdditionalFields_Delete
+|		AdditionalFields_Update( field var ) 
+|		AdditionalFields_Insert( field var )
+|		AdditionalFields_Delete( field_id )
 |
-|		AdditionalFields_Load_Query
-|		JSON_AdditionalFields_Update
-|		JSON_AdditionalFields_Insert
-|		JSON_AdditionalFields_Delete
+|		JSON_AdditionalFields_Load_Query( module var )
+|		JSON_AdditionalFields_Update( module var )
+|		JSON_AdditionalFields_Insert( module var )
+|		JSON_AdditionalFields_Delete( module var )
 |
 |	Front-End Functions
-|		FrontEnd_Add_Review
-|		Form_Template
-|		Reviews_Template
-|		Reviews_Load_Query
-|		Date
-|		Product_Rating
-|		Product_Review_Count
-|		Product_Review_Breakdowns
-|		Review_Check_Verified
+|		FrontEnd_Add_Review()
+|		Form_Template( module var, param, all_settings var )
+|		Reviews_Template( module var, param, all_settings var, product_id )
+|		Reviews_Load_Query( product_id, output var )
+|		Product_Rating( module var, param, all_settings var, product_id, return var )
+|		Product_Review_Count( module var, param, all_settings var, product_id, return var )
+|		Product_Review_Breakdowns( module var, param, all_settings var, product_id, return var )
+|		Date( module var, param, all_settings var, format, timestamp, return var )
+|		Review_Check_Verified( email, product_id )
 |
 |	Email Triggers
-|		Trigger_Merchant_Email
-|		Trigger_Customer_Email
-|		Trigger_MailAfter_Email
-|		Trigger_Email
-|		Reviews_Add_Order
-|		Remove_Order
+|		Trigger_Merchant_Email( review_id )
+|		Trigger_Customer_Email( review var )
+|		Trigger_MailAfter_Email()
+|		MailAfter_Check_Order( order_id, email_settings var )
+|		Trigger_MailAfter_Email_Lowlevel( order var, email_settings var )
+|		Trigger_Email( review_id, order var, page_code, email var)
+|		Reviews_Add_Order( order_id )
+|		Remove_Order( order_id )
+|		Review_Check_EmailXProduct( email, product_id )
+|		Test_MailAfter_Email( module var, param, all_settings var, order_id, email )
 |
 </MvCOMMENT>
 
@@ -250,7 +253,7 @@
 </MvFUNCTION>
 
 
-<MvFUNCTION NAME = "Product_Reviews_Load_Query" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+<MvFUNCTION NAME = "JSON_Product_Reviews_Load_Query" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
 	<MvASSIGN NAME = "g.Filter"			VALUE = "{ trim( g.Filter ) }">
 	<MvASSIGN NAME = "g.Sort"			VALUE = "{ trim( g.Sort ) }">
 	<MvASSIGN NAME = "g.Offset"			VALUE = "{ trim( g.Offset ) }">
@@ -759,7 +762,7 @@
 	<MvFUNCTIONRETURN VALUE = 1 />
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "AdditionalFields_Insert" PARAMETERS = "field" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "AdditionalFields_Insert" PARAMETERS = "field var" STANDARDOUTPUTLEVEL = "">
 
 	<MvASSIGN NAME = "l.field:code"	VALUE = "{ trim( l.field:code ) }">
 	<MvASSIGN NAME = "l.field:name"	VALUE = "{ trim( l.field:name ) }">
@@ -825,7 +828,7 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "AdditionalFields_Load_Query" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+<MvFUNCTION NAME = "JSON_AdditionalFields_Load_Query" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
 	<MvASSIGN NAME = "g.Filter"			VALUE = "{ trim( g.Filter ) }">
 	<MvASSIGN NAME = "g.Sort"			VALUE = "{ trim( g.Sort ) }">
 	<MvASSIGN NAME = "g.Offset"			VALUE = "{ trim( g.Offset ) }">
@@ -1606,7 +1609,7 @@
 	<MvFUNCTIONRETURN VALUE = 1 />
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Trigger_Email" PARAMETERS = "review_id, order, page_code, email var" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Trigger_Email" PARAMETERS = "review_id, order var, page_code, email var" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ l.review_id GT 0 }">
 		<MvIF EXPR = "{ NOT Product_Review_WithFields_Load_ID( l.review_id, l.review ) }">
 			<MvFUNCTIONRETURN VALUE = 0 />

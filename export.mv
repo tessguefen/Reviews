@@ -1,0 +1,85 @@
+<MvCOMMENT>
+|
+|	Export Functions for `export`
+|
+|		Export_Reviews( output var)
+|		Export_Header_Template()
+|
+</MvCOMMENT>
+<MvFUNCTION NAME = "Export_Reviews" PARAMETERS = "output var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvASSIGN NAME = "g.Offset"			VALUE = "{ trim( g.Exp_Review_Count ) }">
+	<MvASSIGN NAME = "g.Count"			VALUE = "{ trim( g.Exp_Count ) }">
+	<MvASSIGN NAME = "l.search_query"	VALUE = "">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SELECT( l.search_query,'s.*, p.code as product_code, p.name as product_name' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_FROM( l.search_query, g.Store_Table_Prefix $ 'TGReviews_Products', 's' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_LEFT_OUTER_JOIN( l.search_query, 's', g.Store_Table_Prefix $ 'Products', 'p', 's.product_id = p.id', '' ) }">
+
+	<MvASSIGN NAME = "l.search_sql" VALUE = "{ [ g.Module_Library_DB].SQL_Query_Build( l.search_query, l.search_fields ) }">
+
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].SQL_Query_Count( l.search_query, l.total_count ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error(g.Error_Code, g.Error_Message ) }">
+	<MvELSEIF EXPR = "{ NOT [ g.Module_Library_Native_DBAPI ].DB_OPENVIEW_Range('Merchant', 'TGReviews_Products', l.search_sql, l.search_fields, g.Offset, g.Count) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( 'TGReviews-EXPORT-0001', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.count" VALUE = 0>
+
+	<MvWHILE EXPR = "{ ( NOT TGReviews_Products.d.EOF ) AND ( ( g.Exp_Count EQ 0 ) OR (l.count LT g.Exp_Count ) ) }">
+
+		<MvEVAL EXPR = "{ Product_Review_Read( l.output[++l.count], 'TGReviews_Products' ) }">
+
+		<MvSKIP NAME = "Merchant" VIEW = "TGReviews_Products" ROWS = 1>
+	</MvWHILE>
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_Products">
+
+	<MvASSIGN NAME = "g.Total_Review_Count" VALUE = "{ l.total_count }">
+
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Export_Header_Template" PARAMETERS = "" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.delim" VALUE = "{ asciichar( 44 ) }">
+	<MvFOREACH ITERATOR = "l.field" ARRAY = "g.Exp_Addl_Fields" COUNT = "{ Load_Additional_Fields( g.Exp_Addl_Fields ) }">
+		<MvASSIGN NAME = "l.addl_fields_heading" VALUE = "{ l.addl_fields_heading $ l.delim $ 'FIELD:' $ toupper( l.field:code )  }">
+	</MvFOREACH>
+	<MvFUNCTIONRETURN VALUE = "{	'CREATED'			$ l.delim $
+									'PRODUCT_CODE'		$ l.delim $
+									'ORDER_ID'			$ l.delim $
+									'APPROVED'			$ l.delim $
+									'RATING'			$ l.delim $
+									'NAME'				$ l.delim $
+									'EMAIL'				$ l.delim $
+									'LOCATION'			$ l.delim $
+									'NOTIFY'			$ l.delim $
+									'TITLE'				$ l.delim $
+									'SUMMARY'			$ l.delim $
+									'NOTIFIED'			$ l.delim $
+									'VERIFIED'			$ l.addl_fields_heading }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "CSV_Add" PARAMETERS = "review var, addl_fields" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.delim" VALUE = "{ asciichar( 44 ) }">
+	<MvASSIGN NAME = "l.void" VALUE = "{ [ g.Module_Library_DB ].Product_Load_ID( l.review:product_id, l.review:product ) }">
+	<MvASSIGN NAME = "l.extra_fields" VALUE = "" />
+	<MvFOREACH ITERATOR = "l.field" ARRAY = "l.addl_fields">
+		<MvASSIGN NAME = "l.extra_fields" VALUE = "{ l.extra_fields $ l.delim $ miva_csv_encode( Load_Additional_Value( l.review:id, l.field:id ), l.delim ) }">
+	</MvFOREACH>
+	<MvFUNCTIONRETURN VALUE = "{	asciichar( 10 ) $ 
+									miva_csv_encode( l.review:created, l.delim )			$ l.delim $
+									miva_csv_encode( l.review:product:code, l.delim )		$ l.delim $
+									miva_csv_encode( l.review:order_id, l.delim )			$ l.delim $
+									miva_csv_encode( l.review:approved, l.delim )			$ l.delim $
+									miva_csv_encode( l.review:rating, l.delim )				$ l.delim $
+									miva_csv_encode( l.review:name, l.delim )				$ l.delim $
+									miva_csv_encode( l.review:email, l.delim )				$ l.delim $
+									miva_csv_encode( l.review:location, l.delim )			$ l.delim $
+									miva_csv_encode( l.review:notify, l.delim )				$ l.delim $
+									miva_csv_encode( l.review:title, l.delim )				$ l.delim $
+									miva_csv_encode( l.review:summary, l.delim )			$ l.delim $
+									miva_csv_encode( l.review:notified, l.delim )			$ l.delim $
+									miva_csv_encode( l.review:verified, l.delim )			$ l.extra_fields
+								}">
+</MvFUNCTION>

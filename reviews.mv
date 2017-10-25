@@ -5,8 +5,8 @@
 	<MvASSIGN NAME = "l.module:version"		VALUE = "1.000">
 	<MvASSIGN NAME = "l.module:api_ver"		VALUE = "9.00">
 	<MvASSIGN NAME = "l.module:description"	VALUE = "All the Reviews!">
-	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside, component, fields_prod, fulfill, scheduledtask, vis_product">
-	<MvCOMMENT><MvASSIGN NAME = "l.module:features"	VALUE = " import, export"></MvCOMMENT>
+	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside, component, fields_prod, fulfill, scheduledtask, vis_product, export">
+	<MvCOMMENT><MvASSIGN NAME = "l.module:features"	VALUE = " import"></MvCOMMENT>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Install_Store" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
@@ -486,19 +486,19 @@
 	<MvIF EXPR = "{ g.Session_Type NE 'admin' }">
 		<MvFUNCTIONRETURN>
 	</MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Load_Query'			}"><MvFUNCTIONRETURN VALUE = "{ Product_Reviews_Load_Query( l.module )		}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Update'				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Update( l.module )		}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Insert'				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Insert( l.module )		}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'Load_Additional_Fields'		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Load_Additional_Fields( l.module )		}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Delete' 				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Delete( l.module ) 	}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'Review_Approved_Update' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Review_Approved_Update( l.module ) 	}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'Review_Notify_Update' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Review_Notify_Update( l.module ) 		}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'Review_Verified_Update'		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Review_Verified_Update( l.module ) 	}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Load_Query'			}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Load_Query( l.module )		}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Update'				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Update( l.module )			}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Insert'				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Insert( l.module )			}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'Load_Additional_Fields'		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Load_Additional_Fields( l.module )			}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Delete' 				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Delete( l.module ) 		}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'Review_Approved_Update' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Review_Approved_Update( l.module ) 		}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'Review_Notify_Update' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Review_Notify_Update( l.module ) 			}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'Review_Verified_Update'		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Review_Verified_Update( l.module ) 		}"></MvIF>
 
-	<MvIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Load_Query' 	}"><MvFUNCTIONRETURN VALUE = "{ AdditionalFields_Load_Query( l.module ) 	}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Update' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalFields_Update( l.module ) 	}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Insert' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalFields_Insert( l.module ) 	}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Delete' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalFields_Delete( l.module ) 	}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Load_Query' 	}"><MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalFields_Load_Query( l.module ) 	}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Update' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalFields_Update( l.module ) 		}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Insert' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalFields_Insert( l.module ) 		}"></MvIF>
+	<MvIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Delete' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalFields_Delete( l.module ) 		}"></MvIF>
 </MvFUNCTION>
 
 <MvCOMMENT>
@@ -622,10 +622,10 @@
 			cat
 			pushc		asm_0
 			pushn
-			tagerror	22, 3
+			tagerror	22, 0
 			do_function
 			pop
-			tagerror	22, 3
+			tagerror	22, 0
 			pushc		asm_4
 			pushn
 			jmp_eq		L_asm_success
@@ -806,8 +806,174 @@
 </MvFUNCTION>
 
 
+<MvCOMMENT>
+| ====================================================================================
+|	EXPORT
+| ====================================================================================
+</MvCOMMENT>
+
+<MvFUNCTION NAME = "ExportModule_Export" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvCOMMENT>
+	|
+	|	Starting at 250 each iteration.
+	|
+	</MvCOMMENT>
+
+	<MvASSIGN NAME = "g.Exp_Count" VALUE = "250" />
+
+	<MvIF EXPR = "{ NOT g.Review_Export_Continue }">
+		<MvIF EXPR = "{ fexists( '/' $ g.Reviews_Export_File ) }">
+			<MvASSIGN NAME = "l.success" VALUE = "{ fdelete( '/' $ g.Reviews_Export_File ) }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ ISNULL g.Exp_Review_Count }">
+		<MvASSIGN NAME = "l.csv_header" VALUE = "{ Export_Header_Template() }">
+		<MvASSIGN NAME = "l.success" VALUE = "{ file_create( '/' $ g.Reviews_Export_File, 'data', l.csv_header ) }">
+	</MvIF>
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Draw_ExportProgressBar_Start( 'Review Export Progress', 'EXPT' ) }">
+	<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Draw_ExportProgressBar_Show() }">
+
+	<MvIF EXPR = "{ g.Total_Review_Count }">
+		<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Draw_ExportProgressBar_Update( g.Exp_Review_Count, g.Total_Review_Count ) }">
+	</MvIF>
+
+	<MvEVAL EXPR = "{ Export_Reviews( l.reviews ) }">
+	
+	<MvASSIGN NAME = "l.output" VALUE = "" />
+	<MvFOREACH ITERATOR = "l.review" ARRAY = "l.reviews">
+		<MvASSIGN NAME = "l.output" VALUE = "{ l.output $ CSV_Add( l.review, g.Exp_Addl_Fields ) }">
+
+		<MvASSIGN NAME = "g.Exp_Review_Count" VALUE = "{ g.Exp_Review_Count + 1 }">
+		<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Draw_ExportProgressBar_Update( g.Exp_Review_Count, g.Total_Review_Count ) }">
+	</MvFOREACH>
+
+	<MvIF EXPR = "{ fexists( '/' $ g.Reviews_Export_File ) }">
+		<MvASSIGN NAME = "l.success" VALUE = "{ file_append( '/' $ g.Reviews_Export_File, 'data', l.output ) }">
+	<MvELSE>
+		<MvASSIGN NAME = "l.success" VALUE = "{ file_create( '/' $ g.Reviews_Export_File, 'data', l.output ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ g.Exp_Review_Count GE g.Total_Review_Count }">
+
+		<MvIF EXPR = "{ g.ReviewsExport_SendEmail }">
+			<MvDO FILE = "{ g.Module_Library_Utilities }" NAME = "l.null" VALUE = "{ Send_Email_Attachment( g.ReviewsExport_Email, g.ReviewsExport_Email, '', 'Reviews Export', g.Reviews_Export_File, '/', 'data' ) }">
+			<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( 'TGReviews-SUCCESS-1', 'Review Export Email Sent' ) }">
+		</MvIF>
+
+		<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Draw_ExportProgressBar_ProgressComplete( 'Exported Reviews.' ) }">
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( 'TGReviews-SUCCESS-2', 'Reviews Exported to ' $ g.Reviews_Export_File  ) }">
+
+		<MvASSIGN NAME = "g.Review_Export_Continue" VALUE = "0">
+		<MvASSIGN NAME = "g.Exp_Review_Count" VALUE = "0">
+	<MvELSE>
+		<MvASSIGN NAME = "g.Review_Export_Continue" VALUE = "1">
+	</MvIF>
+
+	<MvHIDE FIELDS = "	g.Exp_Offset,
+						g.Review_Export_Continue,
+						g.Module_Code,
+						g.Exp_Review_Count,
+						g.Reviews_Export_File,
+						g.ReviewsExport_SendEmail,
+						g.ReviewsExport_Email,
+						g.Total_Review_Count,
+						g.Exp_Addl_Fields">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ExportModule_Validate" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "g.Reviews_Export_File"	VALUE = "{ trim( g.Reviews_Export_File ) }">
+
+	<MvIF EXPR = "{ len( g.Reviews_Export_File ) EQ 0 }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( '', 'Reviews_Export_File', 'Please specify a file' ) }">
+	<MvELSE>
+		<MvIF EXPR = "{ '/' IN g.Reviews_Export_File }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( '', 'Reviews_Export_File', 'Please do not include a path in the file name' ) }">
+		</MvIF>
+	</MvIF>
+
+	<MvASSIGN NAME = "g.ReviewsExport_Email" 	VALUE = "{ trim( g.ReviewsExport_Email ) }">
+
+	<MvIF EXPR = "{ g.ReviewsExport_SendEmail }">
+		<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Email( g.ReviewsExport_Email ) }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( '', 'ReviewsExport_Email', 'Please specify a valid email address' ) }">
+		</MvIF>
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ExportModule_Screen" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvIF EXPR = "{ ISNULL g.Reviews_Export_File }">
+		<MvASSIGN NAME = "g.Reviews_Export_File" VALUE = "reviews.csv">
+	</MvIF>
+
+	<MvIF EXPR = "{ g.Review_Export_Continue EQ 1 }">
+		<script type="text/javascript">
+			function exp_continue()
+			{
+				document.forms[ Screen ].submit();
+			}
+			window.onload = exp_continue;
+		</script>
+
+		<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Draw_ExportProgressBar_End() }">
+
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].BeginScreen_Start( 'Export Reviews to CSV', 'EXPT', '' ) }">
+		<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Element_ExportProgressBar_JavaScript( 'Exporting Reviews...', 'EXPT', 'EXPT' ) }">
+		<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Element_ExportProgressBar_CSS() }">
+
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].BeginScreen_End( 'Export Reviews to CSV', 'EXPT', '' ) }">
+		<MvDO FILE = "{ g.Module_Admin }" NAME = "l.ok" VALUE = "{ BeginContent() }">
+
+		<div style="font-family: sans-serif;">
+			<MvHIDE FIELDS = "g.Module_Code">
+			<MvEVAL EXPR = "{ [ g.Module_Admin ].Draw_FieldSet_Open( 'Export Settings', 150 ) }">
+				<table cellspacing="5">
+					<tr>
+						<td valign="top"><strong>Export Product Reviews to File:</strong></td>
+						<td width="100%">
+							<input type="text" name="Reviews_Export_File" size="40" value="{ encodeentities( g.Reviews_Export_File ) }"><br />
+							<em>This is located in the private directory. This will be deleted if it already exists.</em>
+						</td>
+					</tr>
+					<tr>
+						<td valign="top">Email File To:</td>
+						<td width="100%">
+							<MvIF EXPR = "{ NOT g.ReviewsExport_SendEmail }">
+								<label><input type="radio" name="ReviewsExport_SendEmail" value="0" checked>Do Not Email<br></label>
+								<input type="radio" name="ReviewsExport_SendEmail" value="1">
+							<MvELSE>
+								<label><input type="radio" name="ReviewsExport_SendEmail" value="0">Do Not Email<br></label>
+								<input type="radio" name="ReviewsExport_SendEmail" value="1" checked>
+							</MvIF>
+							<MvIF EXPR = "{ ISNULL g.ReviewsExport_Email }"><MvASSIGN NAME = "g.ReviewsExport_Email" VALUE = "{ g.Store:email }"></MvIF>
+							<input type="text" size="40" name="ReviewsExport_Email" value="{ encodeentities( g.ReviewsExport_Email ) }">
+						</td>
+					</tr>
+				</table>
+			<MvEVAL EXPR = "{ [ g.Module_Admin ].Draw_FieldSet_Close() }">
+		</div>
+		<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Element_ExportProgressBar_HTML() }">
+
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].EndContent() }">
+
+		<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Draw_ExportProgressBar_Buttons( 'Export', 'EXPT' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].EndScreen() }">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+
 <MvINCLUDE FILE = "functions.mv">
 <MvINCLUDE FILE = "settings.mv">
+<MvINCLUDE FILE = "export.mv">
 
 <MvCOMMENT>
 |
