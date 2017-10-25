@@ -81,8 +81,9 @@
 						<td align="left" valign="middle">Default Sorting</td>
 						<td align="left" valign="middle">
 							<select name="reviews_default_sorting">
-								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( '-id', l.mod_settings:reviews_default_sorting, 'Most Recent Reviews' ) }">
-								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'id', l.mod_settings:reviews_default_sorting, 'Least Recent Reviews' ) }">
+								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( '-id', l.mod_settings:reviews_default_sorting, 'Default' ) }">
+								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( '-created', l.mod_settings:reviews_default_sorting, 'Most Recent Reviews' ) }">
+								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'created', l.mod_settings:reviews_default_sorting, 'Least Recent Reviews' ) }">
 								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( '-rating', l.mod_settings:reviews_default_sorting, 'Highest To Lowest Rating' ) }">
 								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'rating', l.mod_settings:reviews_default_sorting, 'Lowest to Highest Rating' ) }">
 							</select>
@@ -539,11 +540,12 @@
 	<MvIF EXPR = "{ NOT Settings_Update_LowLevel( 'auto_approve', l.auto_approve ) }">
 		<MvASSIGN NAME = "l.void" VALUE = "{ miva_array_insert( g.Review_Errors, 'Could not Update Auto Approve.', -1 ) }">
 	</MvIF>
-	
+
 	<MvIF EXPR = "{ l.default_sorting }">
 		<MvIF EXPR = "{ 
 			l.default_sorting NE '-id'		AND
-			l.default_sorting NE 'id'		AND
+			l.default_sorting NE '-created'		AND
+			l.default_sorting NE 'created'		AND
 			l.default_sorting NE '-rating'	AND
 			l.default_sorting NE 'rating'
 		 }">

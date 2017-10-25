@@ -38,8 +38,9 @@
 					<input type="hidden" name="TGR_Show_Rating" value="&mvte:global:TGR_Show_Rating;" />
 				</mvt:if>
 				<select name="TGR_Sort" onchange="this.form.submit()">
-					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption(  '-id', g.TGR_Sort, 'Most Recent Reviews' )" />
-					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption(  'id', g.TGR_Sort, 'Least Recent Reviews' )" />
+					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption(  '-id', g.TGR_Sort, 'Default' )" />
+					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption(  '-created', g.TGR_Sort, 'Most Recent Reviews' )" />
+					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption(  'created', g.TGR_Sort, 'Least Recent Reviews' )" />
 					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption(  '-rating', g.TGR_Sort, 'Highest To Lowest Rating' )" />
 					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption(  'rating', g.TGR_Sort, 'Lowest To Highest Rating' )" />
 				</select>
