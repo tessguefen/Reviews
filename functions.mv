@@ -10,6 +10,7 @@
 |		Product_Reviews_Update_Lowlevel( review var )
 |		Product_Reviews_Update( review var )
 |		Product_Reviews_Delete( review_id )
+|		Product_Review_Similar( review var )
 |
 |		JSON_Product_Reviews_Load_Query( module var )
 |		JSON_Product_Reviews_Update( module var )
@@ -250,6 +251,33 @@
 	</MvIF>
 
 	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Product_Review_Similar" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.check:product_id" VALUE = "{ trim( l.review:product_id ) }">
+	<MvASSIGN NAME = "l.check:title" VALUE = "{ trim( l.review:title ) }">
+	<MvASSIGN NAME = "l.check:summary" VALUE = "{ trim( l.review:summary ) }">
+	<MvASSIGN NAME = "l.check:email" VALUE = "{ trim( l.review:email ) }">
+
+	<MvOPENVIEW	NAME	= "Merchant"
+				VIEW	= "TGReviews_Products"
+				QUERY	= "{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'TGReviews_Products WHERE product_id = ? AND title = ? AND summary = ? AND email = ?' }"
+				FIELDS	= "l.check:product_id, l.check:title, l.check:summary, l.check:email">
+
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-LOAD-0015', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.found" VALUE = "0">
+
+	<MvWHILE EXPR = "{ NOT TGReviews_Products.d.EOF }">
+		<MvASSIGN NAME = "l.found" VALUE = "1">
+		<MvSKIP NAME = "Merchant" VIEW = "TGReviews_Products" ROWS = 1>
+	</MvWHILE>
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_Products">
+
+	<MvFUNCTIONRETURN VALUE = "{ l.found }">
 </MvFUNCTION>
 
 
