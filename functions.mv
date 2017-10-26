@@ -96,12 +96,12 @@
 				QUERY 	= "{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'TGReviews_Products WHERE id = ? '}"
 				FIELDS	= "l.id">
 	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-LOAD-0001', g.MvOPENVIEW_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0001', g.MvOPENVIEW_Error ) }">
 	</MvIF>
 
 	<MvIF EXPR = "{ TGReviews_Products_Load.d.EOF }">
 		<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_Products_Load">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( 'TGReviews-LOAD-0002' ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( 'TGReviews-ERROR-0002' ) }">
 	</MvIF>
 
 	<MvEVAL EXPR = "{ Product_Review_Read( l.review, 'TGReviews_Products_Load' ) }">
@@ -148,7 +148,7 @@
 						  ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )' }"
 			 FIELDS	= "l.review:id, l.review:created, l.review:product_id, l.review:cust_id, l.review:order_id, l.review:approved, l.review:rating, l.review:name, l.review:email, l.review:location, l.review:notify, l.review:title, l.review:summary, l.review:store_reply, l.review:notified, l.review:verified">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSERT-0001', g.MvQUERY_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0003', g.MvQUERY_Error ) }">
 	</MvIF>
 
 	<MvFUNCTIONRETURN VALUE = 1>
@@ -207,7 +207,7 @@
 						    id			= ?' }"
 			 FIELDS	= "l.review:created, l.review:product_id, l.review:cust_id, l.review:order_id, l.review:approved, l.review:rating, l.review:name, l.review:email, l.review:location, l.review:notify, l.review:title, l.review:summary, l.review:store_reply, l.review:notified, l.review:verified, l.review:id">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-UPDATE-0001', g.MvQUERY_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0004', g.MvQUERY_Error ) }">
 	</MvIF>
 
 	<MvASSIGN NAME = "l.void" VALUE = "{ Trigger_Customer_Email( l.review ) }">
@@ -249,7 +249,7 @@
 			 QUERY	= "{ 'DELETE FROM ' $ g.Store_Table_Prefix $ 'TGReviews_Products WHERE id = ?' }"
 			 FIELDS	= "l.review_id">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-DELETE-0001', g.MvQUERY_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0005', g.MvQUERY_Error ) }">
 	</MvIF>
 
 	<MvIF EXPR = "{ NOT AdditionalValues_Delete_Review( l.review_id ) }">
@@ -271,7 +271,7 @@
 				FIELDS	= "l.check:product_id, l.check:title, l.check:summary, l.check:email">
 
 	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-LOAD-0015', g.MvQUERY_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0006', g.MvQUERY_Error ) }">
 	</MvIF>
 
 	<MvASSIGN NAME = "l.found" VALUE = "0">
@@ -588,7 +588,7 @@
 				FIELDS	= "l.review_id, l.field_id">
 
 	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-LOAD-1004:', 'An error occured while checking a record. Error:' $ g.MvQUERY_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0007', 'An error occured while checking a record. Error:' $ g.MvQUERY_Error ) }">
 	</MvIF>
 
 	<MvASSIGN NAME = "l.return"  VALUE = "{ TGReviews_AdditionalValues.d.value }">
@@ -676,7 +676,7 @@
 	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( 'TGReviews-LOAD-0006', g.MvOPENVIEW_Error ) }">
 	</MvIF>
-	
+
 	<MvEVAL EXPR = "{ Additional_Value_Read( l.output, 'TGReviews_AdditionalValues' ) }">
 
 	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_AdditionalValues">
@@ -710,7 +710,7 @@
 			 FIELDS	= "l.value, l.field_id, l.review_id">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
 		<MvASSIGN NAME = "g.Review_Error" VALUE = "{ g.MvQUERY_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-UPDATE-0002', g.MvQUERY_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0008', g.MvQUERY_Error ) }">
 	</MvIF>
 
 	<MvFUNCTIONRETURN VALUE = 1>
@@ -735,7 +735,7 @@
 			 FIELDS	= "l.field_id, l.review_id, l.value">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
 		<MvASSIGN NAME = "g.Review_Error" VALUE = "{ g.MvQUERY_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSERT-0002', g.MvQUERY_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0009', g.MvQUERY_Error ) }">
 	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
@@ -745,7 +745,7 @@
 			 QUERY	= "{ 'DELETE FROM ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalValues WHERE rating_id = ?' }"
 			 FIELDS	= "l.review_id">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-DELETE-0002', g.MvQUERY_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0010', g.MvQUERY_Error ) }">
 	</MvIF>
 
 	<MvFUNCTIONRETURN VALUE = 1>
@@ -797,7 +797,7 @@
 						    id			= ?' }"
 			 FIELDS	= "l.field:code,l.field:name,l.field:id">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-UPDATE-0003', g.MvQUERY_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0011', g.MvQUERY_Error ) }">
 	</MvIF>
 
 	<MvFUNCTIONRETURN VALUE = 1 />
@@ -841,7 +841,7 @@
 						  ( ?, ?, ? )' }"
 			 FIELDS	= "l.field:id,l.field:code,l.field:name">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSERT-0003', g.MvQUERY_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0012', g.MvQUERY_Error ) }">
 	</MvIF>
 
 	<MvFUNCTIONRETURN VALUE = 1>
@@ -856,14 +856,14 @@
 			 QUERY	= "{ 'DELETE FROM ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalFields WHERE id = ?' }"
 			 FIELDS	= "l.field_id">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-DELETE-0003', g.MvQUERY_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0013', g.MvQUERY_Error ) }">
 	</MvIF>
 
 	<MvQUERY NAME	= "Merchant"
 			 QUERY	= "{ 'DELETE FROM ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalValues WHERE field_id = ?' }"
 			 FIELDS	= "l.field_id">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-DELETE-0004', g.MvQUERY_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0014', g.MvQUERY_Error ) }">
 	</MvIF>
 
 	<MvFUNCTIONRETURN VALUE = 1>
@@ -1179,9 +1179,9 @@
 	<MvASSIGN NAME = "l.search_sql" VALUE = "{ [ g.Module_Library_DB].SQL_Query_Build( l.search_query, l.search_fields ) }">
 
 	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].SQL_Query_Count( l.search_query, l.total_count ) }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( 'TGReviews-LOAD-0009' ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( 'TGReviews-ERROR-0015' ) }">
 	<MvELSEIF EXPR = "{ NOT [ g.Module_Library_Native_DBAPI ].DB_OPENVIEW_Range('Merchant', 'TGReviews_Products', l.search_sql, l.search_fields, g.TGR_Offset, g.TGR_Count) }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-LOAD-0010', g.MvOPENVIEW_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0016', g.MvOPENVIEW_Error ) }">
 	</MvIF>
 
 	<MvASSIGN NAME = "l.count" VALUE = 0>
@@ -1263,9 +1263,9 @@
 	<MvASSIGN NAME = "l.search_sql" VALUE = "{ [ g.Module_Library_DB].SQL_Query_Build( l.search_query, l.search_fields ) }">
 
 	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].SQL_Query_Count( l.search_query, l.total_count ) }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-LOAD-0011', g.MvOPENVIEW_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0017', g.MvOPENVIEW_Error ) }">
 	<MvELSEIF EXPR = "{ NOT [ g.Module_Library_Native_DBAPI ].DB_OPENVIEW_Range('Merchant', 'TGReviews_Products', l.search_sql, l.search_fields, g.Offset, g.Count) }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-LOAD-0012', g.MvOPENVIEW_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0018', g.MvOPENVIEW_Error ) }">
 	</MvIF>
 
 	<MvASSIGN NAME = "l.rating_num" VALUE = "1">
@@ -1304,7 +1304,7 @@
 	<MvASSIGN NAME = "l.search_sql" VALUE = "{ [ g.Module_Library_DB].SQL_Query_Build( l.search_query, l.search_fields ) }">
 
 	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].SQL_Query_Count( l.search_query, l.return ) }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( 'TGReviews-LOAD-0010' ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( 'TGReviews-ERROR-0019' ) }">
 	</MvIF>
 
 	<MvASSIGN NAME = "{ 'g.Session:cache:TGR:Product_' $ l.product_id $ ':review_count' }" VALUE = "{ l.return }">
@@ -1344,9 +1344,9 @@
 	<MvASSIGN NAME = "l.search_sql" VALUE = "{ [ g.Module_Library_DB].SQL_Query_Build( l.search_query, l.search_fields ) }">
 
 	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].SQL_Query_Count( l.search_query, l.total_count ) }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-LOAD-0011', g.MvOPENVIEW_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0020', g.MvOPENVIEW_Error ) }">
 	<MvELSEIF EXPR = "{ NOT [ g.Module_Library_Native_DBAPI ].DB_OPENVIEW_Range('Merchant', 'TGReviews_Products', l.search_sql, l.search_fields, g.Offset, g.Count) }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-LOAD-0012', g.MvOPENVIEW_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0021', g.MvOPENVIEW_Error ) }">
 	</MvIF>
 
 	<MvASSIGN NAME = "l.rating_num" VALUE = "1">
@@ -1606,7 +1606,7 @@
 				QUERY	= "{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'TGReviews_Orders' }">
 
 	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-LOAD-0013', g.MvOPENVIEW_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0023', g.MvOPENVIEW_Error ) }">
 	</MvIF>
 
 	<MvASSIGN NAME = "l.count" VALUE = "0">
@@ -1703,7 +1703,7 @@
 			</MvIF>
 
 			<MvIF EXPR = "{ g.TemplateManager_Exception }">
-				<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-1000', 'Item \'' $ l.page:settings:_mgr:items[ l.item_pos ]:item_code $ '\' threw exception \'' $ g.TemplateManager_Exception_Code $ '\' during initialization' ) }">
+				<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0024', 'Item \'' $ l.page:settings:_mgr:items[ l.item_pos ]:item_code $ '\' threw exception \'' $ g.TemplateManager_Exception_Code $ '\' during initialization' ) }">
 			</MvIF>
 
 			<MvASSIGN NAME = "l.item_pos"	VALUE = "{ l.item_pos + 1 }">
@@ -1735,7 +1735,7 @@
 						  ( ? )' }"
 			 FIELDS	= "l.order_id">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSERT-0004', g.MvQUERY_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0025', g.MvQUERY_Error ) }">
 	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
@@ -1745,7 +1745,7 @@
 			 QUERY	= "{ 'DELETE FROM ' $ g.Store_Table_Prefix $ 'TGReviews_Orders WHERE order_id = ?' }"
 			 FIELDS	= "l.order_id">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-DELETE-0005', g.MvQUERY_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0026', g.MvQUERY_Error ) }">
 	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
@@ -1757,7 +1757,7 @@
 				FIELDS	= "l.email, l.product_id">
 
 	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-LOAD-0014', g.MvOPENVIEW_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0027', g.MvOPENVIEW_Error ) }">
 	</MvIF>
 
 	<MvWHILE EXPR = "{ NOT TGReviews_EmailXProduct.d.EOF }">

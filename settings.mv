@@ -9,7 +9,6 @@
 |		Load_Setting( name, output var )
 |		Settings_Update_LowLevel( name, value )
 |		Review_Settings_Update( required var, mail_after var, merchant_email var, customer_email var, per_page, default_sorting, auto_approve )
-|
 |		Settings_Update_Required( required var )
 |		Settings_Update_MailAfter( mail_after var )
 |		Settings_Update_MerchantEmail( merchant_email var )
@@ -305,7 +304,7 @@
 
 		<MvASSIGN NAME = "g.Reviews_Template:form:notes"						VALUE = "">
 		<MvASSIGN NAME = "g.Reviews_Template:form:template_code"				VALUE = "{ l.form_template:source }">
-		<MvASSIGN NAME = "g.Reviews_Template:form:template_version"			VALUE = "{ l.form_template:id }">
+		<MvASSIGN NAME = "g.Reviews_Template:form:template_version"				VALUE = "{ l.form_template:id }">
 		<MvASSIGN NAME = "g.Reviews_Template:form:template_version_selected"	VALUE = "{ l.form_template:id }">
 
 		<MvASSIGN NAME = "g.Reviews_Template:reviews:notes"						VALUE = "">
@@ -530,7 +529,6 @@
 	|	This is used  by `Module_System_Update` to update all the settings of the module.
 	|
 	</MvCOMMENT>
-
 	<MvIF EXPR = "{ l.required }">
 		<MvIF EXPR = "{ NOT Settings_Update_Required( l.required ) }">
 			<MvASSIGN NAME = "l.void" VALUE = "{ miva_array_insert( g.Review_Errors, 'Could not Update Required Fields.', -1 ) }">
@@ -593,6 +591,11 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Settings_Update_Required" PARAMETERS = "required var" STANDARDOUTPUTLEVEL = "">
+	<MvCOMMENT>
+	|
+	|	Validation of `required` setting, and Updates the setting afterward.
+	|
+	</MvCOMMENT>
 	<MvIF EXPR = "{ NOT Load_Setting( 'required', l.prev_settings ) }">
 		<MvFUNCTIONRETURN VALUE = 0 />
 	</MvIF>
@@ -616,6 +619,11 @@
 
 
 <MvFUNCTION NAME = "Settings_Update_MailAfter" PARAMETERS = "mail_after var" STANDARDOUTPUTLEVEL = "">
+	<MvCOMMENT>
+	|
+	|	Validation of `mail_after` setting, and Updates the setting afterward.
+	|
+	</MvCOMMENT>
 	<MvIF EXPR = "{ NOT Load_Setting( 'mail_after', l.prev_settings ) }">
 		<MvFUNCTIONRETURN VALUE = 0 />
 	</MvIF>
@@ -643,6 +651,11 @@
 
 
 <MvFUNCTION NAME = "Settings_Update_MerchantEmail" PARAMETERS = "merchant_email var" STANDARDOUTPUTLEVEL = "">
+	<MvCOMMENT>
+	|
+	|	Validation of `merchant_email` setting, and Updates the setting afterward.
+	|
+	</MvCOMMENT>
 	<MvIF EXPR = "{ NOT Load_Setting( 'merchant_email', l.prev_settings ) }">
 		<MvFUNCTIONRETURN VALUE = 0 />
 	</MvIF>
@@ -664,6 +677,11 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Settings_Update_CustomerEmail" PARAMETERS = "customer_email var" STANDARDOUTPUTLEVEL = "">
+	<MvCOMMENT>
+	|
+	|	Validation of `customer_email` setting, and Updates the setting afterward.
+	|
+	</MvCOMMENT>
 	<MvIF EXPR = "{ NOT Load_Setting( 'customer_email', l.prev_settings ) }">
 		<MvFUNCTIONRETURN VALUE = 0 />
 	</MvIF>
@@ -684,6 +702,11 @@
 
 
 <MvFUNCTION NAME = "Settings_Update_Recaptcha" PARAMETERS = "recaptcha var" STANDARDOUTPUTLEVEL = "">
+	<MvCOMMENT>
+	|
+	|	Validation of `recaptcha` setting, and Updates the setting afterward.
+	|
+	</MvCOMMENT>
 	<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'recaptcha', l.prev_recaptcha ) }">
 	<MvASSIGN NAME = "l.prev_recaptcha" VALUE = "{ miva_array_deserialize( l.prev_recaptcha ) }">
 	<MvIF EXPR = "{ ISNULL l.recaptcha:private_key }">	<MvASSIGN NAME = "l.recaptcha:private_key" VALUE = "{ l.prev_recaptcha:private_key }">	</MvIF>
@@ -698,6 +721,11 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Reviews_Templates_Update" PARAMETERS = "templates var" STANDARDOUTPUTLEVEL = "">
+	<MvCOMMENT>
+	|
+	|	Updates form & reviews template via admin.
+	|
+	</MvCOMMENT>
 	<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_ID( l.templates:form:template_version, l.template ) OR
 					NOT [ g.Module_Feature_TUI_DB ].ManagedTemplate_Load_ID( l.templates:form_id, l.managedtemplate ) }">
 		<MvFUNCTIONRETURN VALUE = 0>
@@ -759,5 +787,4 @@
 			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
 	</MvIF>
-
 </MvFUNCTION>

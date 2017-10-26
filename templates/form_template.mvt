@@ -39,30 +39,50 @@
 	<input type="hidden" name="Action" value="TGRADD" />
 	<input type="hidden" name="TGR_Product_Code" value="&mvte:product:code;" />
 	<input type="hidden" name="TGR_Order_ID" value="&mvte:global:TGR_Order_ID;" />
-	<div>
-		Rating:<br />
-		<div class="tgr_rating">
-			<mvt:assign name="l.settings:stars" value="miva_array_deserialize( '5,4,3,2,1' )" />
-			<mvt:if expr="ISNULL g.TGR_Rating"><mvt:assign name="g.TGR_Rating" value="5" /></mvt:if>
-			<mvt:foreach iterator="star" array="stars">
-				<mvt:assign name="l.settings:checked" value="''" />
-				<mvt:if expr="g.TGR_Rating EQ l.settings:star">
-					<mvt:assign name="l.settings:checked" value="' checked'" />
-				</mvt:if>
-				<input type="radio" name="TGR_Rating" value="&mvt:star;" id="tgrStar-&mvt:star;" style="display:none;"&mvt:checked; />
-				<label id="star--tgrStar-&mvt:star;" for="tgrStar-&mvt:star;" title="&mvt:star; Star<mvt:if expr="l.settings:star GT 1">s</mvt:if>">&#9733;</label>
-			</mvt:foreach>
-		</div>
-	</div>
-	<div style="clear:left;"></div>
-	<div style="margin-bottom: 0.75rem;">
-		Name:<br />
-		<input type="text" style="padding: 5px;border: 1px solid #ccc;box-sizing: border-box;" class="&mvte:global:TGR_Name_class;" name="TGR_Name" value="&mvte:global:TGR_Name;" />
-	</div>
-	<div style="margin-bottom: 0.75rem;">
-		Email:<br />
-		<input type="text" style="padding: 5px;border: 1px solid #ccc;box-sizing: border-box;" class="&mvte:global:TGR_Email_class;" name="TGR_Email" value="&mvte:global:TGR_Email;" />
-	</div>
+	<table>
+		<tr>
+			<td colspan="2">
+				Rating:<br />
+				<div class="tgr_rating">
+					<mvt:assign name="l.settings:stars" value="miva_array_deserialize( '5,4,3,2,1' )" />
+					<mvt:if expr="ISNULL g.TGR_Rating"><mvt:assign name="g.TGR_Rating" value="5" /></mvt:if>
+					<mvt:foreach iterator="star" array="stars">
+						<mvt:assign name="l.settings:checked" value="''" />
+						<mvt:if expr="g.TGR_Rating EQ l.settings:star">
+							<mvt:assign name="l.settings:checked" value="' checked'" />
+						</mvt:if>
+						<input type="radio" name="TGR_Rating" value="&mvt:star;" id="tgrStar-&mvt:star;" style="display:none;"&mvt:checked; />
+						<label id="star--tgrStar-&mvt:star;" for="tgrStar-&mvt:star;" title="&mvt:star; Star<mvt:if expr="l.settings:star GT 1">s</mvt:if>">&#9733;</label>
+					</mvt:foreach>
+				</div>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<label for="TGR_Name">Name</label>
+				<input type="text" style="padding: 5px;border: 1px solid #ccc;box-sizing: border-box;" class="&mvte:global:TGR_Name_class;" id="TGR_Name" name="TGR_Name" value="&mvte:global:TGR_Name;" />
+			</td>
+			<td>
+				<label for="TGR_Email">Email</label>
+				<input type="text" style="padding: 5px;border: 1px solid #ccc;box-sizing: border-box;" class="&mvte:global:TGR_Email_class;" id="TGR_Email" name="TGR_Email" value="&mvte:global:TGR_Email;" />
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<label for="TGR_Location">Location</label>
+				<input type="text" style="padding: 5px;border: 1px solid #ccc;box-sizing: border-box;" class="&mvte:global:TGR_Location_class;" id="TGR_Location" name="TGR_Location" value="&mvte:global:TGR_Location;" />
+			</td>
+			<td>
+				<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawCheckbox( g.TGR_Notify, 'TGR_Notify', 1, 'Notify me when my review is approved' )" />
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<label for="TGR_Title">Title</label>
+				<input type="text" style="padding: 5px;border: 1px solid #ccc;box-sizing: border-box;" class="&mvte:global:TGR_Title_class;" id="TGR_Title" name="TGR_Title" value="&mvte:global:TGR_Title;" />
+			</td>
+		</tr>
+	</table>
 	<div style="margin-bottom: 0.75rem;">
 		Location:<br />
 		<input type="text" style="padding: 5px;border: 1px solid #ccc;box-sizing: border-box;" class="&mvte:global:TGR_Location_class;" name="TGR_Location" value="&mvte:global:TGR_Location;" />
