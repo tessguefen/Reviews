@@ -1,8 +1,4 @@
 # Reviews
 
 ![Yaaaaas](http://puu.sh/y4CIO/2af7659075.png)
-![Admin UI](http://puu.sh/y6xUq/0a6e7a4ccc.png)
-
-# Notes
-- Add "Text from Store Owner" (ann)
-- Add Google Recaptcha
+![Admin UI](http://puu.sh/y7g8a/03dc82a117.png)
