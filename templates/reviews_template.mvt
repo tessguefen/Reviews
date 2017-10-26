@@ -124,6 +124,7 @@
 		<div>
 			Summary: &mvte:review:summary;
 			<mvt:if expr="l.settings:review:store_reply">
+			<br />
 				<strong>Note From Store Owner:</strong> &mvte:review:store_reply;
 			</mvt:if>
 		</div>
