@@ -33,12 +33,11 @@
 	<input type="hidden" name="Review_Tab" value="TGR_SETT" />
 
 	<MvIF EXPR = "{ NOT Module_Settings( l.mod_settings ) }">
-		An Error occur
-		ed while retrieving the module settings. :( <br />
+		An Error occured while retrieving the module settings. :( <br />
 	</MvIF>
 	<MvIF EXPR = "{ g.Review_Errors }">
 		<MvFOREACH ITERATOR = "l.error" ARRAY = "g.Review_Errors">
-			ERROR: <MvEVAL EXPR = "{ l.error }">
+			ERROR: <MvEVAL EXPR = "{ l.error }"><br />
 		</MvFOREACH>
 	</MvIF>
 
@@ -56,11 +55,11 @@
 				</thead>
 				<tbody>
 					<MvFOREACH ITERATOR = "l.field" ARRAY = "l.fields" COUNT = "{ miva_struct_members( l.mod_settings:required, l.fields ) }">
-					<tr>
-						<td align="left" valign="middle" width="100%" style="text-transform: capitalize;"><MvEVAL EXPR = "{ l.field }"></td>
-						<td align="center" valign="middle" nowrap=""><MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( 'required:' $ l.field, '1', miva_variable_value( 'l.mod_settings:required:' $ l.field ), '' ) }"></td>
-						<td align="center" valign="middle" nowrap=""><MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( 'required:' $ l.field, '0', miva_variable_value( 'l.mod_settings:required:' $ l.field ), '' ) }"></td>
-					</tr>
+						<tr>
+							<td align="left" valign="middle" width="100%" style="text-transform: capitalize;"><MvEVAL EXPR = "{ l.field }"></td>
+							<td align="center" valign="middle" nowrap=""><MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( 'required:' $ l.field, '1', miva_variable_value( 'l.mod_settings:required:' $ l.field ), '' ) }"></td>
+							<td align="center" valign="middle" nowrap=""><MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( 'required:' $ l.field, '0', miva_variable_value( 'l.mod_settings:required:' $ l.field ), '' ) }"></td>
+						</tr>
 					</MvFOREACH>
 				</tbody>
 			</table>

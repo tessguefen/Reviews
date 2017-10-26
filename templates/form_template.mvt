@@ -15,7 +15,7 @@
 .tgr_rating > input { display: none; } 
 
 .tgr_rating > label {
-	font-size: 20px;
+	font-size: 24px;
 	color: #ddd; 
 	float: right;
 	cursor: pointer;
@@ -55,44 +55,43 @@
 		</div>
 	</div>
 	<div style="clear:left;"></div>
-	<div>
+	<div style="margin-bottom: 0.75rem;">
 		Name:<br />
-		<input type="text" class="&mvte:global:TGR_Name_class;" name="TGR_Name" value="&mvte:global:TGR_Name;" />
+		<input type="text" style="padding: 5px;border: 1px solid #ccc;box-sizing: border-box;" class="&mvte:global:TGR_Name_class;" name="TGR_Name" value="&mvte:global:TGR_Name;" />
 	</div>
-	<div>
+	<div style="margin-bottom: 0.75rem;">
 		Email:<br />
-		<input type="text" class="&mvte:global:TGR_Email_class;" name="TGR_Email" value="&mvte:global:TGR_Email;" />
+		<input type="text" style="padding: 5px;border: 1px solid #ccc;box-sizing: border-box;" class="&mvte:global:TGR_Email_class;" name="TGR_Email" value="&mvte:global:TGR_Email;" />
 	</div>
-	<div>
+	<div style="margin-bottom: 0.75rem;">
 		Location:<br />
-		<input type="text" class="&mvte:global:TGR_Location_class;" name="TGR_Location" value="&mvte:global:TGR_Location;" />
+		<input type="text" style="padding: 5px;border: 1px solid #ccc;box-sizing: border-box;" class="&mvte:global:TGR_Location_class;" name="TGR_Location" value="&mvte:global:TGR_Location;" />
 	</div>
-	<div>
+	<div style="margin-bottom: 0.75rem;">
 		Title:<br />
-		<input type="text" class="&mvte:global:TGR_Title_class;" name="TGR_Title" value="&mvte:global:TGR_Title;" />
+		<input type="text" style="padding: 5px;border: 1px solid #ccc;box-sizing: border-box;" class="&mvte:global:TGR_Title_class;" name="TGR_Title" value="&mvte:global:TGR_Title;" />
 	</div>
-	<div>
+	<div style="margin-bottom: 0.75rem;">
 		Summary:<br />
-		<textarea class="&mvte:global:TGR_Summary_class;" name="TGR_Summary">&mvte:global:TGR_Summary;</textarea>
+		<textarea style="padding: 5px;border: 1px solid #ccc;box-sizing: border-box;" class="&mvte:global:TGR_Summary_class;" name="TGR_Summary">&mvte:global:TGR_Summary;</textarea>
 	</div>
-	<div>
+	<div style="margin-bottom: 0.75rem;">
 		<input type="checkbox" class="&mvte:global:TGR_Notify_class;" name="TGR_Notify" value="1"<mvt:if expr="g.TGR_Notify"> checked </mvt:if> /> Notify Me when my thing is approved. ty.
 	</div>
-	<mvt:if expr="l.settings:tgr_additional_fields">
-		<div>
-			EXTRA FIELDS
-		</div>
+	<mvt:if expr="l.settings:tgr:additional_fields">
 		<mvt:foreach iterator="addl" array="tgr:additional_fields">
 			<mvt:assign name="l.settings:addl:value" value="miva_variable_value( 'g.tgr_AdditionalFields:' $ l.settings:addl:code )" />
-			<div>
+			<div style="margin-bottom: 0.75rem;">
 				&mvte:addl:name;:<br />
-				<input type="text" class="&mvte:global:tgr_AdditionalFields_&mvte:addl:code;_class;" name="tgr_AdditionalFields:&mvt:addl:code;" value="&mvt:addl:value;" />
+				<input type="text" style="padding: 5px;border: 1px solid #ccc;box-sizing: border-box;" class="&mvte:global:tgr_AdditionalFields_&mvte:addl:code;_class;" name="tgr_AdditionalFields:&mvt:addl:code;" value="&mvt:addl:value;" />
 			</div>
 		</mvt:foreach>
 	</mvt:if>
 	<mvt:if expr="l.settings:tgr:recaptcha:enabled EQ 1">
 		<script src='https://www.google.com/recaptcha/api.js'></script>
+		<br />
 		<div class="g-recaptcha" data-sitekey="&mvt:tgr:recaptcha:public_key;"></div>
+		<br />
 	</mvt:if>
 	<div>
 		<input type="submit" name="submit" value="Submit Review!" />

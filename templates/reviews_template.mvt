@@ -1,15 +1,86 @@
+<mvt:if expr="l.settings:tgr:review_count EQ 0">
+	No Reviews Yet!
+	<mvt:exit />
+</mvt:if>
+
 <mvt:if expr="l.settings:product:link">
 	<mvt:assign name="l.settings:tgr:link" value="l.settings:product:link" />
 <mvt:else>
 	<mvt:assign name="l.settings:tgr:link" value="l.settings:urls:_self:auto" />
 </mvt:if>
 <mvt:item name="tgreviews" param="Product_Review_Breakdowns( l.settings:product:id, l.settings:tgr:breakdown )" />
-<mvt:assign name="g.mvt_debug" value="glosub( miva_array_serialize( l.settings:tgr ), ',', asciichar( 10 ) )" />
-<mvt:if expr="l.settings:tgr:review_count EQ 0">
-	No Reviews Yet!
-	<mvt:exit />
-</mvt:if>
+
 <table>
+	<tr>
+		<td colspan="2">Review Snapshot</td>
+	</tr>
+	<tr>
+		<td>
+			<mvt:item name="tgreviews" param="Product_Rating( l.settings:product:id, l.settings:tgr:avg_rating )" />
+			<span style="font-size: 1.25rem;">
+				<mvt:assign name="l.settings:star_width" value="( l.settings:tgr:avg_rating / 5 ) * 100" />
+				<span style="position: relative; color: rgba(0,0,0,.5); height: 22px;" title="&mvt:tgr:avg_rating; out of 5.">
+					&#9733;&#9733;&#9733;&#9733;&#9733;
+					<span style="height: 22px; overflow: hidden; position: absolute; top: -4px; left: 0; white-space: nowrap; color: #000; width:&mvt:star_width;%; overflow:hidden;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+				</span>
+			</span>
+		</td>
+		<td align="right">
+			<button>Write a Review</button>
+		</td>
+	</tr>
+	<tr>
+		<td width="375">
+			<div><em>Ratings Distribution</em></div>
+			<table width="100%;">
+				<mvt:if expr="g.TGR_Show_Rating GT 0">
+					<tr>
+						<td colspan="3">
+							Currently Viewing Reviews with a rating of <strong>&mvte:global:TGR_Show_Rating;</strong>. <a href="&mvt:tgr:link;?TGR_Sort=&mvta:global:TGR_Sort;">Click here to reset.</a>
+						</td>
+					</tr>
+				</mvt:if>
+				<mvt:foreach iterator="breakdown" array="tgr:breakdown">
+					<mvt:assign name="l.settings:breakdown:percent" value="( l.settings:breakdown:count / l.settings:tgr:review_count ) * 100" />
+					<tr alt="&mvt:breakdown:count; Reviews out of &mvt:tgr:review_count; are rated &mvt:breakdown:rating;" title="&mvt:breakdown:count; Reviews out of &mvt:tgr:review_count; are rated &mvt:breakdown:rating;">
+						<td width="30px">
+							<mvt:if expr="l.settings:breakdown:count GT 0">
+								<span><a href="&mvt:tgr:link;?TGR_Sort=&mvta:global:TGR_Sort;&TGR_Show_Rating=&mvt:breakdown:rating;">&mvt:breakdown:rating; <span>&#9733;</span></a></span>
+							<mvt:else>
+								<span>&mvt:breakdown:rating; <span>&#9733;</span></span>
+							</mvt:if>
+						</td>
+						<td width="325px">
+							<div style="height:5px; width: 100%; background: #ccc; position: relative;">
+								<div style="background:#000; height: 5px; width: &mvt:breakdown:percent;%; position: absolute; top: 0; left: 0;"></div>
+							</div>
+						</td>
+						<td width="20px">
+							&mvt:breakdown:count;
+						</td>
+					</tr>
+				</mvt:foreach>
+			</table>
+		</td>
+		<td>&nbsp;</td>
+	</tr>
+	<tr>
+		<td>Reviewed by &mvt:tgr:review_count; customer<mvt:if expr="l.settings:tgr:review_count GT 1">s</mvt:if></td>
+		<td align="right">
+			<form method="POST" action="&mvt:tgr:link;">
+				<mvt:if expr="g.TGR_Show_Rating">
+					<input type="hidden" name="TGR_Show_Rating" value="&mvte:global:TGR_Show_Rating;" />
+				</mvt:if>
+				<select name="TGR_Sort" onchange="this.form.submit()">
+					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption(  '-id', g.TGR_Sort, 'Default' )" />
+					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption(  '-created', g.TGR_Sort, 'Most Recent Reviews' )" />
+					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption(  'created', g.TGR_Sort, 'Least Recent Reviews' )" />
+					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption(  '-rating', g.TGR_Sort, 'Highest To Lowest Rating' )" />
+					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption(  'rating', g.TGR_Sort, 'Lowest To Highest Rating' )" />
+				</select>
+			</form>
+		</td>
+	</tr>
 	<mvt:if expr="l.settings:tgr:pagination:total GT 1">
 		<tr>
 			<td>Pages:</td>
@@ -25,74 +96,15 @@
 			</td>
 		</tr>
 	</mvt:if>
-	<tr>
-		<td>Sort By:</td>
-		<td>
-			<form method="POST" action="&mvt:tgr:link;">
-				<mvt:if expr="g.TGR_Show_Rating">
-					<input type="hidden" name="TGR_Show_Rating" value="&mvte:global:TGR_Show_Rating;" />
-				</mvt:if>
-				<select name="TGR_Sort" onchange="this.form.submit()">
-					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption(  '-id', g.TGR_Sort, 'Default' )" />
-					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption(  '-created', g.TGR_Sort, 'Most Recent Reviews' )" />
-					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption(  'created', g.TGR_Sort, 'Least Recent Reviews' )" />
-					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption(  '-rating', g.TGR_Sort, 'Highest To Lowest Rating' )" />
-					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption(  'rating', g.TGR_Sort, 'Lowest To Highest Rating' )" />
-				</select>
-			</form>
-		</td>
-	</tr>
 </table>
-<mvt:if expr="l.settings:tgr:breakdown">
-	<table width="100%">
-	<mvt:if expr="g.TGR_Show_Rating GT 0">
-		<tr>
-			<td colspan="2">
-				Currently Viewing Reviews with a rating of <strong>&mvte:global:TGR_Show_Rating;</strong>. <a href="&mvt:tgr:link;?TGR_Sort=&mvta:global:TGR_Sort;">Click here to reset.</a>
-			</td>
-		</tr>
-	</mvt:if>
-	<tr>
-		<td valign="middle" align="center" style="background: #000; color: #fff;">
-			<mvt:item name="tgreviews" param="Product_Rating( l.settings:product:id, l.settings:tgr:avg_rating )" />
-			<span style="font-size: 1.25rem;">
-				<mvt:assign name="l.settings:star_width" value="( l.settings:tgr:avg_rating / 5 ) * 100" />
-				<span style="position: relative; color: rgba(255,255,255,.5); height: 22px;">
-					&#9733;&#9733;&#9733;&#9733;&#9733;
-					<span style="height: 22px; overflow: hidden; position: absolute; top: -4px; left: 0; white-space: nowrap; color: #fff; width:&mvt:star_width;%; overflow:hidden;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
-				</span>
-			</span>
-			<div style="clear: left;"></div>
-			<span style="font-size: 1.25rem;"><strong>&mvt:tgr:avg_rating;</strong>/5 Star<mvt:if expr="l.settings:tgr:avg_rating GT 1">s</mvt:if></span><br />
-			out of &mvt:tgr:review_count; Review<mvt:if expr="l.settings:tgr:review_count GT 1">s</mvt:if>
-		</td>
-		<td width="375">
-			<table width="100%;">
-				<mvt:foreach iterator="breakdown" array="tgr:breakdown">
-					<mvt:assign name="l.settings:breakdown:percent" value="( l.settings:breakdown:count / l.settings:tgr:review_count ) * 100" />
-					<tr alt="&mvt:breakdown:count; Reviews out of &mvt:tgr:review_count; are rated &mvt:breakdown:rating;" title="&mvt:breakdown:count; Reviews out of &mvt:tgr:review_count; are rated &mvt:breakdown:rating;">
-						<td align="right">
-							<mvt:if expr="l.settings:breakdown:count GT 0">
-								<span><a href="&mvt:tgr:link;?TGR_Sort=&mvta:global:TGR_Sort;&TGR_Show_Rating=&mvt:breakdown:rating;">&mvt:breakdown:rating; <span>&#9733;</span></a></span>
-							<mvt:else>
-								<span>&mvt:breakdown:rating; <span>&#9733;</span></span>
-							</mvt:if>
-						</td>
-						<td width="75%;">
-							<div style="height:5px; width: 100%; background: #ccc; position: relative;">
-								<div style="background:#000; height: 5px; width: &mvt:breakdown:percent;%; position: absolute; top: 0; left: 0;"></div>
-							</div>
-						</td>
-					</tr>
-				</mvt:foreach>
-			</table>
-		</td>
-	</tr>
-	</table>
-</mvt:if>
 <div>
 	<mvt:foreach iterator="review" array="tgr:reviews">
 	<div>
+		<mvt:if expr="l.settings:review:verified EQ 1">
+			<div>
+				<em><strong>Verified Buyer!</strong></em>
+			</div>
+		</mvt:if>
 		<div>
 			Rating:
 			<mvt:assign name="l.settings:review:rating_output" value="l.settings:review:rating" />

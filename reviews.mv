@@ -974,7 +974,7 @@
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'notify',				'Notify',					'NOTIFY',				0,			0,			'bool' ) }">
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'title',				'Title',					'TITLE',				1,			0,			'string' ) }">
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'summary',				'Summary',					'SUMMARY',				1,			0,			'string' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'store_reply',			'Store Reply',				'STORE_REPLY',			0e,			0,			'string' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'store_reply',			'Store Reply',				'STORE_REPLY',			0,			0,			'string' ) }">
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'notified',				'Notified',					'NOTIFIED',				0,			0,			'integer_nonneg' ) }">
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'verified',				'Verified',					'VERIFIED',				0,			0,			'bool' ) }">
 

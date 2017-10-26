@@ -21,6 +21,7 @@
 |		JSON_Review_Notify_Update( module var )
 |		JSON_Review_Verified_Update( module var )
 |
+|		Additional_Fields_Read( field var, view )
 |		Load_Additional_Fields( fields var )
 |		Load_Additional_Fields_Product_Review( review_id, fields var )
 |		Load_Additional_Value( reivew_id, field_id )
@@ -65,7 +66,7 @@
 |		Test_MailAfter_Email( module var, param, all_settings var, order_id, email )
 |
 |	Google Recaptcha
-|		
+|		reCAPTCHA( secret, response )
 |
 </MvCOMMENT>
 
@@ -380,7 +381,7 @@
 	<MvASSIGN NAME = "l.review" MEMBER = "notify"		VALUE = "{ g.notify }">
 	<MvASSIGN NAME = "l.review" MEMBER = "title"		VALUE = "{ g.title }">
 	<MvASSIGN NAME = "l.review" MEMBER = "summary"		VALUE = "{ g.summary }">
-	<MvASSIGN NAME = "l.review" MEMBER = "store_reply"		VALUE = "{ g.store_reply }">
+	<MvASSIGN NAME = "l.review" MEMBER = "store_reply"	VALUE = "{ g.store_reply }">
 
 
 	<MvIF EXPR = "{ NOT Product_Reviews_Update( l.review ) }">
@@ -540,6 +541,12 @@
 	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
 </MvFUNCTION>
 
+<MvFUNCTION NAME = "Additional_Fields_Read" PARAMETERS = "field var, view">
+	<MvASSIGN NAME = "l.field" MEMBER = "id"			VALUE = "{ miva_variable_value( l.view $ '.d.id' ) }">
+	<MvASSIGN NAME = "l.field" MEMBER = "code"		VALUE = "{ miva_variable_value( l.view $ '.d.code' ) }">
+	<MvASSIGN NAME = "l.field" MEMBER = "name"	VALUE = "{ miva_variable_value( l.view $ '.d.name' ) }">
+</MvFUNCTION>
+
 <MvFUNCTION NAME = "Load_Additional_Fields" PARAMETERS = "fields var" STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.fields" VALUE = "">
 
@@ -554,10 +561,7 @@
 	<MvASSIGN NAME = "l.count" VALUE = "0">
 
 	<MvWHILE EXPR = "{ NOT TGReviews_AdditionalFields.d.EOF }">
-		<MvASSIGN NAME = "l.count" VALUE = "{ l.count + 1 }">
-		<MvASSIGN NAME = "l.fields" INDEX = "{ l.count }" MEMBER = "id" VALUE = "{ TGReviews_AdditionalFields.d.id }">
-		<MvASSIGN NAME = "l.fields" INDEX = "{ l.count }" MEMBER = "code" VALUE = "{ TGReviews_AdditionalFields.d.code }">
-		<MvASSIGN NAME = "l.fields" INDEX = "{ l.count }" MEMBER = "name" VALUE = "{ TGReviews_AdditionalFields.d.name }">
+		<MvEVAL EXPR = "{ Additional_Fields_Read( l.fields[++l.count], 'TGReviews_AdditionalFields' ) }">
 		<MvSKIP NAME = "Merchant" VIEW = "TGReviews_AdditionalFields" ROWS = 1>
 	</MvWHILE>
 
@@ -624,9 +628,7 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( 'TGReviews-LOAD-0005', g.MvOPENVIEW_Error ) }">
 	</MvIF>
 
-	<MvASSIGN NAME = "l.output" MEMBER = "id" VALUE = "{ TGReviews_AdditionalFields.d.id }">
-	<MvASSIGN NAME = "l.output" MEMBER = "code" VALUE = "{ TGReviews_AdditionalFields.d.code }">
-	<MvASSIGN NAME = "l.output" MEMBER = "name" VALUE = "{ TGReviews_AdditionalFields.d.name }">
+	<MvEVAL EXPR = "{ Additional_Fields_Read( l.output, 'TGReviews_AdditionalFields' ) }">
 
 	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_AdditionalFields">
 
@@ -647,9 +649,7 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( 'TGReviews-LOAD-0005', g.MvOPENVIEW_Error ) }">
 	</MvIF>
 
-	<MvASSIGN NAME = "l.output" MEMBER = "id" VALUE = "{ TGReviews_AdditionalFields.d.id }">
-	<MvASSIGN NAME = "l.output" MEMBER = "code" VALUE = "{ TGReviews_AdditionalFields.d.code }">
-	<MvASSIGN NAME = "l.output" MEMBER = "name" VALUE = "{ TGReviews_AdditionalFields.d.name }">
+	<MvEVAL EXPR = "{ Additional_Fields_Read( l.output, 'TGReviews_AdditionalFields' ) }">
 
 	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_AdditionalFields">
 
@@ -658,6 +658,13 @@
 	</MvIF>
 
 	<MvFUNCTIONRETURN VALUE = "1">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Additional_Value_Read" PARAMETERS = "value var, view" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.value" MEMBER = "field_id"	VALUE = "{ miva_variable_value( l.view $ '.d.field_id' ) }">
+	<MvASSIGN NAME = "l.value" MEMBER = "rating_id"	VALUE = "{ miva_variable_value( l.view $ '.d.rating_id' ) }">
+	<MvASSIGN NAME = "l.value" MEMBER = "value"		VALUE = "{ miva_variable_value( l.view $ '.d.value' ) }">
+
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "AdditionalValue_Load" PARAMETERS = "field_id, review_id, output var" STANDARDOUTPUTLEVEL = "">
@@ -669,10 +676,8 @@
 	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( 'TGReviews-LOAD-0006', g.MvOPENVIEW_Error ) }">
 	</MvIF>
-
-	<MvASSIGN NAME = "l.output" MEMBER = "field_id" VALUE = "{ TGReviews_AdditionalValues.d.field_id }">
-	<MvASSIGN NAME = "l.output" MEMBER = "rating_id" VALUE = "{ TGReviews_AdditionalValues.d.rating_id }">
-	<MvASSIGN NAME = "l.output" MEMBER = "value" VALUE = "{ TGReviews_AdditionalValues.d.value }">
+	
+	<MvEVAL EXPR = "{ Additional_Value_Read( l.output, 'TGReviews_AdditionalValues' ) }">
 
 	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_AdditionalValues">
 		
