@@ -37,6 +37,8 @@
 	|		reviews_template
 	|		reviews_per_page
 	|		reviews_default_sorting
+	|		auto_approve
+	|		recaptcha
 	|
 	</MvCOMMENT>
 
@@ -322,14 +324,12 @@
 
 <MvFUNCTION NAME = "Module_Uninstall_Store" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.void" VALUE = "{ Module_Settings( l.mod_settings ) }">
-	
 
 	<MvIF EXPR = "{ [ g.Module_Library_DB ].Module_Load_Code( l.module:code, l.module ) }">
 		<MvASSIGN NAME = "l.item:code"		VALUE = "{ 'tgreviews' }">
 		<MvASSIGN NAME = "l.item:module_id"	VALUE = "{ l.module:id }">
 		<MvASSIGN NAME = "l.void" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_Item( l.item ) }">
 	</MvIF>	
-
 
 	<MvASSIGN NAME = "l.void"	VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_ManagedTemplate( l.mod_settings:form_template ) }">
 	<MvASSIGN NAME = "l.void"	VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_ManagedTemplate( l.mod_settings:reviews_template ) }">
@@ -461,9 +461,7 @@
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "Module_JSON" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
-	<MvIF EXPR = "{ g.Session_Type NE 'admin' }">
-		<MvFUNCTIONRETURN>
-	</MvIF>
+	<MvIF EXPR = "{ NOT g.Admin_Open_Store }"><MvFUNCTIONRETURN></MvIF>
 	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Load_Query'			}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Load_Query( l.module )		}"></MvIF>
 	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Update'				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Update( l.module )			}"></MvIF>
 	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Insert'				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Insert( l.module )			}"></MvIF>

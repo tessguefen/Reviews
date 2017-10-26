@@ -35,13 +35,13 @@
 }
 
 </style>
-<mvt:if expr="g.TGR_Error">
-	<div>ERROR: &mvte:global:TGR_Error;</div>
-</mvt:if>
 
 <mvt:if expr="g.TGR_Review_Success EQ 1">
 	<div style="color: #4F8A10;background-color: #DFF2BF;margin: 10px 0;padding: 12px;">Thank you for your review!</div>
 <mvt:else>
+	<mvt:if expr="g.TGR_Error">
+		<div style="color: #D8000C;background-color: #FFD2D2;margin: 10px 0;padding: 12px;">&mvte:global:TGR_Error;</div>
+	</mvt:if>
 	<form method="POST" action="&mvt:product:link;">
 		<input type="hidden" name="Action" value="TGRADD" />
 		<input type="hidden" name="TGR_Product_Code" value="&mvte:product:code;" />
@@ -67,17 +67,17 @@
 			<tr>
 				<td>
 					<label class="input-label" for="TGR_Name">Name</label>
-					<input type="text" style="padding: 5px;border: 1px solid #ccc;box-sizing: border-box;" class="&mvte:global:TGR_Name_class;" id="TGR_Name" name="TGR_Name" value="&mvte:global:TGR_Name;" />
+					<input type="text" style="padding: 5px;box-sizing: border-box;" class="&mvte:global:TGR_Name_class;" id="TGR_Name" name="TGR_Name" value="&mvte:global:TGR_Name;" />
 				</td>
 				<td>
 					<label class="input-label" for="TGR_Location">Location</label>
-					<input type="text" style="padding: 5px;border: 1px solid #ccc;box-sizing: border-box;" class="&mvte:global:TGR_Location_class;" id="TGR_Location" name="TGR_Location" value="&mvte:global:TGR_Location;" />
+					<input type="text" style="padding: 5px;box-sizing: border-box;" class="&mvte:global:TGR_Location_class;" id="TGR_Location" name="TGR_Location" value="&mvte:global:TGR_Location;" />
 				</td>
 			</tr>
 			<tr>
 				<td colspan="2">
 					<label class="input-label" for="TGR_Email">Email</label>
-					<input type="text" style="padding: 5px;border: 1px solid #ccc;box-sizing: border-box;" class="&mvte:global:TGR_Email_class;" id="TGR_Email" name="TGR_Email" value="&mvte:global:TGR_Email;" /><br />
+					<input type="text" style="padding: 5px;box-sizing: border-box;" class="&mvte:global:TGR_Email_class;" id="TGR_Email" name="TGR_Email" value="&mvte:global:TGR_Email;" /><br />
 					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawCheckbox( g.TGR_Notify, 'TGR_Notify', 1, 'Notify me when my review is approved' )" />
 				</td>
 			</tr>
@@ -91,7 +91,7 @@
 						<td>
 							<mvt:assign name="l.settings:addl:value" value="miva_variable_value( 'g.tgr_AdditionalFields:' $ l.settings:addl:code )" />
 							<label class="input-label" for="tgr_AdditionalFields:&mvt:addl:code;">&mvte:addl:name;</label>
-							<input type="text" style="padding: 5px;border: 1px solid #ccc;box-sizing: border-box;" class="&mvte:global:tgr_AdditionalFields_&mvte:addl:code;_class;" id="tgr_AdditionalFields:&mvt:addl:code;" name="tgr_AdditionalFields:&mvt:addl:code;" value="&mvt:addl:value;" />
+							<input type="text" style="padding: 5px;box-sizing: border-box;" class="&mvte:global:tgr_AdditionalFields_&mvte:addl:code;_class;" id="tgr_AdditionalFields:&mvt:addl:code;" name="tgr_AdditionalFields:&mvt:addl:code;" value="&mvte:addl:value;" />
 						</td>
 					</mvt:foreach>
 				</tr>
@@ -99,13 +99,13 @@
 			<tr>
 				<td colspan="2">
 					<label class="input-label" for="TGR_Title">Title</label>
-					<input type="text" style="padding: 5px;border: 1px solid #ccc;box-sizing: border-box;" class="&mvte:global:TGR_Title_class;" id="TGR_Title" name="TGR_Title" value="&mvte:global:TGR_Title;" />
+					<input type="text" style="padding: 5px;box-sizing: border-box;" class="&mvte:global:TGR_Title_class;" id="TGR_Title" name="TGR_Title" value="&mvte:global:TGR_Title;" />
 				</td>
 			</tr>
 			<tr>
 				<td colspan="2">
 					<label class="input-label" for="TGR_Summary">Summary</label>
-					<textarea style="padding: 5px;border: 1px solid #ccc;box-sizing: border-box;" class="&mvte:global:TGR_Summary_class;" name="TGR_Summary"></textarea>
+					<textarea style="padding: 5px;box-sizing: border-box;" class="&mvte:global:TGR_Summary_class;" name="TGR_Summary">&mvte:global:TGR_Summary;</textarea>
 				</td>
 			</tr>
 			<mvt:if expr="l.settings:tgr:recaptcha:enabled EQ 1">
