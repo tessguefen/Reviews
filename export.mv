@@ -56,6 +56,7 @@
 									'NOTIFY'			$ l.delim $
 									'TITLE'				$ l.delim $
 									'SUMMARY'			$ l.delim $
+									'STORE_REPLY'		$ l.delim $
 									'NOTIFIED'			$ l.delim $
 									'VERIFIED'			$ l.addl_fields_heading }">
 </MvFUNCTION>
@@ -79,6 +80,7 @@
 									miva_csv_encode( l.review:notify, l.delim )				$ l.delim $
 									miva_csv_encode( l.review:title, l.delim )				$ l.delim $
 									miva_csv_encode( l.review:summary, l.delim )			$ l.delim $
+									miva_csv_encode( l.review:store_reply, l.delim )		$ l.delim $
 									miva_csv_encode( l.review:notified, l.delim )			$ l.delim $
 									miva_csv_encode( l.review:verified, l.delim )			$ l.extra_fields
 								}">

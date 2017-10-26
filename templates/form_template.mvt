@@ -108,13 +108,17 @@
 		<div>
 			EXTRA FIELDS
 		</div>
-		<mvt:foreach iterator="addl" array="tgr_additional_fields">
+		<mvt:foreach iterator="addl" array="tgr:additional_fields">
 			<mvt:assign name="l.settings:addl:value" value="miva_variable_value( 'g.tgr_AdditionalFields:' $ l.settings:addl:code )" />
 			<div>
 				&mvte:addl:name;:<br />
 				<input type="text" class="&mvte:global:tgr_AdditionalFields_&mvte:addl:code;_class;" name="tgr_AdditionalFields:&mvt:addl:code;" value="&mvt:addl:value;" />
 			</div>
 		</mvt:foreach>
+	</mvt:if>
+	<mvt:if expr="l.settings:tgr:recaptcha:enabled EQ 1">
+		<script src='https://www.google.com/recaptcha/api.js'></script>
+		<div class="g-recaptcha" data-sitekey="&mvt:tgr:recaptcha:public_key;"></div>
 	</mvt:if>
 	<div>
 		<input type="submit" name="submit" value="Submit Review!" />

@@ -2,7 +2,7 @@ function AdditionalFields_Batchlist() {
 	var self = this;
 	MMBatchList.call( self, 'jsAdditionalFields_Batchlist' );
 	self.Feature_SearchBar_SetPlaceholderText( 'Search Additional Fields...' );
-	self.SetDefaultSort( 'id', '-' );
+	self.SetDefaultSort( 'id', '' );
 	self.Feature_Add_Enable('Add Additional Field');
 	self.Feature_Edit_Enable('Edit Additional Field(s)');
 	self.Feature_Delete_Enable('Delete Additional Field(s)');

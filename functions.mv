@@ -64,6 +64,9 @@
 |		Review_Check_EmailXProduct( email, product_id )
 |		Test_MailAfter_Email( module var, param, all_settings var, order_id, email )
 |
+|	Google Recaptcha
+|		
+|
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "Product_Review_Read" PARAMETERS = "review var, view">
@@ -80,6 +83,7 @@
 	<MvASSIGN NAME = "l.review" MEMBER = "notify"		VALUE = "{ miva_variable_value( l.view $ '.d.notify' ) }">
 	<MvASSIGN NAME = "l.review" MEMBER = "title"		VALUE = "{ miva_variable_value( l.view $ '.d.title' ) }">
 	<MvASSIGN NAME = "l.review" MEMBER = "summary"		VALUE = "{ miva_variable_value( l.view $ '.d.summary' ) }">
+	<MvASSIGN NAME = "l.review" MEMBER = "store_reply"	VALUE = "{ miva_variable_value( l.view $ '.d.store_reply' ) }">
 	<MvASSIGN NAME = "l.review" MEMBER = "notified"		VALUE = "{ miva_variable_value( l.view $ '.d.notified' ) }">
 	<MvASSIGN NAME = "l.review" MEMBER = "verified"		VALUE = "{ miva_variable_value( l.view $ '.d.verified' ) }">
 </MvFUNCTION>
@@ -138,10 +142,10 @@
 
 	<MvQUERY NAME	= "Merchant"
 			 QUERY	= "{ 'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviews_Products
-					      ( id, created, product_id, cust_id, order_id, approved, rating, name, email, location, notify, title, summary, notified, verified )
+					      ( id, created, product_id, cust_id, order_id, approved, rating, name, email, location, notify, title, summary, store_reply, notified, verified )
 						  VALUES
-						  ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )' }"
-			 FIELDS	= "l.review:id, l.review:created, l.review:product_id, l.review:cust_id, l.review:order_id, l.review:approved, l.review:rating, l.review:name, l.review:email, l.review:location, l.review:notify, l.review:title, l.review:summary, l.review:notified, l.review:verified">
+						  ( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )' }"
+			 FIELDS	= "l.review:id, l.review:created, l.review:product_id, l.review:cust_id, l.review:order_id, l.review:approved, l.review:rating, l.review:name, l.review:email, l.review:location, l.review:notify, l.review:title, l.review:summary, l.review:store_reply, l.review:notified, l.review:verified">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSERT-0001', g.MvQUERY_Error ) }">
 	</MvIF>
@@ -195,11 +199,12 @@
 							notify		= ?,
 							title		= ?,
 							summary		= ?,
+							store_reply	= ?,
 							notified	= ?,
 							verified	= ?
 					      WHERE
 						    id			= ?' }"
-			 FIELDS	= "l.review:created, l.review:product_id, l.review:cust_id, l.review:order_id, l.review:approved, l.review:rating, l.review:name, l.review:email, l.review:location, l.review:notify, l.review:title, l.review:summary, l.review:notified, l.review:verified, l.review:id">
+			 FIELDS	= "l.review:created, l.review:product_id, l.review:cust_id, l.review:order_id, l.review:approved, l.review:rating, l.review:name, l.review:email, l.review:location, l.review:notify, l.review:title, l.review:summary, l.review:store_reply, l.review:notified, l.review:verified, l.review:id">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-UPDATE-0001', g.MvQUERY_Error ) }">
 	</MvIF>
@@ -298,9 +303,9 @@
 		<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'product_id = ? ', 'g.Product_ID' ) }">
 	</MvIF>
 
-	<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Filter( l.search_query, g.Filter,'id:s.id,created:s.created,product_id:s.product_id,cust_id:s.cust_id,order_id:s.order_id,approved:s.approved,rating:s.rating,name:s.name,email:s.email,location:s.location,notify:s.notify,title:s.title,summary:s.summary,product_name:p.name,product_code:p.code,addl_test:addl_test' ) }">
+	<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Filter( l.search_query, g.Filter,'id:s.id,created:s.created,product_id:s.product_id,cust_id:s.cust_id,order_id:s.order_id,approved:s.approved,rating:s.rating,name:s.name,email:s.email,location:s.location,notify:s.notify,title:s.title,summary:s.summary,store_reply:s.store_reply,notified:s.notified,verified:s.verified,product_name:p.name,product_code:p.code' ) }">
 
-	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_OrderBy_Fields(l.search_query, g.Sort, 'id:s.id,created:s.created,product_id:s.product_id,cust_id:s.cust_id,order_id:s.order_id,approved:s.approved,rating:s.rating,name:s.name,email:s.email,location:s.location,notify:s.notify,title:s.title,summary:s.summary,product_name:p.name,product_code:p.code,addl_test:addl_test', 's.id' ) }">
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_OrderBy_Fields(l.search_query, g.Sort, 'id:s.id,created:s.created,product_id:s.product_id,cust_id:s.cust_id,order_id:s.order_id,approved:s.approved,rating:s.rating,name:s.name,email:s.email,location:s.location,notify:s.notify,title:s.title,summary:s.summary,store_reply:s.store_reply,notified:s.notified,verified:s.verified,product_name:p.name,product_code:p.code', 's.id' ) }">
 
 	<MvASSIGN NAME = "l.search_sql" VALUE = "{ [ g.Module_Library_DB].SQL_Query_Build( l.search_query, l.search_fields ) }">
 
@@ -331,6 +336,7 @@
 					"notify" : <MvEVAL EXPR = "{ int( TGReviews_Products.d.notify ) }">,
 					"title" : "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( TGReviews_Products.d.title ) }">",
 					"summary" : "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( TGReviews_Products.d.summary ) }">",
+					"store_reply" : "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( TGReviews_Products.d.store_reply ) }">",
 					"notified": <MvEVAL EXPR = "{ int( TGReviews_Products.d.notified ) }">,
 					"verified" : <MvEVAL EXPR = "{ int( TGReviews_Products.d.verified ) }">,
 					"product_code" : "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( TGReviews_Products.d.product_code ) }">",
@@ -374,6 +380,7 @@
 	<MvASSIGN NAME = "l.review" MEMBER = "notify"		VALUE = "{ g.notify }">
 	<MvASSIGN NAME = "l.review" MEMBER = "title"		VALUE = "{ g.title }">
 	<MvASSIGN NAME = "l.review" MEMBER = "summary"		VALUE = "{ g.summary }">
+	<MvASSIGN NAME = "l.review" MEMBER = "store_reply"		VALUE = "{ g.store_reply }">
 
 
 	<MvIF EXPR = "{ NOT Product_Reviews_Update( l.review ) }">
@@ -409,6 +416,7 @@
 	<MvASSIGN NAME = "l.review" MEMBER = "notify"		VALUE = "{ g.notify }">
 	<MvASSIGN NAME = "l.review" MEMBER = "title"		VALUE = "{ g.title }">
 	<MvASSIGN NAME = "l.review" MEMBER = "summary"		VALUE = "{ g.summary }">
+	<MvASSIGN NAME = "l.review" MEMBER = "store_reply"	VALUE = "{ g.store_reply }">
 
 	<MvIF EXPR = "{ NOT Product_Reviews_Insert( l.review ) }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( g.Review_Field_Error, g.Review_Error ) }">
@@ -1033,6 +1041,16 @@
 		<MvASSIGN NAME = "g.TGR_Notify" VALUE = "0" />
 	</MvIF>
 
+	<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'recaptcha', l.recaptcha ) }">
+	<MvASSIGN NAME = "l.recaptcha" VALUE = "{ miva_array_deserialize( l.recaptcha ) }">
+
+	<MvIF EXPR = "{ l.recaptcha:enable EQ 1 }">
+		<MvIF EXPR = "{ NOT reCAPTCHA( l.recaptcha:private_key, miva_variable_value( 'g.g-recaptcha-response' ) ) }">
+			<MvASSIGN NAME = "g.TGR_Error" VALUE = "Invalid reCAPTCHA.">
+			<MvFUNCTIONRETURN VALUE = 0 />
+		</MvIF>
+	</MvIF>
+
 	<MvASSIGN NAME = "l.review" MEMBER = "created"		VALUE = "{ s.dyn_time_t }">
 	<MvASSIGN NAME = "l.review" MEMBER = "product_id"	VALUE = "{ l.review:product:id }">
 	<MvASSIGN NAME = "l.review" MEMBER = "cust_id"		VALUE = "{ g.Basket:cust_id }">
@@ -1095,9 +1113,13 @@
 		<MvIF EXPR = "{ [ g.Module_Feature_TUI_DB ].ManagedTemplate_Load_ID( l.form_template_id, l.form_template ) }">
 			<MvFOREACH ITERATOR = "l.field" ARRAY = "l.fields" COUNT = "{ Load_Additional_Fields( l.fields ) }">
 				<MvASSIGN NAME = "l.field_count" VALUE = "{ l.field_count + 1 }" />
-				<MvASSIGN NAME = "l.all_settings:tgr_additional_fields" INDEX = "{ l.field_count }" MEMBER = "name" VALUE = "{ l.field:name }">
-				<MvASSIGN NAME = "l.all_settings:tgr_additional_fields" INDEX = "{ l.field_count }" MEMBER = "code" VALUE = "{ l.field:code }">
+				<MvASSIGN NAME = "l.all_settings:tgr:additional_fields" INDEX = "{ l.field_count }" MEMBER = "name" VALUE = "{ l.field:name }">
+				<MvASSIGN NAME = "l.all_settings:tgr:additional_fields" INDEX = "{ l.field_count }" MEMBER = "code" VALUE = "{ l.field:code }">
 			</MvFOREACH>
+			<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'recaptcha', l.recaptcha ) }">
+			<MvASSIGN NAME = "l.recaptcha" VALUE = "{ miva_array_deserialize( l.recaptcha ) }">
+			<MvASSIGN NAME = "l.all_settings:tgr:recaptcha:enabled" VALUE = "{ l.recaptcha:enable }" />
+			<MvASSIGN NAME = "l.all_settings:tgr:recaptcha:public_key" VALUE = "{ l.recaptcha:public_key }">
 			<MvEVAL EXPR = "{ [ g.Store_Template_Path $ l.form_template:filename ].Template_Render( l.null, l.all_settings ) }">
 		</MvIF>
 	</MvIF>
@@ -1107,7 +1129,7 @@
 	<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'reviews_template', l.reviews_template_id ) }">
 	<MvIF EXPR = "{ l.reviews_template_id GT 0 }">
 		<MvIF EXPR = "{ [ g.Module_Feature_TUI_DB ].ManagedTemplate_Load_ID( l.reviews_template_id, l.reviews_template ) }">
-			<MvASSIGN NAME = "l.void" VALUE = "{ Reviews_Load_Query( l.product_id, l.all_settings:tgr_reviews ) }">
+			<MvASSIGN NAME = "l.void" VALUE = "{ Reviews_Load_Query( l.product_id, l.all_settings:tgr ) }">
 			<MvEVAL EXPR = "{ [ g.Store_Template_Path $ l.reviews_template:filename ].Template_Render( l.null, l.all_settings ) }">
 		</MvIF>
 	</MvIF>
@@ -1757,4 +1779,22 @@
 	<MvASSIGN NAME = "l.mail_after:bcc" VALUE = "" />
 	<MvASSIGN NAME = "l.void" VALUE = "{ Trigger_MailAfter_Email_Lowlevel( l.order, l.mail_after ) }">
 	<MvFUNCTIONRETURN VALUE = 1 />
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "reCAPTCHA" PARAMETERS = "secret, response" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ ISNULL l.response }">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
+	<MvASSIGN NAME = "l.remoteip"	VALUE = "{ s.remote_addr }">
+
+	<MIVA MvCALL_ERROR = "nonfatal, nodisplay">
+	<MvCALL METHOD = "POST"
+			ACTION = "https://www.google.com/recaptcha/api/siteverify"
+			FIELDS = "l.secret, l.response, l.remoteip">
+			<MvASSIGN NAME = "l.google_response" VALUE = "{ l.google_response $ s.callvalue }">
+	</MvCALL>
+	<MIVA MvCALL_ERROR = "fatal, display">
+
+	<MvFUNCTIONRETURN VALUE = "{ miva_json_decode( l.google_response, l.data ) AND l.data:success }">
 </MvFUNCTION>

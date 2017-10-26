@@ -1,30 +1,25 @@
 <mvt:if expr="l.settings:product:link">
-	<mvt:assign name="l.settings:tgr_reviews:link" value="l.settings:product:link" />
+	<mvt:assign name="l.settings:tgr:link" value="l.settings:product:link" />
 <mvt:else>
-	<mvt:assign name="l.settings:tgr_reviews:link" value="l.settings:urls:_self:auto" />
+	<mvt:assign name="l.settings:tgr:link" value="l.settings:urls:_self:auto" />
 </mvt:if>
-<mvt:item name="tgreviews" param="Product_Review_Breakdowns( l.settings:product:id, l.settings:tgr_reviews:breakdown )" />
-<mvt:assign name="g.mvt_debug" value="glosub( miva_array_serialize( l.settings:tgr_reviews ), ',', asciichar( 10 ) )" />
-<!--
-@@tgr_reviews
-=========================
-&mvt:global:mvt_debug;
--->
-<mvt:if expr="l.settings:tgr_reviews:review_count EQ 0">
+<mvt:item name="tgreviews" param="Product_Review_Breakdowns( l.settings:product:id, l.settings:tgr:breakdown )" />
+<mvt:assign name="g.mvt_debug" value="glosub( miva_array_serialize( l.settings:tgr ), ',', asciichar( 10 ) )" />
+<mvt:if expr="l.settings:tgr:review_count EQ 0">
 	No Reviews Yet!
 	<mvt:exit />
 </mvt:if>
 <table>
-	<mvt:if expr="l.settings:tgr_reviews:pagination:total GT 1">
+	<mvt:if expr="l.settings:tgr:pagination:total GT 1">
 		<tr>
 			<td>Pages:</td>
 			<td>
-				<mvt:foreach iterator="page" array="tgr_reviews:pagination:pages">
+				<mvt:foreach iterator="page" array="tgr:pagination:pages">
 					<mvt:if expr="POS1 GT 1">&nbsp;</mvt:if>
 					<mvt:if expr="l.settings:page:current EQ 1">
 						<span><strong>&mvt:page:page_number;</strong></span>
 					<mvt:else>
-						<span><a href="&mvte:tgr_reviews:link;?&mvt:page:params;">&mvt:page:page_number;</a></span>
+						<span><a href="&mvte:tgr:link;?&mvt:page:params;">&mvt:page:page_number;</a></span>
 					</mvt:if>
 				</mvt:foreach>
 			</td>
@@ -33,7 +28,7 @@
 	<tr>
 		<td>Sort By:</td>
 		<td>
-			<form method="POST" action="&mvt:tgr_reviews:link;">
+			<form method="POST" action="&mvt:tgr:link;">
 				<mvt:if expr="g.TGR_Show_Rating">
 					<input type="hidden" name="TGR_Show_Rating" value="&mvte:global:TGR_Show_Rating;" />
 				</mvt:if>
@@ -48,37 +43,37 @@
 		</td>
 	</tr>
 </table>
-<mvt:if expr="l.settings:tgr_reviews:breakdown">
+<mvt:if expr="l.settings:tgr:breakdown">
 	<table width="100%">
 	<mvt:if expr="g.TGR_Show_Rating GT 0">
 		<tr>
 			<td colspan="2">
-				Currently Viewing Reviews with a rating of <strong>&mvte:global:TGR_Show_Rating;</strong>. <a href="&mvt:tgr_reviews:link;?TGR_Sort=&mvta:global:TGR_Sort;">Click here to reset.</a>
+				Currently Viewing Reviews with a rating of <strong>&mvte:global:TGR_Show_Rating;</strong>. <a href="&mvt:tgr:link;?TGR_Sort=&mvta:global:TGR_Sort;">Click here to reset.</a>
 			</td>
 		</tr>
 	</mvt:if>
 	<tr>
 		<td valign="middle" align="center" style="background: #000; color: #fff;">
-			<mvt:item name="tgreviews" param="Product_Rating( l.settings:product:id, l.settings:tgr_reviews:avg_rating )" />
+			<mvt:item name="tgreviews" param="Product_Rating( l.settings:product:id, l.settings:tgr:avg_rating )" />
 			<span style="font-size: 1.25rem;">
-				<mvt:assign name="l.settings:star_width" value="( l.settings:tgr_reviews:avg_rating / 5 ) * 100" />
+				<mvt:assign name="l.settings:star_width" value="( l.settings:tgr:avg_rating / 5 ) * 100" />
 				<span style="position: relative; color: rgba(255,255,255,.5); height: 22px;">
 					&#9733;&#9733;&#9733;&#9733;&#9733;
 					<span style="height: 22px; overflow: hidden; position: absolute; top: -4px; left: 0; white-space: nowrap; color: #fff; width:&mvt:star_width;%; overflow:hidden;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
 				</span>
 			</span>
 			<div style="clear: left;"></div>
-			<span style="font-size: 1.25rem;"><strong>&mvt:tgr_reviews:avg_rating;</strong>/5 Star<mvt:if expr="l.settings:tgr_reviews:avg_rating GT 1">s</mvt:if></span><br />
-			out of &mvt:tgr_reviews:review_count; Review<mvt:if expr="l.settings:tgr_reviews:review_count GT 1">s</mvt:if>
+			<span style="font-size: 1.25rem;"><strong>&mvt:tgr:avg_rating;</strong>/5 Star<mvt:if expr="l.settings:tgr:avg_rating GT 1">s</mvt:if></span><br />
+			out of &mvt:tgr:review_count; Review<mvt:if expr="l.settings:tgr:review_count GT 1">s</mvt:if>
 		</td>
 		<td width="375">
 			<table width="100%;">
-				<mvt:foreach iterator="breakdown" array="tgr_reviews:breakdown">
-					<mvt:assign name="l.settings:breakdown:percent" value="( l.settings:breakdown:count / l.settings:tgr_reviews:review_count ) * 100" />
-					<tr alt="&mvt:breakdown:count; Reviews out of &mvt:tgr_reviews:review_count; are rated &mvt:breakdown:rating;" title="&mvt:breakdown:count; Reviews out of &mvt:tgr_reviews:review_count; are rated &mvt:breakdown:rating;">
+				<mvt:foreach iterator="breakdown" array="tgr:breakdown">
+					<mvt:assign name="l.settings:breakdown:percent" value="( l.settings:breakdown:count / l.settings:tgr:review_count ) * 100" />
+					<tr alt="&mvt:breakdown:count; Reviews out of &mvt:tgr:review_count; are rated &mvt:breakdown:rating;" title="&mvt:breakdown:count; Reviews out of &mvt:tgr:review_count; are rated &mvt:breakdown:rating;">
 						<td align="right">
 							<mvt:if expr="l.settings:breakdown:count GT 0">
-								<span><a href="&mvt:tgr_reviews:link;?TGR_Sort=&mvta:global:TGR_Sort;&TGR_Show_Rating=&mvt:breakdown:rating;">&mvt:breakdown:rating; <span>&#9733;</span></a></span>
+								<span><a href="&mvt:tgr:link;?TGR_Sort=&mvta:global:TGR_Sort;&TGR_Show_Rating=&mvt:breakdown:rating;">&mvt:breakdown:rating; <span>&#9733;</span></a></span>
 							<mvt:else>
 								<span>&mvt:breakdown:rating; <span>&#9733;</span></span>
 							</mvt:if>
@@ -96,7 +91,7 @@
 	</table>
 </mvt:if>
 <div>
-	<mvt:foreach iterator="review" array="tgr_reviews:reviews">
+	<mvt:foreach iterator="review" array="tgr:reviews">
 	<div>
 		<div>
 			Rating:
@@ -128,6 +123,9 @@
 		</mvt:if>
 		<div>
 			Summary: &mvte:review:summary;
+			<mvt:if expr="l.settings:review:store_reply">
+				<strong>Note From Store Owner:</strong> &mvte:review:store_reply;
+			</mvt:if>
 		</div>
 	</div>
 	<hr />

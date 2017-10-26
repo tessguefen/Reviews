@@ -31,10 +31,20 @@
 		<MvFUNCTIONRETURN VALUE = 1>
 	</MvIF>
 
-	<MvIF EXPR = "{ NOT Product_Reviews_Insert( l.record ) }">
-		<MvEVAL EXPR = "{ Record_Problem( l.session, g.Review_Error ) }">
+	<MvIF EXPR = "{ NOT ( ISNULL l.record:email ) AND  ( NOT [ g.Module_Admin ].Validate_Email( l.record:email ) ) }">
+		<MvEVAL EXPR = "{ Record_Skip( l.session, 'Email specified is not a valid email:' $ l.record:email ) }">
 		<MvFUNCTIONRETURN VALUE = 1>
 	</MvIF>
+
+	<MvIF EXPR = "{ ISNULL l.record:created }">
+		<MvASSIGN NAME = "l.record:created" VALUE = "{ s.dyn_time_t }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT Product_Reviews_Insert( l.record ) }">
+		<MvEVAL EXPR = "{ Record_Skip( l.session, g.Review_Error ) }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
 
 	<MvFOREACH ITERATOR = "l.field" ARRAY = "l.members" COUNT = "{ miva_struct_members( l.record, l.members ) }">
 		<MvASSIGN NAME = "l.value" VALUE = "{ miva_variable_value( 'l.record:' $ l.field ) }">

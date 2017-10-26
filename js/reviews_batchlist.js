@@ -87,6 +87,8 @@ Reviews_Batchlist.prototype.onCreateRootColumnList = function() {
 
 							new MMBatchList_Column_TextArea( 'Edit Summary', 'Summary', 'summary', 'summary' ),
 
+							new MMBatchList_Column_TextArea( 'Edit Store Reply', 'Store Reply', 'store_reply', 'store_reply' ),
+
 							new MMBatchList_Column_DateTime( 'Notified', 'notified', 'notified')
 							.SetDefaultActive( false )
 							.SetOnDisplayEdit( function( record ) { return DrawMMBatchListDateTime_Data( record.notified ); } ),

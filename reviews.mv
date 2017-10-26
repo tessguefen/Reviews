@@ -107,10 +107,14 @@
 	<MvASSIGN NAME = "l.auto_approve" VALUE = "0" />
 	<MvASSIGN NAME = "l.auto_approve_name" VALUE = "auto_approve" />
 
+	<MvASSIGN NAME = "l.recaptcha" VALUE = "" />
+	<MvASSIGN NAME = "l.recaptcha_name" VALUE = "recaptcha" />
+
 	<MvQUERY	NAME	=	"Merchant"
 				QUERY	=	"{	'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviews_Settings
 								( name, value )
 								VALUES
+								( ?, ? ),
 								( ?, ? ),
 								( ?, ? ),
 								( ?, ? ),
@@ -128,7 +132,8 @@
 								l.reviews_template:name, l.reviews_template:id,
 								l.reviews_per_page_name, l.reviews_per_page,
 								l.reviews_default_sorting_name, l.reviews_default_sorting,
-								l.auto_approve_name, l.auto_approve">
+								l.auto_approve_name, l.auto_approve,
+								l.recaptcha_name, l.recaptcha">
 
 	<MvASSIGN NAME = "l.merchant_email_page:admin"		VALUE = "0">
 	<MvASSIGN NAME = "l.merchant_email_page:code"		VALUE = "TGR_Merchant_Email">
@@ -206,6 +211,7 @@
 								notify		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_BOOL()	 		$ ',
 								title		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 255 ) 		$ ',
 								summary		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_MEMO()			$ ',
+								store_reply	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_MEMO()			$ ',
 								notified	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
 								verified	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_BOOL()			$ '
 							)' }">
@@ -438,7 +444,7 @@
 
 <MvFUNCTION NAME = "Module_System_Update" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ ( g.Review_Tab EQ 'TGR_SETT' )  }">
-		<MvASSIGN NAME = "l.void" VALUE = "{ Review_Settings_Update( g.Required, g.Mail_After, g.Merchant_Email, g.Customer_Email, g.Reviews_Per_Page, g.Reviews_Default_Sorting, g.Auto_Approve) }">
+		<MvASSIGN NAME = "l.void" VALUE = "{ Review_Settings_Update( g.Required, g.Mail_After, g.Merchant_Email, g.Customer_Email, g.Reviews_Per_Page, g.Reviews_Default_Sorting, g.Auto_Approve, g.Recaptcha) }">
 		<MvASSIGN NAME = "l.void" VALUE = "{ Reviews_Templates_Update( g.Reviews_Template ) }">
 	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>
@@ -968,6 +974,7 @@
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'notify',				'Notify',					'NOTIFY',				0,			0,			'bool' ) }">
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'title',				'Title',					'TITLE',				1,			0,			'string' ) }">
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'summary',				'Summary',					'SUMMARY',				1,			0,			'string' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'store_reply',			'Store Reply',				'STORE_REPLY',			0e,			0,			'string' ) }">
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'notified',				'Notified',					'NOTIFIED',				0,			0,			'integer_nonneg' ) }">
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'verified',				'Verified',					'VERIFIED',				0,			0,			'bool' ) }">
 
