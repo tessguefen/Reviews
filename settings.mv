@@ -79,7 +79,7 @@
 					<tr>
 						<td align="left" valign="middle">Default Sorting</td>
 						<td align="left" valign="middle">
-							<select name="reviews_default_sorting">
+							<select name="reviews_default_sorting" style="width:100%;padding: 5px;border: 1px solid #ccc;box-sizing: border-box;">
 								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( '-id', l.mod_settings:reviews_default_sorting, 'Default' ) }">
 								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( '-created', l.mod_settings:reviews_default_sorting, 'Most Recent Reviews' ) }">
 								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'created', l.mod_settings:reviews_default_sorting, 'Least Recent Reviews' ) }">

@@ -1152,9 +1152,10 @@
 		<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'reviews_per_page', g.TGR_Count ) }">
 	</MvIF>
 
-	<MvIF EXPR = "{	g.TGR_Sort NE '-id'		AND
-					g.TGR_Sort NE 'id'		AND
-					g.TGR_Sort NE '-rating'	AND
+	<MvIF EXPR = "{	g.TGR_Sort NE '-id'			AND
+					g.TGR_Sort NE '-created'	AND
+					g.TGR_Sort NE 'created'		AND
+					g.TGR_Sort NE '-rating'		AND
 					g.TGR_Sort NE 'rating'
 				}">
 		<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'reviews_default_sorting', g.TGR_Sort ) }">
