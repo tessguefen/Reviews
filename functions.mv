@@ -1120,6 +1120,7 @@
 				<MvASSIGN NAME = "l.field_count" VALUE = "{ l.field_count + 1 }" />
 				<MvASSIGN NAME = "l.all_settings:tgr:additional_fields" INDEX = "{ l.field_count }" MEMBER = "name" VALUE = "{ l.field:name }">
 				<MvASSIGN NAME = "l.all_settings:tgr:additional_fields" INDEX = "{ l.field_count }" MEMBER = "code" VALUE = "{ l.field:code }">
+				<MvASSIGN NAME = "l.all_settings:tgr:additional_fields" INDEX = "{ l.field_count }" MEMBER = "value" VALUE = "{ miva_variable_value( 'g.tgr_AdditionalFields:' $ l.field:code ) }">
 			</MvFOREACH>
 			<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'recaptcha', l.recaptcha ) }">
 			<MvASSIGN NAME = "l.recaptcha" VALUE = "{ miva_array_deserialize( l.recaptcha ) }">
