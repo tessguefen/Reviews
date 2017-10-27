@@ -2,6 +2,187 @@
 	No Reviews Yet!
 	<mvt:exit />
 </mvt:if>
+<style>
+.tgreivews-breaker {
+	height: 1.5rem;
+	clear: left;
+}
+.tgreviews {
+	width: 500px;
+	max-width: 100%;
+}
+.tgreviews div {
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
+.tgreviews-average-overlay {
+	overflow: hidden;
+	position: absolute;
+	top: -4px;
+	left: 0;
+	white-space: nowrap;
+	color: #000; 
+}
+.tgreviews-breakdown {
+	clear: left;
+}
+.tgreviews-breakdown__rating,
+.tgreviews-breakdown__count {
+	-webkit-flex:0 0 auto;
+	-moz-flex:0 0 auto;
+	-ms-flex:0 0 auto;
+	-o-flex:0 0 auto;
+	flex:0 0 auto;
+}
+.tgreviews-breakdown__rating {
+	text-align: right;
+}
+.tgreviews-breakdown__percent {
+	-webkit-flex: 1 1 auto;
+	-moz-flex: 1 1 auto;
+	-ms-flex: 1 1 auto;
+	-o-flex: 1 1 auto;
+	flex: 1 1 auto;
+}
+.tgreviews-breakdown__percentage {
+	height: 5px;
+	background: #ccc;
+	position: relative;
+	margin-top: 5px;
+}
+.tgreviews-breakdown__percentage-overlay {
+	background: #000;
+	height: 5px;
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+.tgreviews-breakdown__rating,
+.tgreviews-breakdown__percent,
+.tgreviews-breakdown__count {
+	float: left;
+	padding: 2px 5px;
+}
+.tgreviews-breakdown__star {
+	-webkit-transform: rotateZ(100deg);
+	transform: rotateZ(100deg);
+}
+.tgreviews-half {
+	float: left;
+	width: 50%;
+}
+.tgreviews-sorting,
+.tgreviews-breakdown,
+.tgreviews-flex {
+	display: -webkit-flex;
+	display: -moz-flex;
+	display: -ms-flex;
+	display: -o-flex;
+	display: flex;
+	align-items: center;
+}
+.tgreviews-label,
+.tgreviews-pagination-label {
+	font-size: 11px;
+	font-weight: bold;
+	text-transform: uppercase;
+	margin-right: 1rem;
+}
+.tgreviews-label {
+	-webkit-flex: 0 0 auto;
+	-moz-flex: 0 0 auto;
+	-ms-flex: 0 0 auto;
+	-o-flex: 0 0 auto;
+	flex: 0 0 auto;
+}
+.tgreviews-select {
+	padding: 0.75rem 1rem;
+	font-size: 12px;
+	border: 1px solid #cccccc;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+	-webkit-flex: 1 1 auto;
+	-moz-flex: 1 1 auto;
+	-ms-flex: 1 1 auto;
+	-o-flex: 1 1 auto;
+	flex: 1 1 auto;
+}
+.tgreviews-average {
+	text-align: center;
+}
+.tgreviews-average__star,
+.tgreviews-average__star-overlay {
+	position: relative;
+	color: rgba(0,0,0,.5);
+}
+.tgreviews-average__star {
+	font-size: 1.5rem;
+	display: inline-block;
+	position: relative;
+}
+.tgreviews-average__star-overlay {
+	position: absolute;
+	top: 0;
+	left: 0;
+	color: #000;
+	overflow: hidden;
+}
+.tgreviews-average__text {
+	font-weight: bold;
+	text-transform: uppercase;
+	font-size: 11px;
+}
+.tgreviews-review {
+	border-bottom: 1px solid #ccc;
+	line-height: 1.5;
+}
+.tgreviews-rating-title {
+	margin-bottom: 0.25rem;
+	position: relative;
+	clear: both;
+}
+.tgreviews-verified-buyer {
+	font-size: 9px;
+	font-weight: bold;
+	text-transform: uppercase;
+}
+.tgreviews-rating-stars {
+	font-size: 1rem;
+}
+.tgreviews-review__rating {
+	padding: 2px 5px;
+	font-size: 11px;
+	border: 1px solid #ccc;
+	margin-right: 0.5rem;
+}
+.tgreviews-review__user {
+	font-size: 11px;
+	margin-bottom: 0.25rem;
+}
+.tgreviews-review__additionalfields {
+	margin: 0.5rem 0;
+}
+.tgreviews-review__addlfield-label {
+	font-weight: bold;
+}
+.tgreviews-review__title {
+	float: left;
+}
+.tgreviews-review__rating-info {
+	float:right;
+}
+.tgreviews-rating-title:before,
+.tgreviews-rating-title:after {
+	content: " ";
+	display: table;
+}
+
+.tgreviews-rating-title:after {
+	clear: both;
+}
+</style>
 
 <mvt:if expr="l.settings:product:link">
 	<mvt:assign name="l.settings:tgr:link" value="l.settings:product:link" />
@@ -10,137 +191,135 @@
 </mvt:if>
 <mvt:item name="tgreviews" param="Product_Review_Breakdowns( l.settings:product:id, l.settings:tgr:breakdown )" />
 
-<table>
-	<tr>
-		<td colspan="2">Review Snapshot</td>
-	</tr>
-	<tr>
-		<td>
+<div class="tgreviews">
+
+	<div class="tgreviews-row tgreviews-flex">
+		<div class="tgreviews-half tgreviews-flex__div">
 			<mvt:item name="tgreviews" param="Product_Rating( l.settings:product:id, l.settings:tgr:avg_rating )" />
-			<span style="font-size: 1.25rem;">
+			<div class="tgreviews-average">
 				<mvt:assign name="l.settings:star_width" value="( l.settings:tgr:avg_rating / 5 ) * 100" />
-				<span style="position: relative; color: rgba(0,0,0,.5); height: 22px;" title="&mvt:tgr:avg_rating; out of 5.">
+				<span class="tgreviews-average__star" title="&mvt:tgr:avg_rating; out of 5.">
 					&#9733;&#9733;&#9733;&#9733;&#9733;
-					<span style="height: 22px; overflow: hidden; position: absolute; top: -4px; left: 0; white-space: nowrap; color: #000; width:&mvt:star_width;%; overflow:hidden;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+					<span class="tgreviews-average__star-overlay" style="width:&mvt:star_width;%;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
 				</span>
-			</span>
-		</td>
-		<td align="right">
-			<button>Write a Review</button>
-		</td>
-	</tr>
-	<tr>
-		<td width="375">
-			<div><em>Ratings Distribution</em></div>
-			<table width="100%;">
-				<mvt:if expr="g.TGR_Show_Rating GT 0">
-					<tr>
-						<td colspan="3">
-							Currently Viewing Reviews with a rating of <strong>&mvte:global:TGR_Show_Rating;</strong>. <a href="&mvt:tgr:link;?TGR_Sort=&mvta:global:TGR_Sort;">Click here to reset.</a>
-						</td>
-					</tr>
-				</mvt:if>
-				<mvt:foreach iterator="breakdown" array="tgr:breakdown">
-					<mvt:assign name="l.settings:breakdown:percent" value="( l.settings:breakdown:count / l.settings:tgr:review_count ) * 100" />
-					<tr alt="&mvt:breakdown:count; Reviews out of &mvt:tgr:review_count; are rated &mvt:breakdown:rating;" title="&mvt:breakdown:count; Reviews out of &mvt:tgr:review_count; are rated &mvt:breakdown:rating;">
-						<td width="30px">
-							<mvt:if expr="l.settings:breakdown:count GT 0">
-								<span><a href="&mvt:tgr:link;?TGR_Sort=&mvta:global:TGR_Sort;&TGR_Show_Rating=&mvt:breakdown:rating;">&mvt:breakdown:rating; <span>&#9733;</span></a></span>
-							<mvt:else>
-								<span>&mvt:breakdown:rating; <span>&#9733;</span></span>
-							</mvt:if>
-						</td>
-						<td width="325px">
-							<div style="height:5px; width: 100%; background: #ccc; position: relative;">
-								<div style="background:#000; height: 5px; width: &mvt:breakdown:percent;%; position: absolute; top: 0; left: 0;"></div>
-							</div>
-						</td>
-						<td width="20px">
-							&mvt:breakdown:count;
-						</td>
-					</tr>
-				</mvt:foreach>
-			</table>
-		</td>
-		<td>&nbsp;</td>
-	</tr>
-	<tr>
-		<td>Reviewed by &mvt:tgr:review_count; customer<mvt:if expr="l.settings:tgr:review_count GT 1">s</mvt:if></td>
-		<td align="right">
-			<form method="POST" action="&mvt:tgr:link;">
-				<mvt:if expr="g.TGR_Show_Rating">
-					<input type="hidden" name="TGR_Show_Rating" value="&mvte:global:TGR_Show_Rating;" />
-				</mvt:if>
-				<select name="TGR_Sort" onchange="this.form.submit()">
-					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption(  '-id', g.TGR_Sort, 'Default' )" />
-					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption(  '-created', g.TGR_Sort, 'Most Recent Reviews' )" />
-					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption(  'created', g.TGR_Sort, 'Least Recent Reviews' )" />
-					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption(  '-rating', g.TGR_Sort, 'Highest To Lowest Rating' )" />
-					<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption(  'rating', g.TGR_Sort, 'Lowest To Highest Rating' )" />
-				</select>
-			</form>
-		</td>
-	</tr>
-	<mvt:if expr="l.settings:tgr:pagination:total GT 1">
-		<tr>
-			<td>Pages:</td>
-			<td>
-				<mvt:foreach iterator="page" array="tgr:pagination:pages">
-					<mvt:if expr="POS1 GT 1">&nbsp;</mvt:if>
-					<mvt:if expr="l.settings:page:current EQ 1">
-						<span><strong>&mvt:page:page_number;</strong></span>
-					<mvt:else>
-						<span><a href="&mvte:tgr:link;?&mvt:page:params;">&mvt:page:page_number;</a></span>
-					</mvt:if>
-				</mvt:foreach>
-			</td>
-		</tr>
-	</mvt:if>
-</table>
-<div>
-	<mvt:foreach iterator="review" array="tgr:reviews">
-	<div>
-		<mvt:if expr="l.settings:review:verified EQ 1">
-			<div>
-				<em><strong>Verified Buyer!</strong></em>
+				<div class="tgreviews-average__text">
+					&mvt:tgr:avg_rating;/5 Star<mvt:if expr="l.settings:tgr:avg_rating GT 1">s</mvt:if> out of &mvt:tgr:review_count; Review<mvt:if expr="l.settings:tgr:review_count">s</mvt:if>
+				</div>
 			</div>
-		</mvt:if>
-		<div>
-			Rating:
-			<mvt:assign name="l.settings:review:rating_output" value="l.settings:review:rating" />
-			<mvt:while expr="l.settings:review:rating_output GT 0">
-				<span>&#9733;</span>
-				<mvt:assign name="l.settings:review:rating_output" value="l.settings:review:rating_output - 1" />
-			</mvt:while>
 		</div>
-		<div>
-			Title: &mvte:review:title;
-		</div>
-		<div>
-			Name: &mvte:review:name;
-		</div>
-		<div>
-			Location: &mvte:review:location;
-		</div>
-		<div>
-			<mvt:item name="tgreviews" param="Date( 'F jS, Y', l.settings:review:created, l.settings:review:formatted_created )" />
-			Created: &mvt:review:formatted_created;
-		</div>
-		<mvt:if expr="miva_array_elements( l.settings:review:additional_fields ) GT 0">
-			<mvt:foreach iterator="addl_field" array="review:additional_fields">
-				<div>
-					Field &mvte:addl_field:name;: &mvte:addl_field:value;
+		<div class="tgreviews-half tgreviews-flex__div">
+			<mvt:foreach iterator="breakdown" array="tgr:breakdown">
+				<mvt:assign name="l.settings:breakdown:percent" value="( l.settings:breakdown:count / l.settings:tgr:review_count ) * 100" />
+				<div class="tgreviews-breakdown">
+					<div class="tgreviews-breakdown__rating">
+						<mvt:if expr="l.settings:breakdown:count GT 0">
+							<span><a href="&mvt:tgr:link;?TGR_Sort=&mvta:global:TGR_Sort;&TGR_Show_Rating=&mvt:breakdown:rating;" title="View Reviews with a rating of &mvt:breakdown:rating;">&mvt:breakdown:rating;</a></span>
+						<mvt:else>
+							<span>&mvt:breakdown:rating;</span>
+						</mvt:if>
+						 <span class="tgreviews-breakdown__star">&#9733;</span>
+					</div>
+					<div class="tgreviews-breakdown__percent" title="&mvt:breakdown:count; Reviews out of &mvt:tgr:review_count; are rated &mvt:breakdown:rating;">
+						<div class="tgreviews-breakdown__percentage">
+							<div class="tgreviews-breakdown__percentage-overlay" style="width: &mvt:breakdown:percent;%;"></div>
+						</div>
+					</div>
+
+					<div class="tgreviews-breakdown__count" title="&mvt:breakdown:count; Reviews out of &mvt:tgr:review_count; are rated &mvt:breakdown:rating;">
+						&mvt:breakdown:count;
+					</div>
 				</div>
 			</mvt:foreach>
-		</mvt:if>
-		<div>
-			Summary: &mvte:review:summary;
-			<mvt:if expr="l.settings:review:store_reply">
-			<br />
-				<strong>Note From Store Owner:</strong> &mvte:review:store_reply;
-			</mvt:if>
 		</div>
 	</div>
-	<hr />
-	</mvt:foreach>
+
+	<div class="tgreivews-breaker"></div>
+
+	<div class="tgreviews-row">
+		<form method="POST" action="&mvt:tgr:link;" class="tgreviews-sorting">
+			<label class="tgreviews-label">Sort By</label>
+			<mvt:if expr="g.TGR_Show_Rating">
+				<input type="hidden" name="TGR_Show_Rating" value="&mvte:global:TGR_Show_Rating;" />
+			</mvt:if>
+			<select class="tgreviews-select" name="TGR_Sort" onchange="this.form.submit()">
+				<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( '-id', g.TGR_Sort, 'Default' )" />
+				<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( '-created', g.TGR_Sort, 'Most Recent Reviews' )" />
+				<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( 'created', g.TGR_Sort, 'Least Recent Reviews' )" />
+				<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( '-rating', g.TGR_Sort, 'Highest To Lowest Rating' )" />
+				<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( 'rating', g.TGR_Sort, 'Lowest To Highest Rating' )" />
+			</select>
+		</form>
+	</div>
+
+	<div class="tgreivews-breaker"></div>
+
+	<mvt:if expr="l.settings:tgr:pagination:total GT 1">
+		<div class="tgreviews-row tgreviews-pagination">
+			<span class="tgreviews-pagination-label">Pages</span> 
+			<mvt:foreach iterator="page" array="tgr:pagination:pages">
+				<mvt:if expr="POS1 GT 1">&nbsp;</mvt:if>
+				<mvt:if expr="l.settings:page:current EQ 1">
+					<span><strong>&mvt:page:page_number;</strong></span>
+				<mvt:else>
+					<span><a href="&mvte:tgr:link;?&mvt:page:params;">&mvt:page:page_number;</a></span>
+				</mvt:if>
+			</mvt:foreach>
+		</div>
+		<div class="tgreivews-breaker"></div>
+	</mvt:if>
+
+	<div class="tgreviews-reviews">
+		<mvt:foreach iterator="review" array="tgr:reviews">
+			<div class="tgreviews-review">
+
+				<div class="tgreviews-rating-title">
+					<mvt:if expr="l.settings:review:verified EQ 1">
+						<div class="tgreviews-verified-buyer">
+							Verified Buyer
+						</div>
+					</mvt:if>
+					<mvt:if expr="l.settings:review:title">
+						<span class="tgreviews-review__title">&mvte:review:title;</span>
+					</mvt:if>
+					<div class="tgreviews-review__rating-info">
+						<mvt:assign name="l.settings:review:rating_output" value="l.settings:review:rating" />
+						<mvt:while expr="l.settings:review:rating_output GT 0">
+							<span class="tgreviews-rating-stars">&#9733;</span>
+							<mvt:assign name="l.settings:review:rating_output" value="l.settings:review:rating_output - 1" />
+						</mvt:while>
+						<span class="tgreviews-review__rating">&mvt:review:rating;</span>
+					</div>
+				</div>
+
+				<div class="tgreviews-review__user">
+					<mvt:item name="tgreviews" param="Date( 'F jS, Y', l.settings:review:created, l.settings:review:formatted_created )" />
+					&mvte:review:name;<mvt:if expr="l.settings:review:location"> (&mvte:review:location;)</mvt:if> | &mvt:review:formatted_created;
+				</div>
+
+				<mvt:if expr="miva_array_elements( l.settings:review:additional_fields ) GT 0">
+					<div class="tgreviews-review__additionalfields">
+						<mvt:foreach iterator="addl_field" array="review:additional_fields">
+							<div class="tgreviews-review__addlfield">
+								<span class="tgreviews-review__addlfield-label">&mvte:addl_field:name;:</span> &mvte:addl_field:value;
+							</div>
+						</mvt:foreach>
+					</div>
+				</mvt:if>
+
+				<mvt:if expr="l.settings:review:summary">
+					<div class="tgreviews-review__summary">
+						&mvte:review:summary;
+					</div>
+				</mvt:if>
+				<mvt:if expr="l.settings:review:store_reply">
+					<div class="tgreviews-review__storenote">
+						<em><strong>Note From Store Owner:</strong> &mvte:review:store_reply;</em>
+					</div>
+				</mvt:if>
+				<div class="tgreivews-breaker"></div>
+			</div>
+			<div class="tgreivews-breaker"></div>
+		</mvt:foreach>
+	</div>
+
 </div>

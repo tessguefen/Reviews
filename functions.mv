@@ -382,6 +382,7 @@
 	<MvASSIGN NAME = "l.review" MEMBER = "title"		VALUE = "{ g.title }">
 	<MvASSIGN NAME = "l.review" MEMBER = "summary"		VALUE = "{ g.summary }">
 	<MvASSIGN NAME = "l.review" MEMBER = "store_reply"	VALUE = "{ g.store_reply }">
+	<MvASSIGN NAME = "l.review" MEMBER = "verified"		VALUE = "{ g.verified }">
 
 
 	<MvIF EXPR = "{ NOT Product_Reviews_Update( l.review ) }">

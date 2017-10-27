@@ -1,4 +1,9 @@
 <style>
+.tgreviews__form div {
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
+}
 .tgr_rating {
 	float: left;
 }
@@ -45,10 +50,6 @@
 	width: 100%;
 	padding: 0.75rem 1rem;
 	font-size: 12px;
-	border: 1px solid #cccccc;
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	box-sizing: border-box;
 }
 .tgreviews__form-input.error,
 .tgreviews__form-textarea.error {
@@ -123,11 +124,11 @@
 </mvt:if>
 
 <mvt:if expr="g.TGR_Review_Success EQ 1">
-	<div style="color: #4F8A10;background-color: #DFF2BF;margin: 10px 0;padding: 12px; text-align:center; font-weight: bold;">Thank you for your review!</div>
+	<div style="color: #4F8A10;background-color: #DFF2BF;margin: 10px 0;padding: 0.75rem 1rem; font-size: 11px; text-transform: uppercase; font-weight: bold; text-align:center;">Thank you for your review!</div>
 <mvt:else>
 	<div class="tgreviews__form">
 		<mvt:if expr="g.TGR_Error">
-			<div style="color: #D8000C;background-color: #FFD2D2;margin: 10px 0;padding: 12px;">&mvte:global:TGR_Error;</div>
+			<div style="color: #D8000C;background-color: #FFD2D2;margin: 10px 0;padding: 0.75rem 1rem; font-size: 11px; text-transform: uppercase; font-weight: bold;">&mvte:global:TGR_Error;</div>
 		</mvt:if>
 		<form method="POST" action="&mvt:tgr:link;">
 			<input type="hidden" name="Action" value="TGRADD" />
