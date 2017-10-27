@@ -52,7 +52,7 @@
 	margin-top: 5px;
 }
 .tgreviews-breakdown__percentage-overlay {
-	background: #000;
+	background: #FFED85;
 	height: 5px;
 	position: absolute;
 	top: 0;
@@ -126,7 +126,7 @@
 	position: absolute;
 	top: 0;
 	left: 0;
-	color: #000;
+	color: #FFED85;
 	overflow: hidden;
 }
 .tgreviews-average__text {
@@ -150,6 +150,7 @@
 }
 .tgreviews-rating-stars {
 	font-size: 1rem;
+	color: #FFED85;
 }
 .tgreviews-review__rating {
 	padding: 2px 5px;
@@ -192,6 +193,12 @@
 <mvt:item name="tgreviews" param="Product_Review_Breakdowns( l.settings:product:id, l.settings:tgr:breakdown )" />
 
 <div class="tgreviews">
+	<mvt:if expr="g.TGR_Show_Rating GT 0">
+		<div>
+			Currently Viewing Reviews with a rating of <strong>&mvte:global:TGR_Show_Rating;</strong>. <a href="&mvt:tgr:link;?TGR_Sort=&mvta:global:TGR_Sort;">Click here to reset.</a>
+		</div>
+		<div class="tgreivews-breaker"></div>
+	</mvt:if>
 
 	<div class="tgreviews-row tgreviews-flex">
 		<div class="tgreviews-half tgreviews-flex__div">
