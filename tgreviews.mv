@@ -952,6 +952,10 @@
 | ====================================================================================
 </MvCOMMENT>
 
+<MvFUNCTION NAME = "ImportModule_Delete" PARAMETERS = "module var, import var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
 <MvFUNCTION NAME = "ImportModule_Capabilities" PARAMETERS = "module var, capabilities var" STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.capabilities:screen"				VALUE = 0>
 	<MvASSIGN NAME = "l.capabilities:persistent"			VALUE = 1>
