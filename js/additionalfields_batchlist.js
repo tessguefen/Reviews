@@ -17,7 +17,7 @@ AdditionalFields_Batchlist.prototype.onLoad = AdditionalFields_Load_Query;
 AdditionalFields_Batchlist.prototype.onCreateRootColumnList = function() {
 	var columnlist =
 	[
-		new MMBatchList_Column_Name( 'AdditionalFields_ID ID', 'id', 'id')
+		new MMBatchList_Column_Name( 'Data ID', 'id', 'id')
 		.SetAdvancedSearchEnabled(false)
 		.SetDisplayInMenu(false)
 		.SetDisplayInList(false)
