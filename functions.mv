@@ -556,7 +556,7 @@
 				QUERY	= "{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalFields' }">
 
 	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( 'TGReviews-LOAD-0003', g.MvOPENVIEW_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-LOAD-0003:', g.MvOPENVIEW_Error ) }">
 	</MvIF>
 
 	<MvASSIGN NAME = "l.count" VALUE = "0">
@@ -626,7 +626,7 @@
 				FIELDS	= "l.id">
 
 	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( 'TGReviews-LOAD-0005', g.MvOPENVIEW_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-LOAD-0005', g.MvOPENVIEW_Error ) }">
 	</MvIF>
 
 	<MvEVAL EXPR = "{ Additional_Fields_Read( l.output, 'TGReviews_AdditionalFields' ) }">
@@ -647,7 +647,8 @@
 				FIELDS	= "l.code">
 
 	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( 'TGReviews-LOAD-0005', g.MvOPENVIEW_Error ) }">
+
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-LOAD-0005', g.MvOPENVIEW_Error ) }">
 	</MvIF>
 
 	<MvEVAL EXPR = "{ Additional_Fields_Read( l.output, 'TGReviews_AdditionalFields' ) }">
@@ -675,7 +676,7 @@
 				FIELDS	= "l.field_id, l.review_id">
 
 	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( 'TGReviews-LOAD-0006', g.MvOPENVIEW_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-LOAD-0006', g.MvOPENVIEW_Error ) }">
 	</MvIF>
 
 	<MvEVAL EXPR = "{ Additional_Value_Read( l.output, 'TGReviews_AdditionalValues' ) }">
@@ -1548,7 +1549,7 @@
 				FIELDS	= "l.email, l.email, l.product_id">
 
 	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( 'TGReviews-LOAD-1013', g.MvOPENVIEW_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-LOAD-1013', g.MvOPENVIEW_Error ) }">
 	</MvIF>
 
 	<MvASSIGN NAME = "l.output" MEMBER = "id" VALUE = "{ Review_CheckXLoad.d.id }">

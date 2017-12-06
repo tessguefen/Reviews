@@ -320,7 +320,7 @@
 				</mvt:if>
 				<mvt:if expr="l.settings:review:store_reply">
 					<div class="tgreviews-review__storenote">
-						<em><strong>Note From Store Owner:</strong> &mvte:review:store_reply;</em>
+						<em><strong>Note From Store Owner:</strong> &mvt:review:store_reply;</em>
 					</div>
 				</mvt:if>
 				<div class="tgreivews-breaker"></div>

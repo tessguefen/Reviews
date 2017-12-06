@@ -1,9 +1,4 @@
 <style>
-.tgreviews__form div {
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	box-sizing: border-box;
-}
 .tgr_rating {
 	float: left;
 }
@@ -50,6 +45,10 @@
 	width: 100%;
 	padding: 0.75rem 1rem;
 	font-size: 12px;
+	border: 1px solid #cccccc;
+	-moz-box-sizing: border-box;
+	-webkit-box-sizing: border-box;
+	box-sizing: border-box;
 }
 .tgreviews__form-input.error,
 .tgreviews__form-textarea.error {
