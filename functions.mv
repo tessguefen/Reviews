@@ -1230,16 +1230,41 @@
 		<MvFUNCTIONRETURN VALUE = 1 />
 	</MvIF>
 	<MvASSIGN NAME = "l.output:pagination" MEMBER ="total" VALUE = "{ ceil( l.output:total_reviews_filtered / g.TGR_Count ) }">
+	<MvASSIGN NAME = "l.prev_offset" VALUE = "{ g.TGR_Offset - g.TGR_Count }">
+	<MvIF EXPR = "{ l.prev_offset GE g.TGR_Count }">
+		<MvASSIGN NAME = "l.output:pagination:previous_params" VALUE = "{ 'TGR_Sort=' $ encodeattribute( g.TGR_Sort ) $ '&TGR_Count=' $ encodeattribute( g.TGR_Count ) $ '&TGR_Show_Rating=' $ encodeattribute( g.TGR_Show_Rating ) $ '&TGR_Offset=' $ l.prev_offset }">
+	</MvIF>
+	<MvASSIGN NAME = "l.next_offset" VALUE = "{ g.TGR_Offset + g.TGR_Count }">
+	<MvIF EXPR = "{ l.next_offset LT l.output:total_reviews_filtered }">
+		<MvASSIGN NAME = "l.output:pagination:next_params" VALUE = "{ 'TGR_Sort=' $ encodeattribute( g.TGR_Sort ) $ '&TGR_Count=' $ encodeattribute( g.TGR_Count ) $ '&TGR_Show_Rating=' $ encodeattribute( g.TGR_Show_Rating ) $ '&TGR_Offset=' $ l.next_offset }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.output:pagination:current_page" VALUE = "{ ( g.TGR_Offset + g.TGR_Count ) / g.TGR_Count }">
+	
+
+	<MvIF EXPR = "{ l.output:pagination:total LE 5 }">
+		<MvASSIGN NAME = "l.begin" VALUE = "1" />
+	<MvELSE>
+		<MvIF EXPR = "{ l.output:pagination:current_page LE 3 }">
+			<MvASSIGN NAME = "l.begin" VALUE = "1" />
+		<MvELSEIF EXPR = "{ ( l.output:pagination:current_page + 2 ) GE l.output:pagination:total }">
+			<MvASSIGN NAME = "l.begin" VALUE = "{ l.output:pagination:total - 4 }">
+		<MvELSE>
+			<MvASSIGN NAME = "l.begin" VALUE = "{ l.output:pagination:current_page - 2 }">
+		</MvIF>
+	</MvIF>
+
 
 	<MvFOR INDEX = "l.page_count" COUNT = "{ l.output:pagination:total }">
 		<MvASSIGN NAME = "l.curr_offset" VALUE = "{ ( g.TGR_Count * l.page_count ) - g.TGR_Count }">
 		<MvIF EXPR = "{ l.curr_offset EQ g.TGR_Offset }">
-			<MvASSIGN NAME = "l.output:pagination:pages" INDEX = "{ l.page_count }" MEMBER = "current" VALUE = "1">
-			<MvASSIGN NAME = "l.output:pagination:current_page" VALUE = "{ l.page_count }">
+			<MvASSIGN NAME = "l.output:full_pagination:pages" INDEX = "{ l.page_count }" MEMBER = "current" VALUE = "1">
 		</MvIF>
-		<MvASSIGN NAME = "l.output:pagination:pages" INDEX = "{ l.page_count }" MEMBER = "page_number" VALUE = "{ l.page_count }">
-		<MvASSIGN NAME = "l.output:pagination:pages" INDEX = "{ l.page_count }" MEMBER = "params" VALUE = "{ 'TGR_Sort=' $ encodeattribute( g.TGR_Sort ) $ '&TGR_Count=' $ encodeattribute( g.TGR_Count ) $ '&TGR_Show_Rating=' $ encodeattribute( g.TGR_Show_Rating ) $ '&TGR_Offset=' $ l.curr_offset }">
+		<MvASSIGN NAME = "l.output:full_pagination:pages" INDEX = "{ l.page_count }" MEMBER = "page_number" VALUE = "{ l.page_count }">
+		<MvASSIGN NAME = "l.output:full_pagination:pages" INDEX = "{ l.page_count }" MEMBER = "params" VALUE = "{ 'TGR_Sort=' $ encodeattribute( g.TGR_Sort ) $ '&TGR_Count=' $ encodeattribute( g.TGR_Count ) $ '&TGR_Show_Rating=' $ encodeattribute( g.TGR_Show_Rating ) $ '&TGR_Offset=' $ l.curr_offset }">
 	</MvFOR>
+
+	<MvASSIGN NAME = "l.void" VALUE = "{ miva_array_copy( l.output:full_pagination:pages, l.begin, 5, l.output:pagination:pages, 0) }">
 
 	<MvFUNCTIONRETURN VALUE = 1 />
 </MvFUNCTION>
