@@ -1231,7 +1231,7 @@
 	</MvIF>
 	<MvASSIGN NAME = "l.output:pagination" MEMBER ="total" VALUE = "{ ceil( l.output:total_reviews_filtered / g.TGR_Count ) }">
 
-	<MvFOR INDEX = "l.page_count" COUNT = "{ l.output:pagination }">
+	<MvFOR INDEX = "l.page_count" COUNT = "{ l.output:pagination:total }">
 		<MvASSIGN NAME = "l.curr_offset" VALUE = "{ ( g.TGR_Count * l.page_count ) - g.TGR_Count }">
 		<MvIF EXPR = "{ l.curr_offset EQ g.TGR_Offset }">
 			<MvASSIGN NAME = "l.output:pagination:pages" INDEX = "{ l.page_count }" MEMBER = "current" VALUE = "1">
