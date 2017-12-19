@@ -1301,7 +1301,7 @@
 
 	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'approved = 1', '' ) }">
 
-	<MvIF EXPR = "{ g.TGR_Product_ID GT 0 }">
+	<MvIF EXPR = "{ g.Temp_Product_ID GT 0 }">
 		<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'product_id = ? ', 'g.Temp_Product_ID' ) }">
 	</MvIF>
 
