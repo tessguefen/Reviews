@@ -403,6 +403,10 @@
 						<td>Render the Reviews Template. Returns <pre style="display:inline;">reviews array</pre> in <pre style="display:inline;">l.settings:tgr:reviews</pre>. If you do not pass an id (i.e. put 0, or an empty string), it will return all approved reviews for the store.</td>
 					</tr>
 					<tr>
+						<td><MvEVAL EXPR = "{ Pretty_Code( 'Load_Product_Reviews', ' l.settings:product:id, l.settings:product:reviews ') }"></td>
+						<td>Don't want to render the reviews template? Use this to save all the review data to a variable and utilize in template code.</td>
+					</tr>
+					<tr>
 						<td><MvEVAL EXPR = "{ Pretty_Code( 'Date', ' \'F jS, Y\', l.settings:review:created, l.settings:review:formatted_created ') }"></td>
 						<td>Format a timestamp, and save to a variable (3rd parameter). Uses PHP's date function as a reference.</td>
 					</tr>

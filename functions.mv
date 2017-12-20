@@ -1070,6 +1070,11 @@
 	<MvASSIGN NAME = "l.review" MEMBER = "title"		VALUE = "{ g.TGR_Title }">
 	<MvASSIGN NAME = "l.review" MEMBER = "summary"		VALUE = "{ g.TGR_Summary }">
 
+	<MvIF EXPR = "{ Product_Review_Similar( l.review ) }">
+		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Review has already been submitted.">
+		<MvFUNCTIONRETURN VALUE = 0 />
+	</MvIF>
+
 	<MvIF EXPR = "{ NOT Product_Reviews_Insert( l.review ) }">
 		<MvASSIGN NAME = "g.TGR_Error" VALUE = "{ g.Review_Error }">
 		<MvASSIGN NAME = "{ 'g.tgr_' $ g.Review_Field_Error $ '_class' }" VALUE = "error">
@@ -1141,6 +1146,10 @@
 			<MvEVAL EXPR = "{ [ g.Store_Template_Path $ l.reviews_template:filename ].Template_Render( l.null, l.all_settings ) }">
 		</MvIF>
 	</MvIF>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Load_Product_Reviews" PARAMETERS = "module var, param, all_settings var, product_id, output var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = "{ Reviews_Load_Query( l.product_id, l.output ) }">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Reviews_Load_Query" PARAMETERS = "product_id, output var" STANDARDOUTPUTLEVEL = "">
@@ -1265,6 +1274,8 @@
 	</MvFOR>
 
 	<MvASSIGN NAME = "l.void" VALUE = "{ miva_array_copy( l.output:full_pagination:pages, l.begin, 5, l.output:pagination:pages, 0) }">
+
+	<MvASSIGN NAME = "l.void" VALUE = "{ Product_Rating( l.module, l.param, l.all_settings, l.product_id, l.output:avg_rating ) }">
 
 	<MvFUNCTIONRETURN VALUE = 1 />
 </MvFUNCTION>

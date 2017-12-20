@@ -202,7 +202,6 @@
 
 	<div class="tgreviews-row tgreviews-flex">
 		<div class="tgreviews-half tgreviews-flex__div">
-			<mvt:item name="tgreviews" param="Product_Rating( l.settings:product:id, l.settings:tgr:avg_rating )" />
 			<div class="tgreviews-average">
 				<mvt:assign name="l.settings:star_width" value="( l.settings:tgr:avg_rating / 5 ) * 100" />
 				<span class="tgreviews-average__star" title="&mvt:tgr:avg_rating; out of 5.">
