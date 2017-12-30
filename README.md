@@ -6,15 +6,18 @@
 ```
 Render the Form Template.
 
+
 ```xml
 <mvt:item name="tgreviews" param="Reviews_Template( l.settings:product:id )" />
 ```
 Render the Reviews Template. Returns reviews array in l.settings:tgr:reviews. If you do not pass an id (i.e. put 0, or an empty string), it will return all approved reviews for the store.
 
+
 ```xml
 <mvt:item name="tgreviews" param="Load_Product_Reviews( l.settings:product:id, l.settings:product:reviews )" />
 ```
 Don't want to render the reviews template? Use this to save all the review data to a variable and utilize in template code.
+
 
 
 ```xml
@@ -23,20 +26,24 @@ Don't want to render the reviews template? Use this to save all the review data 
 Format a timestamp, and save to a variable (3rd parameter). Uses PHP's date function as a reference.
 
 
+
 ```xml
 <mvt:item name="tgreviews" param="Product_Rating( l.settings:product:id, l.settings:product:product_rating )" />
 ```
 Returns the average product rating value to a variable (2nd parameter).
+
 
 ```xml
 <mvt:item name="tgreviews" param="Product_Review_Breakdowns( l.settings:product:id, l.settings:tgr:breakdown )" />
 ```
 Returns a breakdown of ratings for a product to a variable (2nd parameter). Array has 2 members: count and rating
 
+
 ```xml
 <mvt:item name="tgreviews" param="Product_Review_Count( l.settings:product:id, l.settings:tgr:review_count )" />
 ```
 Returns a total number of approved reviews for a product to a variable (2nd parameter).
+
 
 ```xml
 <mvt:item name="tgreviews" param="Test_MailAfter_Email( 12345, 'hello@email.com' )" />
