@@ -426,10 +426,6 @@
 						<td><MvEVAL EXPR = "{ Pretty_Code( 'Test_MailAfter_Email', ' 12345, \'hello@email.com\' ') }"></td>
 						<td>This will trigger the email for any order you specify, to the email you specify. This is specifcally made to test the email template. Please note: BCC and CC will not carry through. If you have left a review on a product in the order, it will skip that product.</td>
 					</tr>
-					<tr>
-						<td><MvEVAL EXPR = "{ Pretty_Code( 'Load_Product_Reviews', ' l.settings:product:id, l.settings:product:reviews ') }"></td>
-						<td>Want to load the Review data, but not the items? Use this to load all the product review data you would recieve in the reviews template.</td>
-					</tr>
 				</tbody>
 			</table>
 		</div>
