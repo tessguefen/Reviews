@@ -1649,10 +1649,10 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0023', g.MvOPENVIEW_Error ) }">
 	</MvIF>
 
-	<MvASSIGN NAME = "l.count" VALUE = "0">
 
 	<MvWHILE EXPR = "{ NOT TGReviews_Orders.d.EOF }">
-		<MvASSIGN NAME = "l.void" VALUE = "{ MailAfter_Check_Order( TGReviews_Orders.d.order_id, l.mail_after ) }">
+		<MvASSIGN NAME = "l.mail_after_settings" VALUE = "{ l.mail_after }">
+		<MvASSIGN NAME = "l.void" VALUE = "{ MailAfter_Check_Order( TGReviews_Orders.d.order_id, l.mail_after_settings ) }">
 		<MvSKIP NAME = "Merchant" VIEW = "TGReviews_Orders" ROWS = 1>
 	</MvWHILE>
 
@@ -1663,7 +1663,7 @@
 
 <MvFUNCTION NAME = "MailAfter_Check_Order" PARAMETERS = "order_id, email_settings var" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].Order_Load_ID( l.order_id, l.order ) }">
-		<MvASSIGN NAME = "l.void" VALUE = "{ Remove_Order( l.order:id ) }">
+		<MvASSIGN NAME = "l.void" VALUE = "{ Remove_Order( l.order_id ) }">
 		<MvFUNCTIONRETURN VALUE = 1 />
 	</MvIF>
 
@@ -1677,6 +1677,7 @@
 			<MvASSIGN NAME = "l.void" VALUE = "{ Remove_Order( l.order:id ) }">
 			<MvFUNCTIONRETURN VALUE = 1 />
 		</MvIF>
+		<MvFUNCTIONRETURN VALUE = 1 />
 	</MvIF>
 
 	<MvIF EXPR = "{ ( l.email_settings:after EQ 'ship' ) AND ( l.order:status EQ 200 ) }">
