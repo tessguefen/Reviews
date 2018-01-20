@@ -135,7 +135,7 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td align="left" valign="middle" width="100%" colspan="2">Page Template Used: <strong>TGR_MailAfter_Email</strong></td>
+						<td align="left" valign="middle" width="100%" colspan="2">Page Template Used: <strong>TGR_MailAfter_Email (<a href="{ glosub( g.sessionurl, 'json.mvc', 'admin.mvc' ) $ 'Screen=PAGE&Edit_Page=TGR_MailAfter_Email&Store_Code=' $ encodeattribute( g.Store_Code ) }">Edit Template</a>)</strong></td>
 					</tr>
 					<tr>
 						<td align="left" valign="middle" style="text-transform: capitalize;" colspan="2">
@@ -185,7 +185,7 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td align="left" valign="middle" width="100%" colspan="2">Page Template Used: <strong>TGR_Merchant_Email</strong></td>
+						<td align="left" valign="middle" width="100%" colspan="2">Page Template Used: <strong>TGR_Merchant_Email (<a href="{ glosub( g.sessionurl, 'json.mvc', 'admin.mvc' ) $ 'Screen=PAGE&Edit_Page=TGR_Merchant_Email&Store_Code=' $ encodeattribute( g.Store_Code ) }">Edit Template</a>)</strong></td>
 					</tr>
 					<tr>
 						<td align="left" valign="middle" style="text-transform: capitalize;" colspan="2">
@@ -226,7 +226,7 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td align="left" valign="middle" width="100%" colspan="2">Page Template Used: <strong>TGR_Customer_Email</strong></td>
+						<td align="left" valign="middle" width="100%" colspan="2">Page Template Used: <strong>TGR_Customer_Email (<a href="{ glosub( g.sessionurl, 'json.mvc', 'admin.mvc' ) $ 'Screen=PAGE&Edit_Page=TGR_Customer_Email&Store_Code=' $ encodeattribute( g.Store_Code ) }">Edit Template</a>)</strong></td>
 					</tr>
 					<tr>
 						<td align="left" valign="middle">From</td>

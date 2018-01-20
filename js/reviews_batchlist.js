@@ -127,6 +127,7 @@ Reviews_Batchlist.prototype.onCreate = function() {
 	record.product_id = TGR_Product_ID;
 	record.product_code = TGR_Product_Code;
 	record.product_name = '';
+	record.store_reply = '';
 	for ( i = 0, i_len = self.additional_fields_length; i < i_len; i++ ) {
 		var code = 'AdditionalFields_' + self.additional_fields[ i ].code;
 		record[code] = '';
