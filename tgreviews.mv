@@ -45,7 +45,6 @@
 	<MvASSIGN NAME = "l.defaults:required:email" VALUE = 1 />
 	<MvASSIGN NAME = "l.defaults:required:location" VALUE = 0 />
 	<MvASSIGN NAME = "l.defaults:required:name" VALUE = 1 />
-	<MvASSIGN NAME = "l.defaults:required:rating" VALUE = 1 />
 	<MvASSIGN NAME = "l.defaults:required:summary" VALUE = 1 />
 	<MvASSIGN NAME = "l.defaults:required:title" VALUE = 1 />
 
@@ -388,7 +387,7 @@
 
 
 <MvFUNCTION NAME = "Module_System_Tabs" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
-	<MvFUNCTIONRETURN VALUE = "TGR_SETT:Reviews: Settings,TGR_SETT/TGR_FIELDS:General Settings,TGR_SETT/TGR_EMAIL:Email Notifications,TGR_SETT/TGR_TEMPL:Templates & Items,TGR_ADDL:Reviews: Additional Fields,TGR_PROD:Reviews: Product Reviews">
+	<MvFUNCTIONRETURN VALUE = "TGR_PROD:Reviews: Product Reviews,TGR_SETT:Reviews: Settings,TGR_SETT/TGR_FIELDS:General Settings,TGR_SETT/TGR_EMAIL:Email Notifications,TGR_SETT/TGR_TEMPL:Templates & Items,TGR_ADDL:Reviews: Additional Fields">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_System_Head" PARAMETERS = "module var, tab" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
@@ -790,7 +789,7 @@
 | ====================================================================================
 </MvCOMMENT>
 
-<MvFUNCTION NAME = "ExportModule_Export" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+<MvFUNCTION NAME = "ExportModule_Export" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
 	<MvCOMMENT>
 	|
 	|	Starting at 250 each iteration.
@@ -836,7 +835,7 @@
 	<MvIF EXPR = "{ g.Exp_Review_Count GE g.Total_Review_Count }">
 
 		<MvIF EXPR = "{ g.ReviewsExport_SendEmail }">
-			<MvDO FILE = "{ g.Module_Library_Utilities }" NAME = "l.null" VALUE = "{ Send_Email_Attachment( g.ReviewsExport_Email, g.ReviewsExport_Email, '', 'Reviews Export', g.Reviews_Export_File, '/', 'data' ) }">
+			<MvDO FILE = "{ g.Module_Library_Utilities }" NAME = "l.void" VALUE = "{ Send_Email_Attachment( g.ReviewsExport_Email, g.ReviewsExport_Email, '', 'Reviews Export', g.Reviews_Export_File, '/', 'data' ) }">
 			<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( 'TGReviews-SUCCESS-1', 'Review Export Email Sent' ) }">
 		</MvIF>
 
@@ -966,21 +965,23 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ImportModule_Delimited_Columns" PARAMETERS = "module var, import var, columns var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'required', l.required_fields ) }">
+	<MvASSIGN NAME = "l.required_fields" VALUE = "{ miva_array_deserialize( l.required_fields ) }">
 	<MvCOMMENT>											field					name						header				required	default			validation		</MvCOMMENT>
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'created',				'Created',					'CREATED',				0,			'',			'string' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'product_code',			'Product Code',				'PRODUCT_CODE',			1,			'',			'code' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'order_id',				'Order ID',					'ORDER_ID',				0,			0,			'integer_nonneg' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'approved',				'Approved',					'APPROVED',				1,			0,			'bool' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'rating',				'Rating',					'RATING',				1,			'',			'integer_nonneg' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'name',					'Name',						'NAME',					0,			'',			'string' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'email',				'Email',					'EMAIL',				0,			'',			'email' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'location',				'Location',					'LOCATION',				0,			'',			'string' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'notify',				'Notify',					'NOTIFY',				0,			0,			'bool' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'title',				'Title',					'TITLE',				1,			'',			'string' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'summary',				'Summary',					'SUMMARY',				1,			'',			'string' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'store_reply',			'Store Reply',				'STORE_REPLY',			0,			'',			'string' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'notified',				'Notified',					'NOTIFIED',				0,			0,			'integer_nonneg' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'verified',				'Verified',					'VERIFIED',				0,			0,			'bool' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'created',				'Created',					'CREATED',				0,							'',			'string' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'product_code',			'Product Code',				'PRODUCT_CODE',			1,							'',			'code' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'order_id',				'Order ID',					'ORDER_ID',				0,							0,			'integer_nonneg' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'approved',				'Approved',					'APPROVED',				1,							0,			'bool' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'rating',				'Rating',					'RATING',				1,							'',			'integer_nonneg' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'name',					'Name',						'NAME',					l.required_fields:name,		'',			'string' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'email',				'Email',					'EMAIL',				l.required_fields:email,	'',			'email' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'location',				'Location',					'LOCATION',				l.required_fields:location,	'',			'string' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'notify',				'Notify',					'NOTIFY',				0,							0,			'bool' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'title',				'Title',					'TITLE',				l.required_fields:title,	'',			'string' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'summary',				'Summary',					'SUMMARY',				l.required_fields:summary,	'',			'string' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'store_reply',			'Store Reply',				'STORE_REPLY',			0,							'',			'string' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'notified',				'Notified',					'NOTIFIED',				0,							0,			'integer_nonneg' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'verified',				'Verified',					'VERIFIED',				0,							0,			'bool' ) }">
 
 	<MvFOREACH ITERATOR = "l.field" ARRAY = "g.Exp_Addl_Fields" COUNT = "{ Load_Additional_Fields( g.Exp_Addl_Fields ) }">
 		<MvEVAL EXPR = "{ Add_Standard_Column( l.columns, 'field_' $ l.field:code, 'Field: ' $ l.field:name, 'FIELD:'$ toupper( l.field:code ), 0, 0, 'string' ) }">

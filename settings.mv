@@ -424,7 +424,7 @@
 					</tr>
 					<tr>
 						<td><MvEVAL EXPR = "{ Pretty_Code( 'Test_MailAfter_Email', ' 12345, \'hello@email.com\' ') }"></td>
-						<td>This will trigger the email for any order you specify, to the email you specify. This is specifcally made to test the email template. Please note: BCC and CC will not carry through. If you have left a review on a product in the order, it will skip that product.</td>
+						<td>This will trigger the email for any order you specify, to the email you specify. This is specifically made to test the email template. Please note: BCC and CC will not carry through. If you have left a review on a product in the order, it will skip that product.</td>
 					</tr>
 				</tbody>
 			</table>
@@ -608,7 +608,6 @@
 	<MvIF EXPR = "{ ( l.prev_settings:email NE l.required:email ) AND ( l.required:email EQ 1 OR l.required:email EQ 0) }">				<MvASSIGN NAME = "l.prev_settings:email" 	VALUE = "{ l.required:email }">		</MvIF>
 	<MvIF EXPR = "{ ( l.prev_settings:location NE l.required:location ) AND ( l.required:location EQ 1 OR l.required:location EQ 0) }">	<MvASSIGN NAME = "l.prev_settings:location" VALUE = "{ l.required:location }">	</MvIF>
 	<MvIF EXPR = "{ ( l.prev_settings:name NE l.required:name ) AND ( l.required:name EQ 1 OR l.required:name EQ 0) }"	>				<MvASSIGN NAME = "l.prev_settings:name" 	VALUE = "{ l.required:name }">		</MvIF>
-	<MvIF EXPR = "{ ( l.prev_settings:rating NE l.required:rating ) AND ( l.required:rating EQ 1 OR l.required:rating EQ 0) }">			<MvASSIGN NAME = "l.prev_settings:rating" 	VALUE = "{ l.required:rating }">	</MvIF>
 	<MvIF EXPR = "{ ( l.prev_settings:summary NE l.required:summary ) AND ( l.required:summary EQ 1 OR l.required:summary EQ 0) }">		<MvASSIGN NAME = "l.prev_settings:summary" 	VALUE = "{ l.required:summary }">	</MvIF>
 	<MvIF EXPR = "{ ( l.prev_settings:title NE l.required:title ) AND ( l.required:title EQ 1 OR l.required:title EQ 0) }">				<MvASSIGN NAME = "l.prev_settings:title" 	VALUE = "{ l.required:title }">		</MvIF>
 
