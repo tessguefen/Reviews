@@ -1,0 +1,15 @@
+Product Reviews module allows your customers to easily write reviews for products. This module also allows for importing and exporting product reviews.
+<br /><br />
+<strong>Features:</strong>
+<ul>
+	<li>Import Reviews</li>
+	<li>Export Reviews</li>
+	<li>Approve, Disapprove and Delete Reviews</li>
+	<li>Verfified Buyer tag (i.e. they have purchased the product they are reviewing)</li>
+	<li>reCAPTCHA settings to help prevent spam</li>
+	<li>Additional Field settings (You can add more fields for your customers to fill out!)</li>
+	<li>Settings to change certain fields from being option/required</li>
+	<li>Review Form Template and Review Listing Template</li>
+	<li>Automated "Mail After" emails with a Scheduled Task</li>
+	<li>Allow your customers to view reviews by star rating</li>
+</ul>
