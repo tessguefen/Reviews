@@ -105,7 +105,7 @@
 																	<tr>
 																		<td>
 																			<div class="text-header" style="color:#7a838d; font-family:Arial, sans-serif; min-width:auto !important; font-size:14px; line-height:21px; text-align:right">
-																				<strong>&mvt:store:name;</strong>
+																				<strong>&mvte:store:name;</strong>
 																				<br />
 																				<a href="&mvte:urls:ABUS:auto;" target="_blank" class="link-1" style="color:#7a838d; text-decoration:none"><span class="link-1" style="color:#7a838d; text-decoration:none">
 																					&mvte:store:address;<br />
@@ -204,8 +204,8 @@
 																			</tr>
 																			<mvt:foreach iterator="field" array="review:additional_fields">
 																				<tr>
-																					<td>&mvt:field:name;:</td>
-																					<td>&mvt:field:value;</td>
+																					<td>&mvte:field:name;:</td>
+																					<td>&mvte:field:value;</td>
 																				</tr>
 																			</mvt:foreach>
 																		</mvt:if>

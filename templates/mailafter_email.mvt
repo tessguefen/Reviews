@@ -105,7 +105,7 @@
 																	<tr>
 																		<td>
 																			<div class="text-header" style="color:#7a838d; font-family:Arial, sans-serif; min-width:auto !important; font-size:14px; line-height:21px; text-align:right">
-																				<strong>&mvt:store:name;</strong>
+																				<strong>&mvte:store:name;</strong>
 																				<br />
 																				<a href="&mvte:urls:ABUS:auto;" target="_blank" class="link-1" style="color:#7a838d; text-decoration:none"><span class="link-1" style="color:#7a838d; text-decoration:none">
 																					&mvte:store:address;<br />
@@ -139,7 +139,7 @@
 
 																<table width="100%" border="0" cellspacing="0" cellpadding="0" class="spacer" style="font-size:0pt; line-height:0pt; text-align:center; width:100%; min-width:100%"><tr><td height="15" class="spacer" style="font-size:0pt; line-height:0pt; text-align:center; width:100%; min-width:100%"> </td></tr></table>
 
-																<div class="text-center" style="color:#1a2026; font-family:Arial, sans-serif; min-width:auto !important; font-size:24px; line-height:24px; text-align:center"><strong>Your Recent Order (<a href="&mvt:urls:ORDS:auto_sep;Order_ID=&mvt:order:id;&amp;Order_BillEmail=&mvte:order:bill_email;&amp;Order_BillZip=&mvte:order:bill_zip;" style="color:#1a2026; text-decoration: none;">#&mvte:order:id;</a>)</strong></div>
+																<div class="text-center" style="color:#1a2026; font-family:Arial, sans-serif; min-width:auto !important; font-size:24px; line-height:24px; text-align:center"><strong>Your Recent Order (<a href="&mvte:urls:ORDS:auto_sep;Order_ID=&mvte:order:id;&amp;Order_BillEmail=&mvte:order:bill_email;&amp;Order_BillZip=&mvte:order:bill_zip;" style="color:#1a2026; text-decoration: none;">#&mvte:order:id;</a>)</strong></div>
 																<table width="100%" border="0" cellspacing="0" cellpadding="0" class="spacer" style="font-size:0pt; line-height:0pt; text-align:center; width:100%; min-width:100%"><tr><td height="10" class="spacer" style="font-size:0pt; line-height:0pt; text-align:center; width:100%; min-width:100%"> </td></tr></table>
 
 																<table width="100%" border="0" cellspacing="0" cellpadding="0" class="spacer" style="font-size:0pt; line-height:0pt; text-align:center; width:100%; min-width:100%"><tr><td height="35" class="spacer" style="font-size:0pt; line-height:0pt; text-align:center; width:100%; min-width:100%"> </td></tr></table>
@@ -211,7 +211,7 @@
 																			&nbsp;
 																		<mvt:else>
 																			<div class="item-image">
-																				<a href="&mvte:item:link;TGR_Order_ID=&mvte:order:id;"><img src="&mvt:global:domain:base_url;&mvte:item:imagetypes:main;" alt="&mvte:item:name;" /></a>
+																				<a href="&mvte:item:link;TGR_Order_ID=&mvte:order:id;"><img src="&mvte:global:domain:base_url;&mvte:item:imagetypes:main;" alt="&mvte:item:name;" /></a>
 																			</div>
 																		</mvt:if>
 																	</div>
@@ -221,15 +221,15 @@
 																		<a href="&mvte:item:link;TGR_Order_ID=&mvte:order:id;" target="_blank" class="link-2" style="color:#303748; text-decoration:none"><strong class="link-2" style="color:#303748; text-decoration:none">&mvte:item:name;</a>
 																		<mvt:foreach iterator="option" array="item:options">
 																			<mvt:if expr="l.settings:option:option_id">
-																				<br />&mvt:option:attr_prompt;: &mvt:option:opt_prompt;
+																				<br />&mvte:option:attr_prompt;: &mvte:option:opt_prompt;
 																			<mvt:elseif expr="NOT ISNULL l.settings:option:data">
 																				<mvt:if expr="NOT ( l.settings:option:attr_prompt EQ 'digitaldownload' ) AND ( NOT ISNULL l.settings:option:digital_download_url )">
-																					<br />&mvt:option:attr_prompt;: &mvt:option:data;
+																					<br />&mvte:option:attr_prompt;: &mvte:option:data;
 																				</mvt:if>
 																			<mvt:elseif expr="NOT ISNULL l.settings:option:data_long">
-																				<br />&mvt:option:attr_prompt;: &mvt:option:data_long;
+																				<br />&mvte:option:attr_prompt;: &mvte:option:data_long;
 																			<mvt:else>
-																				<br />&mvt:option:attr_prompt;
+																				<br />&mvte:option:attr_prompt;
 																			</mvt:if>
 																		</mvt:foreach>
 																	</div>
@@ -256,7 +256,7 @@
 													<table width="100%" border="0" cellspacing="0" cellpadding="0" class="spacer" style="font-size:0pt; line-height:0pt; text-align:center; width:100%; min-width:100%"><tr><td height="5" class="spacer" style="font-size:0pt; line-height:0pt; text-align:center; width:100%; min-width:100%"> </td></tr></table>
 
 													<div class="text-footer" style="color:#303748; font-family:Arial, sans-serif; min-width:auto !important; font-size:16px; line-height:24px; text-align:left">
-														<a href="&mvte:urls:SFNT:auto;" target="_blank" class="link-2" style="color:#303748; text-decoration:none"><strong class="link-2" style="color:#303748; text-decoration:none">&mvt:store:name;</strong></a>
+														<a href="&mvte:urls:SFNT:auto;" target="_blank" class="link-2" style="color:#303748; text-decoration:none"><strong class="link-2" style="color:#303748; text-decoration:none">&mvte:store:name;</strong></a>
 													</div>
 													<table width="100%" border="0" cellspacing="0" cellpadding="0" class="spacer" style="font-size:0pt; line-height:0pt; text-align:center; width:100%; min-width:100%"><tr><td height="25" class="spacer" style="font-size:0pt; line-height:0pt; text-align:center; width:100%; min-width:100%"> </td></tr></table>
 

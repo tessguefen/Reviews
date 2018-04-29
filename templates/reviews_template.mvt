@@ -195,7 +195,7 @@
 <div class="tgreviews">
 	<mvt:if expr="g.TGR_Show_Rating GT 0">
 		<div>
-			Currently Viewing Reviews with a rating of <strong>&mvte:global:TGR_Show_Rating;</strong>. <a href="&mvt:tgr:link;?TGR_Sort=&mvta:global:TGR_Sort;">Click here to reset.</a>
+			Currently Viewing Reviews with a rating of <strong>&mvte:global:TGR_Show_Rating;</strong>. <a href="&mvte:tgr:link;?TGR_Sort=&mvta:global:TGR_Sort;">Click here to reset.</a>
 		</div>
 		<div class="tgreivews-breaker"></div>
 	</mvt:if>
@@ -204,12 +204,12 @@
 		<div class="tgreviews-half tgreviews-flex__div">
 			<div class="tgreviews-average">
 				<mvt:assign name="l.settings:star_width" value="( l.settings:tgr:avg_rating / 5 ) * 100" />
-				<span class="tgreviews-average__star" title="&mvt:tgr:avg_rating; out of 5.">
+				<span class="tgreviews-average__star" title="&mvte:tgr:avg_rating; out of 5.">
 					&#9733;&#9733;&#9733;&#9733;&#9733;
-					<span class="tgreviews-average__star-overlay" style="width:&mvt:star_width;%;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+					<span class="tgreviews-average__star-overlay" style="width:&mvte:star_width;%;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
 				</span>
 				<div class="tgreviews-average__text">
-					&mvt:tgr:avg_rating;/5 Star<mvt:if expr="l.settings:tgr:avg_rating GT 1">s</mvt:if> out of &mvt:tgr:review_count; Review<mvt:if expr="l.settings:tgr:review_count">s</mvt:if>
+					&mvte:tgr:avg_rating;/5 Star<mvt:if expr="l.settings:tgr:avg_rating GT 1">s</mvt:if> out of &mvte:tgr:review_count; Review<mvt:if expr="l.settings:tgr:review_count">s</mvt:if>
 				</div>
 			</div>
 		</div>
@@ -219,20 +219,20 @@
 				<div class="tgreviews-breakdown">
 					<div class="tgreviews-breakdown__rating">
 						<mvt:if expr="l.settings:breakdown:count GT 0">
-							<span><a href="&mvt:tgr:link;?TGR_Sort=&mvta:global:TGR_Sort;&TGR_Show_Rating=&mvt:breakdown:rating;" title="View Reviews with a rating of &mvt:breakdown:rating;">&mvt:breakdown:rating;</a></span>
+							<span><a href="&mvte:tgr:link;?TGR_Sort=&mvta:global:TGR_Sort;&TGR_Show_Rating=&mvte:breakdown:rating;" title="View Reviews with a rating of &mvte:breakdown:rating;">&mvte:breakdown:rating;</a></span>
 						<mvt:else>
-							<span>&mvt:breakdown:rating;</span>
+							<span>&mvte:breakdown:rating;</span>
 						</mvt:if>
 						 <span class="tgreviews-breakdown__star">&#9733;</span>
 					</div>
-					<div class="tgreviews-breakdown__percent" title="&mvt:breakdown:count; Reviews out of &mvt:tgr:review_count; are rated &mvt:breakdown:rating;">
+					<div class="tgreviews-breakdown__percent" title="&mvte:breakdown:count; Reviews out of &mvte:tgr:review_count; are rated &mvte:breakdown:rating;">
 						<div class="tgreviews-breakdown__percentage">
-							<div class="tgreviews-breakdown__percentage-overlay" style="width: &mvt:breakdown:percent;%;"></div>
+							<div class="tgreviews-breakdown__percentage-overlay" style="width: &mvte:breakdown:percent;%;"></div>
 						</div>
 					</div>
 
-					<div class="tgreviews-breakdown__count" title="&mvt:breakdown:count; Reviews out of &mvt:tgr:review_count; are rated &mvt:breakdown:rating;">
-						&mvt:breakdown:count;
+					<div class="tgreviews-breakdown__count" title="&mvte:breakdown:count; Reviews out of &mvte:tgr:review_count; are rated &mvte:breakdown:rating;">
+						&mvte:breakdown:count;
 					</div>
 				</div>
 			</mvt:foreach>
@@ -242,7 +242,7 @@
 	<div class="tgreivews-breaker"></div>
 
 	<div class="tgreviews-row">
-		<form method="POST" action="&mvt:tgr:link;" class="tgreviews-sorting">
+		<form method="POST" action="&mvte:tgr:link;" class="tgreviews-sorting">
 			<label class="tgreviews-label">Sort By</label>
 			<mvt:if expr="g.TGR_Show_Rating">
 				<input type="hidden" name="TGR_Show_Rating" value="&mvte:global:TGR_Show_Rating;" />
@@ -265,9 +265,9 @@
 			<mvt:foreach iterator="page" array="tgr:pagination:pages">
 				<mvt:if expr="POS1 GT 1">&nbsp;</mvt:if>
 				<mvt:if expr="l.settings:page:current EQ 1">
-					<span><strong>&mvt:page:page_number;</strong></span>
+					<span><strong>&mvte:page:page_number;</strong></span>
 				<mvt:else>
-					<span><a href="&mvte:tgr:link;?&mvt:page:params;">&mvt:page:page_number;</a></span>
+					<span><a href="&mvte:tgr:link;?&mvte:page:params;">&mvte:page:page_number;</a></span>
 				</mvt:if>
 			</mvt:foreach>
 		</div>
@@ -293,13 +293,13 @@
 							<span class="tgreviews-rating-stars">&#9733;</span>
 							<mvt:assign name="l.settings:review:rating_output" value="l.settings:review:rating_output - 1" />
 						</mvt:while>
-						<span class="tgreviews-review__rating">&mvt:review:rating;</span>
+						<span class="tgreviews-review__rating">&mvte:review:rating;</span>
 					</div>
 				</div>
 
 				<div class="tgreviews-review__user">
 					<mvt:item name="tgreviews" param="Date( 'F jS, Y', l.settings:review:created, l.settings:review:formatted_created )" />
-					&mvte:review:name;<mvt:if expr="l.settings:review:location"> (&mvte:review:location;)</mvt:if> | &mvt:review:formatted_created;
+					&mvte:review:name;<mvt:if expr="l.settings:review:location"> (&mvte:review:location;)</mvt:if> | &mvte:review:formatted_created;
 				</div>
 
 				<mvt:if expr="miva_array_elements( l.settings:review:additional_fields ) GT 0">
@@ -319,7 +319,7 @@
 				</mvt:if>
 				<mvt:if expr="l.settings:review:store_reply">
 					<div class="tgreviews-review__storenote">
-						<em><strong>Note From Store Owner:</strong> &mvt:review:store_reply;</em>
+						<em><strong>Note From Store Owner:</strong> &mvte:review:store_reply;</em>
 					</div>
 				</mvt:if>
 				<div class="tgreivews-breaker"></div>

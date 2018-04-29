@@ -105,7 +105,7 @@
 																	<tr>
 																		<td>
 																			<div class="text-header" style="color:#7a838d; font-family:Arial, sans-serif; min-width:auto !important; font-size:14px; line-height:21px; text-align:right">
-																				<strong>&mvt:store:name;</strong>
+																				<strong>&mvte:store:name;</strong>
 																				<br />
 																				<a href="&mvte:urls:ABUS:auto;" target="_blank" class="link-1" style="color:#7a838d; text-decoration:none"><span class="link-1" style="color:#7a838d; text-decoration:none">
 																					&mvte:store:address;<br />
@@ -189,7 +189,7 @@
 													<table width="100%" border="0" cellspacing="0" cellpadding="0" class="spacer" style="font-size:0pt; line-height:0pt; text-align:center; width:100%; min-width:100%"><tr><td height="5" class="spacer" style="font-size:0pt; line-height:0pt; text-align:center; width:100%; min-width:100%"> </td></tr></table>
 
 													<div class="text-footer" style="color:#303748; font-family:Arial, sans-serif; min-width:auto !important; font-size:16px; line-height:24px; text-align:left">
-														<a href="&mvte:urls:SFNT:auto;" target="_blank" class="link-2" style="color:#303748; text-decoration:none"><strong class="link-2" style="color:#303748; text-decoration:none">&mvt:store:name;</strong></a>
+														<a href="&mvte:urls:SFNT:auto;" target="_blank" class="link-2" style="color:#303748; text-decoration:none"><strong class="link-2" style="color:#303748; text-decoration:none">&mvte:store:name;</strong></a>
 													</div>
 													<table width="100%" border="0" cellspacing="0" cellpadding="0" class="spacer" style="font-size:0pt; line-height:0pt; text-align:center; width:100%; min-width:100%"><tr><td height="25" class="spacer" style="font-size:0pt; line-height:0pt; text-align:center; width:100%; min-width:100%"> </td></tr></table>
 

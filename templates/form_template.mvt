@@ -129,7 +129,7 @@
 		<mvt:if expr="g.TGR_Error">
 			<div style="color: #D8000C;background-color: #FFD2D2;margin: 10px 0;padding: 0.75rem 1rem; font-size: 11px; text-transform: uppercase; font-weight: bold;">&mvte:global:TGR_Error;</div>
 		</mvt:if>
-		<form method="POST" action="&mvt:tgr:link;">
+		<form method="POST" action="&mvte:tgr:link;">
 			<input type="hidden" name="Action" value="TGRADD" />
 			<input type="hidden" name="TGR_Product_Code" value="&mvte:product:code;" />
 			<input type="hidden" name="TGR_Order_ID" value="&mvte:global:TGR_Order_ID;" />
@@ -145,8 +145,8 @@
 							<mvt:if expr="g.TGR_Rating EQ l.settings:star">
 								<mvt:assign name="l.settings:checked" value="' checked'" />
 							</mvt:if>
-							<input type="radio" name="TGR_Rating" value="&mvt:star;" id="tgrStar-&mvt:star;" style="display:none;"&mvt:checked; />
-							<label id="star--tgrStar-&mvt:star;" for="tgrStar-&mvt:star;" title="&mvt:star; Star<mvt:if expr="l.settings:star GT 1">s</mvt:if>">&#9733;</label>
+							<input type="radio" name="TGR_Rating" value="&mvte:star;" id="tgrStar-&mvte:star;" style="display:none;"&mvte:checked; />
+							<label id="star--tgrStar-&mvte:star;" for="tgrStar-&mvte:star;" title="&mvte:star; Star<mvt:if expr="l.settings:star GT 1">s</mvt:if>">&#9733;</label>
 						</mvt:foreach>
 					</div>
 				</div>
@@ -186,7 +186,7 @@
 
 			<div class="tgreviews__form-row">
 				<mvt:if expr="g.TGR_Notify EQ 1"><mvt:assign name="l.settings:tgr:notify_checked" value="' checked'" /></mvt:if>
-				<input type="checkbox" name="TGR_Notify" id="TGR_Notify" value="1"&mvt:tgr:notify_checked;>
+				<input type="checkbox" name="TGR_Notify" id="TGR_Notify" value="1"&mvte:tgr:notify_checked;>
 				<label for="TGR_Notify" class="tgreviews__form-checkboxlabel">Notify me when my review is approved</label>
 			</div>
 
@@ -195,7 +195,7 @@
 				<mvt:foreach iterator="addl" array="tgr:additional_fields">
 					<div class="tgreviews__form-row">
 						<div class="tgreviews__form-field">
-							<input type="text" class="tgreviews__form-input &mvte:global:tgr_AdditionalFields_&mvte:addl:code;_class;" id="tgr_AdditionalFields:&mvt:addl:code;" name="tgr_AdditionalFields:&mvt:addl:code;" value="&mvt:addl:value;" placeholder="&mvte:addl:name;" />
+							<input type="text" class="tgreviews__form-input &mvte:global:tgr_AdditionalFields_&mvte:addl:code;_class;" id="tgr_AdditionalFields:&mvte:addl:code;" name="tgr_AdditionalFields:&mvte:addl:code;" value="&mvte:addl:value;" placeholder="&mvte:addl:name;" />
 						</div>
 					</div>
 				</mvt:foreach>
@@ -204,7 +204,7 @@
 			<mvt:if expr="l.settings:tgr:recaptcha:enabled EQ 1">
 				<div class="tgreviews__form-row">
 					<script src="https://www.google.com/recaptcha/api.js" defer></script>
-					<div class="g-recaptcha" data-sitekey="&mvt:tgr:recaptcha:public_key;"></div>
+					<div class="g-recaptcha" data-sitekey="&mvte:tgr:recaptcha:public_key;"></div>
 				</div>
 			</mvt:if>
 
