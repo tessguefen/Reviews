@@ -2,11 +2,16 @@
 	<MvASSIGN NAME = "l.module:code"		VALUE = "tgreviews">
 	<MvASSIGN NAME = "l.module:name"		VALUE = "Product Reviews">
 	<MvASSIGN NAME = "l.module:provider"	VALUE = "Tess Guefen">
-	<MvASSIGN NAME = "l.module:version"		VALUE = "1.000">
+	<MvASSIGN NAME = "l.module:version"		VALUE = "1.001">
 	<MvASSIGN NAME = "l.module:api_ver"		VALUE = "9.06">
 	<MvASSIGN NAME = "l.module:description"	VALUE = "Product Reviews module allows your customers to easily write reviews for products. This module also allows for importing and exporting product reviews.">
 	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside, component, fields_prod, fulfill, scheduledtask, vis_product, export, import">
 </MvFUNCTION>
+
+<MvCOMMENT>
+	V 1.0001 Changes
+	- Added Email validation in the Admin (Mail After, Merchant Notification, Customer Notification Email Settings)
+</MvCOMMENT>
 
 <MvFUNCTION NAME = "Module_Install_Store" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
 	<MvCOMMENT>
@@ -445,6 +450,7 @@
 	<MvIF EXPR = "{ ( g.Review_Tab EQ 'TGR_SETT' )  }">
 		<MvASSIGN NAME = "l.void" VALUE = "{ Review_Settings_Update( g.Required, g.Mail_After, g.Merchant_Email, g.Customer_Email, g.Reviews_Per_Page, g.Reviews_Default_Sorting, g.Auto_Approve, g.Recaptcha) }">
 		<MvASSIGN NAME = "l.void" VALUE = "{ Reviews_Templates_Update( g.Reviews_Template ) }">
+		<MvASSIGN NAME = "g.Tab" VALUE = "TGR_SETT" />
 	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>

@@ -637,12 +637,24 @@
 	</MvIF>
 
 	<MvIF EXPR = "{ l.prev_settings:after NE l.mail_after:after }">		<MvASSIGN NAME = "l.prev_settings:after" 	VALUE = "{ l.mail_after:after }">	</MvIF>
-	<MvIF EXPR = "{ l.prev_settings:days NE l.mail_after:days }">		<MvASSIGN NAME = "l.prev_settings:days" VALUE = "{ l.mail_after:days }">		</MvIF>
+	<MvIF EXPR = "{ l.prev_settings:days NE l.mail_after:days }">		<MvASSIGN NAME = "l.prev_settings:days" 	VALUE = "{ l.mail_after:days }">		</MvIF>
 	<MvIF EXPR = "{ l.prev_settings:from NE l.mail_after:from }"	>	<MvASSIGN NAME = "l.prev_settings:from" 	VALUE = "{ l.mail_after:from }">	</MvIF>
 	<MvIF EXPR = "{ l.prev_settings:notify NE l.mail_after:notify }">	<MvASSIGN NAME = "l.prev_settings:notify" 	VALUE = "{ l.mail_after:notify }">	</MvIF>
-	<MvIF EXPR = "{ l.prev_settings:cc NE l.mail_after:cc }">			<MvASSIGN NAME = "l.prev_settings:cc" 	VALUE = "{ l.mail_after:cc }">			</MvIF>
-	<MvIF EXPR = "{ l.prev_settings:bcc NE l.mail_after:bcc }">			<MvASSIGN NAME = "l.prev_settings:bcc" 	VALUE = "{ l.mail_after:bcc }">			</MvIF>
+	<MvIF EXPR = "{ l.prev_settings:cc NE l.mail_after:cc }">			<MvASSIGN NAME = "l.prev_settings:cc" 		VALUE = "{ l.mail_after:cc }">			</MvIF>
+	<MvIF EXPR = "{ l.prev_settings:bcc NE l.mail_after:bcc }">			<MvASSIGN NAME = "l.prev_settings:bcc" 		VALUE = "{ l.mail_after:bcc }">			</MvIF>
 	<MvIF EXPR = "{ l.prev_settings:subject NE l.mail_after:subject }">	<MvASSIGN NAME = "l.prev_settings:subject" 	VALUE = "{ l.mail_after:subject }">	</MvIF>
+
+	<MvIF EXPR = "{ l.prev_settings:from AND NOT [ g.Module_Admin ].Validate_Email( l.prev_settings:from ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGReviews-SETT-0008', 'mail_after:from', 'Please make sure the Mail After Email From is a valid email.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ l.prev_settings:cc AND NOT [ g.Module_Admin ].Validate_Email( l.prev_settings:cc ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGReviews-SETT-0009', 'mail_after:cc', 'Please make sure the Mail After Email CC is a valid email.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ l.prev_settings:bcc AND NOT [ g.Module_Admin ].Validate_Email( l.prev_settings:bcc ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGReviews-SETT-0010', 'mail_after:bcc', 'Please make sure the Mail After Email BCC is a valid email.' ) }">
+	</MvIF>
 
 	<MvASSIGN NAME = "l.insert" VALUE = "{ miva_array_serialize( l.prev_settings ) }">
 
@@ -671,6 +683,22 @@
 	<MvIF EXPR = "{ l.prev_settings:bcc NE l.merchant_email:bcc }">			<MvASSIGN NAME = "l.prev_settings:bcc" 	VALUE = "{ l.merchant_email:bcc }">			</MvIF>
 	<MvIF EXPR = "{ l.prev_settings:subject NE l.merchant_email:subject }">	<MvASSIGN NAME = "l.prev_settings:subject" 	VALUE = "{ l.merchant_email:subject }">	</MvIF>
 
+	<MvIF EXPR = "{ l.prev_settings:to AND NOT [ g.Module_Admin ].Validate_Email( l.prev_settings:to ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGReviews-SETT-0004', 'merchant_email:to', 'Please make sure the Merchant Email To is a valid email.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ l.prev_settings:from AND NOT [ g.Module_Admin ].Validate_Email( l.prev_settings:from ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGReviews-SETT-0005', 'merchant_email:from', 'Please make sure the Merchant Email From is a valid email.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ l.prev_settings:cc AND NOT [ g.Module_Admin ].Validate_Email( l.prev_settings:cc ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGReviews-SETT-0006', 'merchant_email:cc', 'Please make sure the Merchant Email CC is a valid email.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ l.prev_settings:bcc AND NOT [ g.Module_Admin ].Validate_Email( l.prev_settings:bcc ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGReviews-SETT-0007', 'merchant_email:bcc', 'Please make sure the Merchant Email BCC is a valid email.' ) }">
+	</MvIF>
+
 	<MvASSIGN NAME = "l.insert" VALUE = "{ miva_array_serialize( l.prev_settings ) }">
 
 	<MvIF EXPR = "{ NOT Settings_Update_LowLevel( 'merchant_email', l.insert ) }">
@@ -688,12 +716,25 @@
 	<MvIF EXPR = "{ NOT Load_Setting( 'customer_email', l.prev_settings ) }">
 		<MvFUNCTIONRETURN VALUE = 0 />
 	</MvIF>
+
 	<MvASSIGN NAME = "l.prev_settings" VALUE = "{ miva_array_deserialize( l.prev_settings ) }">
 
 	<MvIF EXPR = "{ l.prev_settings:from NE l.customer_email:from }">		<MvASSIGN NAME = "l.prev_settings:from" 	VALUE = "{ l.customer_email:from }">	</MvIF>
 	<MvIF EXPR = "{ l.prev_settings:cc NE l.customer_email:cc }">			<MvASSIGN NAME = "l.prev_settings:cc" 	VALUE = "{ l.customer_email:cc }">			</MvIF>
 	<MvIF EXPR = "{ l.prev_settings:bcc NE l.customer_email:bcc }">			<MvASSIGN NAME = "l.prev_settings:bcc" 	VALUE = "{ l.customer_email:bcc }">			</MvIF>
 	<MvIF EXPR = "{ l.prev_settings:subject NE l.customer_email:subject }">	<MvASSIGN NAME = "l.prev_settings:subject" 	VALUE = "{ l.customer_email:subject }">	</MvIF>
+
+	<MvIF EXPR = "{ l.prev_settings:from AND NOT [ g.Module_Admin ].Validate_Email( l.prev_settings:from ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGReviews-SETT-0001', 'customer_email:from', 'Please make sure the Customer Email From is a valid email.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ l.prev_settings:cc AND NOT [ g.Module_Admin ].Validate_Email( l.prev_settings:cc ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGReviews-SETT-0002', 'customer_email:cc', 'Please make sure the Customer Email CC is a valid email.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ l.prev_settings:bcc AND NOT [ g.Module_Admin ].Validate_Email( l.prev_settings:bcc ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGReviews-SETT-0003', 'customer_email:bcc', 'Please make sure the Customer Email BCC is a valid email.' ) }">
+	</MvIF>
 
 	<MvASSIGN NAME = "l.insert" VALUE = "{ miva_array_serialize( l.prev_settings ) }">
 
