@@ -219,7 +219,7 @@
 				<div class="tgreviews-breakdown">
 					<div class="tgreviews-breakdown__rating">
 						<mvt:if expr="l.settings:breakdown:count GT 0">
-							<span><a href="&mvte:tgr:link;?TGR_Sort=&mvta:global:TGR_Sort;&TGR_Show_Rating=&mvte:breakdown:rating;" title="View Reviews with a rating of &mvte:breakdown:rating;">&mvte:breakdown:rating;</a></span>
+							<span><a href="&mvte:tgr:link;?TGR_Sort=&mvta:global:TGR_Sort;&TGR_Show_Rating=&mvta:breakdown:rating;" title="View Reviews with a rating of &mvte:breakdown:rating;">&mvte:breakdown:rating;</a></span>
 						<mvt:else>
 							<span>&mvte:breakdown:rating;</span>
 						</mvt:if>

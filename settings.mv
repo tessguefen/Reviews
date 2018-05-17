@@ -36,7 +36,7 @@
 	</MvIF>
 	<MvIF EXPR = "{ g.Review_Errors }">
 		<MvFOREACH ITERATOR = "l.error" ARRAY = "g.Review_Errors">
-			ERROR: <MvEVAL EXPR = "{ l.error }"><br />
+			ERROR: <MvEVAL EXPR = "{ encodeentities( l.error ) }"><br />
 		</MvFOREACH>
 	</MvIF>
 

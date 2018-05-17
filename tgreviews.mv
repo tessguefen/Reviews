@@ -466,7 +466,9 @@
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "Module_JSON" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
-	<MvIF EXPR = "{ NOT g.Admin_Open_Store }"><MvFUNCTIONRETURN></MvIF>
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }">
+		<MvFUNCTIONRETURN>
+	</MvIF>
 	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Load_Query'			}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Load_Query( l.module )		}"></MvIF>
 	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Update'				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Update( l.module )			}"></MvIF>
 	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Insert'				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Insert( l.module )			}"></MvIF>
@@ -608,7 +610,7 @@
 			tagerror	22, 0
 			do_function
 			pop
-			tagerror	22, 0
+			tagerror	22, 3
 			pushc		asm_4
 			pushn
 			jmp_eq		L_asm_success
@@ -754,7 +756,7 @@
 	<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_Functions.js' }"></script>
 	<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_Batchlist.js' }"></script>
 	<script language="JavaScript">
-		var TGR_Product_ID = <MvEVAL EXPR = "{ l.product:id }">;
+		var TGR_Product_ID = <MvEVAL EXPR = "{ int( l.product:id ) }">;
 		var TGR_Product_Code = "<MvEVAL EXPR = "{ encodejavascriptstring( l.product:code ) }">";
 		MMScreen_LoadFinished( function() { new Reviews_Batchlist(); } );
 	</script>

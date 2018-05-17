@@ -260,7 +260,7 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Product_Review_Similar" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
-	<MvASSIGN NAME = "l.check:product_id" VALUE = "{ trim( l.review:product_id ) }">
+	<MvASSIGN NAME = "l.check:product_id" VALUE = "{ int( l.review:product_id ) }">
 	<MvASSIGN NAME = "l.check:title" VALUE = "{ trim( l.review:title ) }">
 	<MvASSIGN NAME = "l.check:summary" VALUE = "{ trim( l.review:summary ) }">
 	<MvASSIGN NAME = "l.check:email" VALUE = "{ trim( l.review:email ) }">
@@ -288,10 +288,11 @@
 
 
 <MvFUNCTION NAME = "JSON_Product_Reviews_Load_Query" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }"><MvFUNCTIONRETURN></MvIF>
 	<MvASSIGN NAME = "g.Filter"			VALUE = "{ trim( g.Filter ) }">
 	<MvASSIGN NAME = "g.Sort"			VALUE = "{ trim( g.Sort ) }">
-	<MvASSIGN NAME = "g.Offset"			VALUE = "{ trim( g.Offset ) }">
-	<MvASSIGN NAME = "g.Count"			VALUE = "{ trim( g.Count ) }">
+	<MvASSIGN NAME = "g.Offset"			VALUE = "{ int( g.Offset ) }">
+	<MvASSIGN NAME = "g.Count"			VALUE = "{ int( g.Count ) }">
 	<MvASSIGN NAME = "l.search_query"	VALUE = "">
 
 	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SELECT( l.search_query,'s.*, p.code as product_code, p.name as product_name' ) }">
@@ -343,7 +344,7 @@
 					"product_code" : "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( TGReviews_Products.d.product_code ) }">",
 					"product_name" : "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( TGReviews_Products.d.product_name ) }">"
 					<MvFOREACH ITERATOR = "l.field" ARRAY = "l.fields" COUNT = "{ Load_Additional_Fields_Product_Review( TGReviews_Products.d.id, l.fields) }">
-						,"AdditionalFields_<MvEVAL EXPR = "{ l.field:code }">": "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( l.field:value ) }">"
+						,"AdditionalFields_<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( l.field:code ) }">": "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( l.field:value ) }">"
 					</MvFOREACH>
 					<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_ArrayElement_End() }">
 					<MvSKIP NAME = "Merchant" VIEW = "TGReviews_Products" ROWS = 1>
@@ -360,6 +361,10 @@
 
 
 <MvFUNCTION NAME = "JSON_Product_Reviews_Update" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }"><MvFUNCTIONRETURN></MvIF>
+
+	<MvASSIGN NAME = "g.Product_Code" VALUE = "{ [ g.Module_JSON ].JSON_Decode( g.Product_Code ) }">
+
 	<MvIF EXPR = "{ ISNULL g.Product_Code }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'product_code', 'Please select a Product Code.' ) }">
 	</MvIF>
@@ -368,28 +373,28 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'product_code', 'Please select a valid Product Code.' ) }">
 	</MvIF>
 
-	<MvASSIGN NAME = "l.review" MEMBER = "id"			VALUE = "{ g.id }">
-	<MvASSIGN NAME = "l.review" MEMBER = "created"		VALUE = "{ g.created }">
+	<MvASSIGN NAME = "l.review" MEMBER = "id"			VALUE = "{ int( g.id )}">
+	<MvASSIGN NAME = "l.review" MEMBER = "created"		VALUE = "{ int( g.created ) }">
 	<MvASSIGN NAME = "l.review" MEMBER = "product_id"	VALUE = "{ l.product:id }">
-	<MvASSIGN NAME = "l.review" MEMBER = "cust_id"		VALUE = "{ g.cust_id }">
-	<MvASSIGN NAME = "l.review" MEMBER = "order_id"		VALUE = "{ g.order_id }">
-	<MvASSIGN NAME = "l.review" MEMBER = "approved"		VALUE = "{ g.approved }">
-	<MvASSIGN NAME = "l.review" MEMBER = "rating"		VALUE = "{ g.rating }">
-	<MvASSIGN NAME = "l.review" MEMBER = "name"			VALUE = "{ g.name }">
-	<MvASSIGN NAME = "l.review" MEMBER = "email"		VALUE = "{ g.email }">
-	<MvASSIGN NAME = "l.review" MEMBER = "location"		VALUE = "{ g.location }">
-	<MvASSIGN NAME = "l.review" MEMBER = "notify"		VALUE = "{ g.notify }">
-	<MvASSIGN NAME = "l.review" MEMBER = "title"		VALUE = "{ g.title }">
-	<MvASSIGN NAME = "l.review" MEMBER = "summary"		VALUE = "{ g.summary }">
-	<MvASSIGN NAME = "l.review" MEMBER = "store_reply"	VALUE = "{ g.store_reply }">
-	<MvASSIGN NAME = "l.review" MEMBER = "verified"		VALUE = "{ g.verified }">
+	<MvASSIGN NAME = "l.review" MEMBER = "cust_id"		VALUE = "{ int( g.cust_id ) }">
+	<MvASSIGN NAME = "l.review" MEMBER = "order_id"		VALUE = "{ int( g.order_id ) }">
+	<MvASSIGN NAME = "l.review" MEMBER = "approved"		VALUE = "{ int( g.approved ) }">
+	<MvASSIGN NAME = "l.review" MEMBER = "rating"		VALUE = "{ int( g.rating ) }">
+	<MvASSIGN NAME = "l.review" MEMBER = "name"			VALUE = "{ [ g.Module_JSON ].JSON_Decode( g.name ) }">
+	<MvASSIGN NAME = "l.review" MEMBER = "email"		VALUE = "{ [ g.Module_JSON ].JSON_Decode( g.email ) }">
+	<MvASSIGN NAME = "l.review" MEMBER = "location"		VALUE = "{ [ g.Module_JSON ].JSON_Decode( g.location ) }">
+	<MvASSIGN NAME = "l.review" MEMBER = "notify"		VALUE = "{ int( g.notify ) }">
+	<MvASSIGN NAME = "l.review" MEMBER = "title"		VALUE = "{ [ g.Module_JSON ].JSON_Decode( g.title ) }">
+	<MvASSIGN NAME = "l.review" MEMBER = "summary"		VALUE = "{ [ g.Module_JSON ].JSON_Decode( g.summary ) }">
+	<MvASSIGN NAME = "l.review" MEMBER = "store_reply"	VALUE = "{ [ g.Module_JSON ].JSON_Decode( g.store_reply ) }">
+	<MvASSIGN NAME = "l.review" MEMBER = "verified"		VALUE = "{ int( g.verified ) }">
 
 
 	<MvIF EXPR = "{ NOT Product_Reviews_Update( l.review ) }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( g.Review_Field_Error, g.Review_Error ) }">
 	</MvIF>
 	<MvIF EXPR = "{ NOT ISNULL ( g.AdditionalFields ) }">
-		<MvIF EXPR = "{ NOT Product_Reviews_AdditionalValues_InsertUpdate_LowLevel( g.id, g.AdditionalFields ) }">
+		<MvIF EXPR = "{ NOT Product_Reviews_AdditionalValues_InsertUpdate_LowLevel( l.review:id, g.AdditionalFields ) }">
 			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'AdditionalFields_' $ g.Review_Field_Error, g.Review_Error ) }">
 		</MvIF>
 	</MvIF>
@@ -398,6 +403,11 @@
 
 
 <MvFUNCTION NAME = "JSON_Product_Reviews_Insert" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }"><MvFUNCTIONRETURN></MvIF>
+	
+	<MvASSIGN NAME = "g.Product_Code" VALUE = "{ [ g.Module_JSON ].JSON_Decode( g.Product_Code ) }">
+	<MvASSIGN NAME = "g.AdditionalFields" VALUE = "{ [ g.Module_JSON ].JSON_Decode( g.AdditionalFields ) }">
+
 	<MvIF EXPR = "{ ISNULL g.Product_Code }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'product_code', 'Please select a Product Code.' ) }">
 	</MvIF>
@@ -406,19 +416,19 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'product_code', 'Please select a valid Product Code.' ) }">
 	</MvIF>
 
-	<MvASSIGN NAME = "l.review" MEMBER = "created"		VALUE = "{ g.created }">
+	<MvASSIGN NAME = "l.review" MEMBER = "created"		VALUE = "{ int( g.created ) }">
 	<MvASSIGN NAME = "l.review" MEMBER = "product_id"	VALUE = "{ l.product:id }">
-	<MvASSIGN NAME = "l.review" MEMBER = "cust_id"		VALUE = "{ g.cust_id }">
-	<MvASSIGN NAME = "l.review" MEMBER = "order_id"		VALUE = "{ g.order_id }">
-	<MvASSIGN NAME = "l.review" MEMBER = "approved"		VALUE = "{ g.approved }">
-	<MvASSIGN NAME = "l.review" MEMBER = "rating"		VALUE = "{ g.rating }">
-	<MvASSIGN NAME = "l.review" MEMBER = "name"			VALUE = "{ g.name }">
-	<MvASSIGN NAME = "l.review" MEMBER = "email"		VALUE = "{ g.email }">
-	<MvASSIGN NAME = "l.review" MEMBER = "location"		VALUE = "{ g.location }">
-	<MvASSIGN NAME = "l.review" MEMBER = "notify"		VALUE = "{ g.notify }">
-	<MvASSIGN NAME = "l.review" MEMBER = "title"		VALUE = "{ g.title }">
-	<MvASSIGN NAME = "l.review" MEMBER = "summary"		VALUE = "{ g.summary }">
-	<MvASSIGN NAME = "l.review" MEMBER = "store_reply"	VALUE = "{ g.store_reply }">
+	<MvASSIGN NAME = "l.review" MEMBER = "cust_id"		VALUE = "{ int( g.cust_id ) }">
+	<MvASSIGN NAME = "l.review" MEMBER = "order_id"		VALUE = "{ int( g.order_id ) }">
+	<MvASSIGN NAME = "l.review" MEMBER = "approved"		VALUE = "{ int( g.approved ) }">
+	<MvASSIGN NAME = "l.review" MEMBER = "rating"		VALUE = "{ int( g.rating ) }">
+	<MvASSIGN NAME = "l.review" MEMBER = "name"			VALUE = "{ [ g.Module_JSON ].JSON_Decode( g.name ) }">
+	<MvASSIGN NAME = "l.review" MEMBER = "email"		VALUE = "{ [ g.Module_JSON ].JSON_Decode( g.email ) }">
+	<MvASSIGN NAME = "l.review" MEMBER = "location"		VALUE = "{ [ g.Module_JSON ].JSON_Decode( g.location ) }">
+	<MvASSIGN NAME = "l.review" MEMBER = "notify"		VALUE = "{ int( g.notify ) }">
+	<MvASSIGN NAME = "l.review" MEMBER = "title"		VALUE = "{ [ g.Module_JSON ].JSON_Decode( g.title ) }">
+	<MvASSIGN NAME = "l.review" MEMBER = "summary"		VALUE = "{ [ g.Module_JSON ].JSON_Decode( g.summary ) }">
+	<MvASSIGN NAME = "l.review" MEMBER = "store_reply"	VALUE = "{ [ g.Module_JSON ].JSON_Decode( g.store_reply ) }">
 
 	<MvIF EXPR = "{ NOT Product_Reviews_Insert( l.review ) }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( g.Review_Field_Error, g.Review_Error ) }">
@@ -452,6 +462,11 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "JSON_Review_Approved_Update" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, compresswhitespace">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }"><MvFUNCTIONRETURN></MvIF>
+
+	<MvASSIGN NAME = "g.Review_ID" VALUE = "{ int( g.Review_ID ) }">
+	<MvASSIGN NAME = "g.Approved" VALUE = "{ int( g.Approved ) }">
+
 	<MvIF EXPR = "{ ISNULL g.Review_ID }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'id', 'Review ID must be present.' ) }">
 	</MvIF>
@@ -478,6 +493,11 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "JSON_Review_Notify_Update" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, compresswhitespace">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }"><MvFUNCTIONRETURN></MvIF>
+
+	<MvASSIGN NAME = "g.Review_ID" VALUE = "{ int( g.Review_ID ) }">
+	<MvASSIGN NAME = "g.Notify" VALUE = "{ int( g.Notify ) }">
+
 	<MvIF EXPR = "{ ISNULL g.Review_ID }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'id', 'Review ID must be present.' ) }">
 	</MvIF>
@@ -504,6 +524,11 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "JSON_Review_Verified_Update" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, compresswhitespace">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }"><MvFUNCTIONRETURN></MvIF>
+
+	<MvASSIGN NAME = "g.Review_ID" VALUE = "{ int( g.Review_ID ) }">
+	<MvASSIGN NAME = "g.Verified" VALUE = "{ int( g.Verified ) }">
+
 	<MvIF EXPR = "{ ISNULL g.Review_ID }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'id', 'Review ID must be present.' ) }">
 	</MvIF>
@@ -531,6 +556,10 @@
 
 
 <MvFUNCTION NAME = "JSON_Product_Reviews_Delete" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, compresswhitespace">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }"><MvFUNCTIONRETURN></MvIF>
+
+	<MvASSIGN NAME = "g.Review_ID" VALUE = "{ int( g.Review_ID ) }">
+
 	<MvIF EXPR = "{ ISNULL g.Review_ID }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'id', 'An Error has occured.' ) }">
 	</MvIF>
@@ -606,12 +635,12 @@
 		</MvIF>
 		<MvIF EXPR = "{ AdditionalValue_Load( l.addlfield:id, l.review_id, l.value ) }">
 			<MvIF EXPR = "{ NOT AdditionalValues_Update( l.addlfield:id, l.review_id, miva_variable_value( 'l.values:' $ l.member ) ) }">
-				<MvASSIGN NAME = "g.Review_Field_Error" VALUE = "{ l.member }">
+				<MvASSIGN NAME = "g.Review_Field_Error" VALUE = "{ encodeentities( l.member ) }">
 				<MvFUNCTIONRETURN VALUE = "0" />
 			</MvIF>
 		<MvELSE>
 			<MvIF EXPR = "{ NOT AdditionalValues_Insert( l.addlfield:id, l.review_id, miva_variable_value( 'l.values:' $ l.member ) ) }">
-				<MvASSIGN NAME = "g.Review_Field_Error" VALUE = "{ l.member }">
+				<MvASSIGN NAME = "g.Review_Field_Error" VALUE = "{ encodeentities( l.member ) }">
 				<MvFUNCTIONRETURN VALUE = "0" />
 			</MvIF>
 		</MvIF>
@@ -692,12 +721,12 @@
 
 <MvFUNCTION NAME = "AdditionalValues_Update" PARAMETERS = "field_id, review_id, value" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ NOT AdditionalField_Load_ID( l.field_id, l.output ) }">
-		<MvASSIGN NAME = "g.Review_Error" VALUE = "{ 'field_id ' $ l.field_id $ ' does not exsist' }">
+		<MvASSIGN NAME = "g.Review_Error" VALUE = "{ 'field_id ' $ encodeentities( l.field_id ) $ ' does not exsist' }">
 		<MvFUNCTIONRETURN VALUE = "0" />
 	</MvIF>
 
 	<MvIF EXPR = "{ NOT Product_Review_Load_ID( l.review_id, l.old_review ) }">
-		<MvASSIGN NAME = "g.Review_Error" VALUE = "{ 'review_id ' $ l.review_id $ ' does not exsist' }">
+		<MvASSIGN NAME = "g.Review_Error" VALUE = "{ 'review_id ' $ encodeentities( l.review_id ) $ ' does not exsist' }">
 		<MvFUNCTIONRETURN VALUE = "0" />
 	</MvIF>
 
@@ -720,12 +749,12 @@
 
 <MvFUNCTION NAME = "AdditionalValues_Insert" PARAMETERS = "field_id, review_id, value" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ NOT AdditionalField_Load_ID( l.field_id, l.output ) }">
-		<MvASSIGN NAME = "g.Review_Error" VALUE = "{ 'field_id ' $ l.field_id $ ' does not exsist' }">
+		<MvASSIGN NAME = "g.Review_Error" VALUE = "{ 'field_id ' $ encodeentities( l.field_id ) $ ' does not exsist' }">
 		<MvFUNCTIONRETURN VALUE = "0" />
 	</MvIF>
 
 	<MvIF EXPR = "{ NOT Product_Review_Load_ID( l.review_id, l.old_review ) }">
-		<MvASSIGN NAME = "g.Review_Error" VALUE = "{ 'review_id ' $ l.review_id $ ' does not exsist' }">
+		<MvASSIGN NAME = "g.Review_Error" VALUE = "{ 'review_id ' $ encodeentities( l.review_id ) $ ' does not exsist' }">
 		<MvFUNCTIONRETURN VALUE = "0" />
 	</MvIF>
 
@@ -872,9 +901,10 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "JSON_AdditionalFields_Load_Query" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }"><MvFUNCTIONRETURN></MvIF>	
 	<MvASSIGN NAME = "g.Filter"			VALUE = "{ trim( g.Filter ) }">
-	<MvASSIGN NAME = "g.Sort"			VALUE = "{ trim( g.Sort ) }">
-	<MvASSIGN NAME = "g.Offset"			VALUE = "{ trim( g.Offset ) }">
+	<MvASSIGN NAME = "g.Sort"			VALUE = "{ int( g.Sort ) }">
+	<MvASSIGN NAME = "g.Offset"			VALUE = "{ int( g.Offset ) }">
 	<MvASSIGN NAME = "g.Count"			VALUE = "{ trim( g.Count ) }">
 	<MvASSIGN NAME = "l.search_query"	VALUE = "">
 
@@ -919,6 +949,12 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "JSON_AdditionalFields_Update" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }"><MvFUNCTIONRETURN></MvIF>
+
+	<MvASSIGN NAME = "g.id" VALUE = "{ int( g.id ) }">
+	<MvASSIGN NAME = "g.code" VALUE = "{ [ g.Module_JSON ].JSON_Decode( g.code ) }">
+	<MvASSIGN NAME = "g.name" VALUE = "{ [ g.Module_JSON ].JSON_Decode( g.name ) }">
+
 	<MvIF EXPR = "{ ISNULL g.id }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'id', 'Additional Fields ID can not be empty.' ) }">
 	</MvIF>
@@ -943,6 +979,11 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "JSON_AdditionalFields_Insert" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }"><MvFUNCTIONRETURN></MvIF>
+
+	<MvASSIGN NAME = "g.code" VALUE = "{ [ g.Module_JSON ].JSON_Decode( g.code ) }">
+	<MvASSIGN NAME = "g.name" VALUE = "{ [ g.Module_JSON ].JSON_Decode( g.name ) }">
+
 	<MvIF EXPR = "{ ISNULL g.code }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'code', 'Additional Fields Code can not be empty.' ) }">
 	</MvIF>
@@ -962,6 +1003,10 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "JSON_AdditionalFields_Delete" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }"><MvFUNCTIONRETURN></MvIF>
+
+	<MvASSIGN NAME = "g.Field_ID" VALUE = "{ int( g.Field_ID ) }">
+
 	<MvIF EXPR = "{ ISNULL g.Field_ID }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'id', 'Additional Fields ID can not be empty.' ) }">
 	</MvIF>
@@ -974,12 +1019,12 @@
 
 <MvFUNCTION NAME = "FrontEnd_Add_Review" PARAMETERS = "" STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN NAME = "g.TGR_Product_Code" VALUE = "{ trim( g.TGR_Product_Code ) }" />
-	<MvASSIGN NAME = "g.TGR_Order_ID" VALUE = "{ trim( g.TGR_Order_ID ) }" />
-	<MvASSIGN NAME = "g.TGR_Rating" VALUE = "{ trim( g.TGR_Rating ) }" />
+	<MvASSIGN NAME = "g.TGR_Order_ID" VALUE = "{ int( g.TGR_Order_ID ) }" />
+	<MvASSIGN NAME = "g.TGR_Rating" VALUE = "{ int( g.TGR_Rating ) }" />
 	<MvASSIGN NAME = "g.TGR_Name" VALUE = "{ trim( g.TGR_Name ) }" />
 	<MvASSIGN NAME = "g.TGR_Email" VALUE = "{ trim( g.TGR_Email ) }" />
 	<MvASSIGN NAME = "g.TGR_Location" VALUE = "{ trim( g.TGR_Location ) }" />
-	<MvASSIGN NAME = "g.TGR_Notify" VALUE = "{ trim( g.TGR_Notify ) }" />
+	<MvASSIGN NAME = "g.TGR_Notify" VALUE = "{ int( g.TGR_Notify ) }" />
 	<MvASSIGN NAME = "g.TGR_Title" VALUE = "{ trim( g.TGR_Title ) }" />
 	<MvASSIGN NAME = "g.TGR_Summary" VALUE = "{ trim( g.TGR_Summary ) }" />
 
@@ -1154,10 +1199,10 @@
 
 <MvFUNCTION NAME = "Reviews_Load_Query" PARAMETERS = "product_id, output var" STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN NAME = "g.TGR_Sort"			VALUE = "{ trim( g.TGR_Sort ) }">
-	<MvASSIGN NAME = "g.TGR_Offset"			VALUE = "{ trim( int( g.TGR_Offset ) ) }">
-	<MvASSIGN NAME = "g.TGR_Count"			VALUE = "{ trim( int( g.TGR_Count ) ) }">
-	<MvASSIGN NAME = "g.TGR_Show_Rating"	VALUE = "{ trim( int( g.TGR_Show_Rating ) ) }">
-	<MvASSIGN NAME = "g.TGR_Product_ID"		VALUE = "{ trim( int( l.product_id ) ) }">
+	<MvASSIGN NAME = "g.TGR_Offset"			VALUE = "{ int( g.TGR_Offset ) }">
+	<MvASSIGN NAME = "g.TGR_Count"			VALUE = "{ int( g.TGR_Count ) }">
+	<MvASSIGN NAME = "g.TGR_Show_Rating"	VALUE = "{ int( g.TGR_Show_Rating ) }">
+	<MvASSIGN NAME = "g.TGR_Product_ID"		VALUE = "{ int( l.product_id ) }">
 	<MvASSIGN NAME = "l.search_query"	VALUE = "">
 
 	<MvIF EXPR = "{ g.TGR_Count EQ 0 }">
