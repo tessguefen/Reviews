@@ -2,7 +2,7 @@
 	<MvASSIGN NAME = "l.module:code"		VALUE = "tgreviews">
 	<MvASSIGN NAME = "l.module:name"		VALUE = "Product Reviews">
 	<MvASSIGN NAME = "l.module:provider"	VALUE = "Tess Guefen">
-	<MvASSIGN NAME = "l.module:version"		VALUE = "1.001">
+	<MvASSIGN NAME = "l.module:version"		VALUE = "1.002">
 	<MvASSIGN NAME = "l.module:api_ver"		VALUE = "9.06">
 	<MvASSIGN NAME = "l.module:description"	VALUE = "Product Reviews module allows your customers to easily write reviews for products. This module also allows for importing and exporting product reviews.">
 	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside, component, fields_prod, fulfill, scheduledtask, vis_product, export, import">
@@ -217,7 +217,7 @@
 								notify		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_BOOL()	 		$ ',
 								title		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 255 ) 		$ ',
 								summary		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_MEMO()			$ ',
-								store_reply	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_MEMO()			$ ',
+								store_rply	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_MEMO()			$ ',
 								notified	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
 								verified	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_BOOL()			$ '
 							)' }">
@@ -323,7 +323,17 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Upgrade_Store" PARAMETERS = "module var, version" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
-	<MvFUNCTIONRETURN VALUE = 1 />
+	<MvIF EXPR = "{ l.version LT 1.002 }">
+		<MvCOMMENT>
+			Change `store_reply` to `store_rply` for MivaSQL
+		</MvCOMMENT>
+		<MvQUERY NAME	= "Merchant"
+				 QUERY	= "{ 'ALTER TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Products CHANGE store_reply store_rply ' $ [ g.Module_Library_Native_DBAPI ].DB_Type_MEMO() }">
+		<MvIF EXPR = "{ g.MvQUERY_Error }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-UPDATE-1001', 'Could not Rename store_reply to store_rply' ) }">
+		</MvIF>
+	</MvIF>
+	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Uninstall_Store" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
