@@ -155,6 +155,23 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Product_Reviews_Insert" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
+
+	<MvASSIGN NAME = "l.review:created" VALUE = "{ int( l.review:created ) }">
+	<MvASSIGN NAME = "l.review:product_id" VALUE = "{ int( l.review:product_id ) }">
+	<MvASSIGN NAME = "l.review:cust_id" VALUE = "{ int( l.review:cust_id ) }">
+	<MvASSIGN NAME = "l.review:order_id" VALUE = "{ int( l.review:order_id ) }">
+	<MvASSIGN NAME = "l.review:approved" VALUE = "{ int( l.review:approved ) }">
+	<MvASSIGN NAME = "l.review:rating" VALUE = "{ int( l.review:rating ) }">
+	<MvASSIGN NAME = "l.review:name" VALUE = "{ trim( l.review:name ) }">
+	<MvASSIGN NAME = "l.review:email" VALUE = "{ trim( l.review:email ) }">
+	<MvASSIGN NAME = "l.review:location" VALUE = "{ trim( l.review:location ) }">
+	<MvASSIGN NAME = "l.review:notify" VALUE = "{ int( l.review:notify ) }">
+	<MvASSIGN NAME = "l.review:title" VALUE = "{ trim( l.review:title ) }">
+	<MvASSIGN NAME = "l.review:summary" VALUE = "{ trim( l.review:summary ) }">
+	<MvASSIGN NAME = "l.review:store_reply" VALUE = "{ trim( l.review:store_reply ) }">
+	<MvASSIGN NAME = "l.review:notified" VALUE = "{ int( l.review:notified ) }">
+	<MvASSIGN NAME = "l.review:verified" VALUE = "{ int( l.review:verified ) }">
+
 	<MvIF EXPR = "{ ISNULL l.review:product_id }">
 		<MvASSIGN NAME = "g.Review_Field_Error" VALUE = "product_id">
 		<MvASSIGN NAME = "g.Review_Error" VALUE = "Missing Product.">
@@ -216,6 +233,23 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Product_Reviews_Update" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.review:id" VALUE = "{ int( l.review:id ) }">
+	<MvASSIGN NAME = "l.review:created" VALUE = "{ int( l.review:created ) }">
+	<MvASSIGN NAME = "l.review:product_id" VALUE = "{ int( l.review:product_id ) }">
+	<MvASSIGN NAME = "l.review:cust_id" VALUE = "{ int( l.review:cust_id ) }">
+	<MvASSIGN NAME = "l.review:order_id" VALUE = "{ int( l.review:order_id ) }">
+	<MvASSIGN NAME = "l.review:approved" VALUE = "{ int( l.review:approved ) }">
+	<MvASSIGN NAME = "l.review:rating" VALUE = "{ int( l.review:rating ) }">
+	<MvASSIGN NAME = "l.review:name" VALUE = "{ trim( l.review:name ) }">
+	<MvASSIGN NAME = "l.review:email" VALUE = "{ trim( l.review:email ) }">
+	<MvASSIGN NAME = "l.review:location" VALUE = "{ trim( l.review:location ) }">
+	<MvASSIGN NAME = "l.review:notify" VALUE = "{ int( l.review:notify ) }">
+	<MvASSIGN NAME = "l.review:title" VALUE = "{ trim( l.review:title ) }">
+	<MvASSIGN NAME = "l.review:summary" VALUE = "{ trim( l.review:summary ) }">
+	<MvASSIGN NAME = "l.review:store_reply" VALUE = "{ trim( l.review:store_reply ) }">
+	<MvASSIGN NAME = "l.review:notified" VALUE = "{ int( l.review:notified ) }">
+	<MvASSIGN NAME = "l.review:verified" VALUE = "{ int( l.review:verified ) }">
+
 	<MvIF EXPR = "{ ISNULL l.review:product_id }">
 		<MvASSIGN NAME = "g.Review_Field_Error" VALUE = "product_id">
 		<MvASSIGN NAME = "g.Review_Error" VALUE = "Missing Product.">
@@ -241,6 +275,7 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Product_Reviews_Delete" PARAMETERS = "review_id" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.review_id" VALUE = "{ int( l.review_id ) }">
 	<MvIF EXPR = "{ NOT Product_Review_Load_ID( l.review_id, l.review ) }">
 		<MvFUNCTIONRETURN VALUE = "0" />
 	</MvIF>
