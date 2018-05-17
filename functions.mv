@@ -90,7 +90,7 @@
 </MvFUNCTION>
 
 
-<MvFUNCTION NAME = "Product_Review_Load_ID" PARAMETERS = "id, review var" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Product_Review_Load_ID" PARAMETERS = "id, review var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvOPENVIEW NAME	= "Merchant"
 				VIEW 	= "TGReviews_Products_Load"
 				QUERY 	= "{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'TGReviews_Products WHERE id = ? '}"
@@ -134,7 +134,7 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Product_Reviews_Insert_Lowlevel" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Product_Reviews_Insert_Lowlevel" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.review:id" VALUE = "{ [ g.Module_Library_DB ].StoreKey_Generate( 'TGRProduct' ) }">
 
 	<MvIF EXPR = "{ ISNULL l.review:notified }">
@@ -180,7 +180,7 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Product_Reviews_Update_Lowlevel" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Product_Reviews_Update_Lowlevel" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvIF EXPR = "{ NOT Product_Review_Load_ID( l.review:id, l.old_review ) }">
 		<MvFUNCTIONRETURN VALUE = "0" />
 	</MvIF>
@@ -240,7 +240,7 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Product_Reviews_Delete" PARAMETERS = "review_id" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Product_Reviews_Delete" PARAMETERS = "review_id" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvIF EXPR = "{ NOT Product_Review_Load_ID( l.review_id, l.review ) }">
 		<MvFUNCTIONRETURN VALUE = "0" />
 	</MvIF>
@@ -259,7 +259,7 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Product_Review_Similar" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Product_Review_Similar" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.check:product_id" VALUE = "{ int( l.review:product_id ) }">
 	<MvASSIGN NAME = "l.check:title" VALUE = "{ trim( l.review:title ) }">
 	<MvASSIGN NAME = "l.check:summary" VALUE = "{ trim( l.review:summary ) }">
@@ -577,7 +577,7 @@
 	<MvASSIGN NAME = "l.field" MEMBER = "name"	VALUE = "{ miva_variable_value( l.view $ '.d.name' ) }">
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Load_Additional_Fields" PARAMETERS = "fields var" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Load_Additional_Fields" PARAMETERS = "fields var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.fields" VALUE = "">
 
 	<MvOPENVIEW	NAME	= "Merchant"
@@ -607,7 +607,7 @@
 	<MvFUNCTIONRETURN VALUE = "{ miva_array_elements( l.fields ) }">
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Load_Additional_Value" PARAMETERS = "review_id, field_id" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Load_Additional_Value" PARAMETERS = "review_id, field_id" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvIF EXPR = "{ NOT Product_Review_Load_ID( l.review_id, l.review ) }">
 		<MvFUNCTIONRETURN VALUE = "" />
 	</MvIF>
@@ -648,7 +648,7 @@
 	<MvFUNCTIONRETURN VALUE = "1" />
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "AdditionalField_Load_ID" PARAMETERS = "id, output var" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "AdditionalField_Load_ID" PARAMETERS = "id, output var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvOPENVIEW	NAME	= "Merchant"
 				VIEW	= "TGReviews_AdditionalFields"
 				QUERY	= "{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalFields WHERE id = ?' }"
@@ -669,7 +669,7 @@
 	<MvFUNCTIONRETURN VALUE = "1">
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "AdditionalField_Load_Code" PARAMETERS = "code, output var" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "AdditionalField_Load_Code" PARAMETERS = "code, output var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvOPENVIEW	NAME	= "Merchant"
 				VIEW	= "TGReviews_AdditionalFields"
 				QUERY	= "{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalFields WHERE code = ?' }"
@@ -698,7 +698,7 @@
 
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "AdditionalValue_Load" PARAMETERS = "field_id, review_id, output var" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "AdditionalValue_Load" PARAMETERS = "field_id, review_id, output var" STANDARDOUTPUTLEVEL = ""  ERROROUTPUTLEVEL = "">
 	<MvOPENVIEW	NAME	= "Merchant"
 				VIEW	= "TGReviews_AdditionalValues"
 				QUERY	= "{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalValues WHERE field_id = ? AND rating_id = ?' }"
@@ -719,7 +719,7 @@
 	<MvFUNCTIONRETURN VALUE = "1">
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "AdditionalValues_Update" PARAMETERS = "field_id, review_id, value" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "AdditionalValues_Update" PARAMETERS = "field_id, review_id, value" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvIF EXPR = "{ NOT AdditionalField_Load_ID( l.field_id, l.output ) }">
 		<MvASSIGN NAME = "g.Review_Error" VALUE = "{ 'field_id ' $ encodeentities( l.field_id ) $ ' does not exsist' }">
 		<MvFUNCTIONRETURN VALUE = "0" />
@@ -747,7 +747,7 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "AdditionalValues_Insert" PARAMETERS = "field_id, review_id, value" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "AdditionalValues_Insert" PARAMETERS = "field_id, review_id, value" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvIF EXPR = "{ NOT AdditionalField_Load_ID( l.field_id, l.output ) }">
 		<MvASSIGN NAME = "g.Review_Error" VALUE = "{ 'field_id ' $ encodeentities( l.field_id ) $ ' does not exsist' }">
 		<MvFUNCTIONRETURN VALUE = "0" />
@@ -771,7 +771,7 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "AdditionalValues_Delete_Review" PARAMETERS = "review_id" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "AdditionalValues_Delete_Review" PARAMETERS = "review_id" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvQUERY NAME	= "Merchant"
 			 QUERY	= "{ 'DELETE FROM ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalValues WHERE rating_id = ?' }"
 			 FIELDS	= "l.review_id">
@@ -782,7 +782,7 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "AdditionalFields_Update" PARAMETERS = "field" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "AdditionalFields_Update" PARAMETERS = "field" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.field:id" 	VALUE = "{ trim( l.field:id ) }">
 	<MvASSIGN NAME = "l.field:code"	VALUE = "{ trim( l.field:code ) }">
 	<MvASSIGN NAME = "l.field:name"	VALUE = "{ trim( l.field:name ) }">
@@ -834,7 +834,7 @@
 	<MvFUNCTIONRETURN VALUE = 1 />
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "AdditionalFields_Insert" PARAMETERS = "field var" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "AdditionalFields_Insert" PARAMETERS = "field var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 
 	<MvASSIGN NAME = "l.field:code"	VALUE = "{ trim( l.field:code ) }">
 	<MvASSIGN NAME = "l.field:name"	VALUE = "{ trim( l.field:name ) }">
@@ -878,7 +878,7 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "AdditionalFields_Delete" PARAMETERS = "field_id" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "AdditionalFields_Delete" PARAMETERS = "field_id" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvIF EXPR = "{ NOT AdditionalField_Load_ID( l.field_id, l.field ) }">
 		<MvFUNCTIONRETURN VALUE = 0 />
 	</MvIF>
@@ -1612,7 +1612,7 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Review_Check_Verified" PARAMETERS = "email, product_id" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Review_Check_Verified" PARAMETERS = "email, product_id" STANDARDOUTPUTLEVEL = ""  ERROROUTPUTLEVEL = "">
 	<MvOPENVIEW	NAME	= "Merchant"
 				VIEW	= "Review_CheckXLoad"
 				QUERY	= "{	'SELECT
@@ -1676,7 +1676,7 @@
 	<MvFUNCTIONRETURN VALUE = 1 />
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Trigger_MailAfter_Email" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Trigger_MailAfter_Email" STANDARDOUTPUTLEVEL = ""  ERROROUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'mail_after', l.mail_after ) }">
 	<MvASSIGN NAME = "l.mail_after" VALUE = "{ miva_array_deserialize( l.mail_after ) }">
 
@@ -1813,7 +1813,7 @@
 	<MvFUNCTIONRETURN VALUE = 1 />
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Reviews_Add_Order" PARAMETERS = "order_id" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Reviews_Add_Order" PARAMETERS = "order_id" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvQUERY NAME	= "Merchant"
 			 QUERY	= "{ 'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviews_Orders
 					      ( order_id )
@@ -1826,7 +1826,7 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Remove_Order" PARAMETERS = "order_id" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Remove_Order" PARAMETERS = "order_id" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvQUERY NAME	= "Merchant"
 			 QUERY	= "{ 'DELETE FROM ' $ g.Store_Table_Prefix $ 'TGReviews_Orders WHERE order_id = ?' }"
 			 FIELDS	= "l.order_id">
@@ -1836,7 +1836,7 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Review_Check_EmailXProduct" PARAMETERS = "email, product_id" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Review_Check_EmailXProduct" PARAMETERS = "email, product_id" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvOPENVIEW	NAME	= "Merchant"
 				VIEW	= "TGReviews_EmailXProduct"
 				QUERY	= "{ 'SELECT id FROM ' $ g.Store_Table_Prefix $ 'TGReviews_Products WHERE email = ? AND product_id = ?' }"

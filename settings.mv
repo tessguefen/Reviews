@@ -508,7 +508,7 @@
 	<MvFUNCTIONRETURN VALUE = 1 />
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Settings_Update_LowLevel" PARAMETERS = "name, value" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Settings_Update_LowLevel" PARAMETERS = "name, value" STANDARDOUTPUTLEVEL = ""  ERROROUTPUTLEVEL = "">
 	<MvCOMMENT>
 	|
 	|	Lowlevel version of other `Settings Update` Functions.
