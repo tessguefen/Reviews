@@ -1,5 +1,7 @@
 # Reviews
 
+**Current Version 1.002**
+
 ## Item Functions
 ```xml
 <mvt:item name="tgreviews" param="Form_Template()" />
