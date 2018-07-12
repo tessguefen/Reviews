@@ -1240,8 +1240,11 @@
 	<MvASSIGN NAME = "g.TGR_Product_ID"		VALUE = "{ int( l.product_id ) }">
 	<MvASSIGN NAME = "l.search_query"	VALUE = "">
 
-	<MvIF EXPR = "{ g.TGR_Count EQ 0 }">
+	<MvIF EXPR = "{ g.TGR_Count LE 0 }">
 		<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'reviews_per_page', g.TGR_Count ) }">
+	</MvIF>
+	<MvIF EXPR = "{ g.TGR_Count LE 0 }">
+		<MvASSIGN NAME = "g.TGR_Count" VALUE = "5" />
 	</MvIF>
 
 	<MvIF EXPR = "{	g.TGR_Sort NE '-id'			AND
@@ -1342,7 +1345,6 @@
 			<MvASSIGN NAME = "l.begin" VALUE = "{ l.output:pagination:current_page - 2 }">
 		</MvIF>
 	</MvIF>
-
 
 	<MvFOR INDEX = "l.page_count" COUNT = "{ l.output:pagination:total }">
 		<MvASSIGN NAME = "l.curr_offset" VALUE = "{ ( g.TGR_Count * l.page_count ) - g.TGR_Count }">
