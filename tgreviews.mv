@@ -13,7 +13,7 @@
 	- Added Email validation in the Admin (Mail After, Merchant Notification, Customer Notification Email Settings)
 
 	V 1.0003 Changes
-	Updated g.TRG_Count to always be GT 0.
+	Updated g.TGR_Count to always be GT 0.
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "Module_Install_Store" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
