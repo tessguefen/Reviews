@@ -58,3 +58,7 @@ This will trigger the email for any order you specify, to the email you specify.
 ## Admin UI
 ![Yaaaaas](http://puu.sh/y4CIO/2af7659075.png)
 ![Admin UI](http://puu.sh/y7gbJ/cd4c2372d3.png)
+
+## Future Feature Wishlist
+- Do Not Email Me List
+- Trigger emails (2 more) based on X days (if customer hasn't reviewed yet)
