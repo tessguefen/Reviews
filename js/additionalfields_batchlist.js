@@ -1,5 +1,14 @@
 function AdditionalFields_Batchlist() {
 	var self = this;
+	self.Construct();
+	self.onConstruct();
+}
+
+DeriveFrom( MMBatchList, AdditionalFields_Batchlist );
+
+AdditionalFields_Batchlist.prototype.Construct = function() {
+	var self = this;
+
 	MMBatchList.call( self, 'jsAdditionalFields_Batchlist' );
 	self.Feature_SearchBar_SetPlaceholderText( 'Search Additional Fields...' );
 	self.SetDefaultSort( 'id', '' );
@@ -7,10 +16,9 @@ function AdditionalFields_Batchlist() {
 	self.Feature_Edit_Enable('Edit Additional Field(s)');
 	self.Feature_Delete_Enable('Delete Additional Field(s)');
 	self.Feature_RowDoubleClick_Enable();
-	self.processingdialog = new ProcessingDialog();
 }
 
-DeriveFrom( MMBatchList, AdditionalFields_Batchlist );
+AdditionalFields_Batchlist.prototype.onConstruct = function() { ; }
 
 AdditionalFields_Batchlist.prototype.onLoad = AdditionalFields_Load_Query;
 

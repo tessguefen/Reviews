@@ -52,6 +52,7 @@
 |		Product_Review_Breakdowns( module var, param, all_settings var, product_id, return var )
 |		Date( module var, param, all_settings var, format, timestamp, return var )
 |		Review_Check_Verified( email, product_id )
+|		Product_Rating_Review_Count( product_id, return var )
 |
 |	Email Triggers
 |		Trigger_Merchant_Email( review_id )
@@ -193,6 +194,53 @@
 		<MvASSIGN NAME = "g.Review_Error" VALUE = "{ g.MvQUERY_Error }">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Product_Rating_Review_Count" PARAMETERS = "product_id, return var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.product_id" VALUE = "{ int( l.product_id ) }">
+
+	<MvIF EXPR = "{ NOT ISNULL miva_variable_value( 'g.Session:cache:TGR:Product_' $ l.product_id $ ':rating' ) AND
+					NOT ISNULL miva_variable_value( 'g.Session:cache:TGR:Product_' $ l.product_id $ ':review_count' ) }">
+		<MvASSIGN NAME = "l.return" MEMBER = "rating"		VALUE = "{ miva_variable_value( 'g.Session:cache:TGR:Product_' $ l.product_id $ ':rating' ) }">
+		<MvASSIGN NAME = "l.return" MEMBER = "review_count"	VALUE = "{ miva_variable_value( 'g.Session:cache:TGR:Product_' $ l.product_id $ ':review_count' ) }">
+		<MvFUNCTIONRETURN VALUE = 1 />
+	</MvIF>
+
+	<MvASSIGN NAME = "l.return" MEMBER = "rating"		VALUE = 0>
+	<MvASSIGN NAME = "l.return" MEMBER = "review_count"	VALUE = 0>
+
+	<MvOPENVIEW NAME	= "Merchant"
+				VIEW 	= "TGReviews_Products"
+				QUERY 	= "{ 'SELECT
+								AVG( rating ) as rating,
+								COUNT( id ) as review_count
+							  FROM ' $ g.Store_Table_Prefix $ 'TGReviews_Products
+							  WHERE
+							  	product_id = ? AND
+							  	approved = 1'}"
+				FIELDS	= "l.product_id">
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-ERROR-0001', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ TGReviews_Products.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_Products">
+
+		<MvASSIGN NAME = "{ 'g.Session:cache:TGR:Product_' $ l.product_id }" MEMBER = "rating"		VALUE = "{ l.return:rating }">
+		<MvASSIGN NAME = "{ 'g.Session:cache:TGR:Product_' $ l.product_id }" MEMBER = "review_count"	VALUE = "{ l.return:review_count }">
+
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( 'TGReviews-ERROR-0002' ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.return" MEMBER = "rating"		VALUE = "{ TGReviews_Products.d.rating }">
+	<MvASSIGN NAME = "l.return" MEMBER = "review_count"	VALUE = "{ TGReviews_Products.d.review_count }">
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_Products">
+
+	<MvASSIGN NAME = "{ 'g.Session:cache:TGR:Product_' $ l.product_id }" MEMBER = "rating"		VALUE = "{ l.return:rating }">
+	<MvASSIGN NAME = "{ 'g.Session:cache:TGR:Product_' $ l.product_id }" MEMBER = "review_count"	VALUE = "{ l.return:review_count }">
 
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
@@ -1243,6 +1291,7 @@
 	<MvIF EXPR = "{ g.TGR_Count LE 0 }">
 		<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'reviews_per_page', g.TGR_Count ) }">
 	</MvIF>
+	<MvASSIGN NAME = "g.TGR_Count"			VALUE = "{ int( g.TGR_Count ) }">
 	<MvIF EXPR = "{ g.TGR_Count LE 0 }">
 		<MvASSIGN NAME = "g.TGR_Count" VALUE = "5" />
 	</MvIF>

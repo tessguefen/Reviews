@@ -2,18 +2,22 @@
 	<MvASSIGN NAME = "l.module:code"		VALUE = "tgreviews">
 	<MvASSIGN NAME = "l.module:name"		VALUE = "Product Reviews">
 	<MvASSIGN NAME = "l.module:provider"	VALUE = "Tess Guefen">
-	<MvASSIGN NAME = "l.module:version"		VALUE = "1.003">
+	<MvASSIGN NAME = "l.module:version"		VALUE = "1.004">
 	<MvASSIGN NAME = "l.module:api_ver"		VALUE = "9.06">
 	<MvASSIGN NAME = "l.module:description"	VALUE = "Product Reviews module allows your customers to easily write reviews for products. This module also allows for importing and exporting product reviews.">
 	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside, component, fields_prod, fulfill, scheduledtask, vis_product, export, import">
 </MvFUNCTION>
 
 <MvCOMMENT>
-	V 1.0001 Changes
+	v1.0001 Changes
 	- Added Email validation in the Admin (Mail After, Merchant Notification, Customer Notification Email Settings)
 
-	V 1.0003 Changes
-	Updated g.TGR_Count to always be GT 0.
+	v1.0003 Changes
+	- Updated g.TGR_Count to always be GT 0.
+
+	v1.004 Changes
+	- Fixed Module_Product_Field_Value
+	- Added tgr_review_count
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "Module_Install_Store" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
@@ -50,45 +54,45 @@
 	|
 	</MvCOMMENT>
 
-	<MvASSIGN NAME = "l.defaults:required:email" VALUE = 1 />
-	<MvASSIGN NAME = "l.defaults:required:location" VALUE = 0 />
-	<MvASSIGN NAME = "l.defaults:required:name" VALUE = 1 />
-	<MvASSIGN NAME = "l.defaults:required:summary" VALUE = 1 />
-	<MvASSIGN NAME = "l.defaults:required:title" VALUE = 1 />
+	<MvASSIGN NAME = "l.defaults:required:email" VALUE = 1>
+	<MvASSIGN NAME = "l.defaults:required:location" VALUE = 0>
+	<MvASSIGN NAME = "l.defaults:required:name" VALUE = 1>
+	<MvASSIGN NAME = "l.defaults:required:summary" VALUE = 1>
+	<MvASSIGN NAME = "l.defaults:required:title" VALUE = 1>
 
 	<MvASSIGN NAME = "l.required" VALUE = "{ miva_array_serialize( l.defaults:required ) }">
-	<MvASSIGN NAME = "l.required_name" VALUE = "required" />
+	<MvASSIGN NAME = "l.required_name" VALUE = "required">
 
-	<MvASSIGN NAME = "l.defaults:mail_after:notify" VALUE = 0 />
-	<MvASSIGN NAME = "l.defaults:mail_after:days" VALUE = 7 />
-	<MvASSIGN NAME = "l.defaults:mail_after:after" VALUE = "order" />
-	<MvASSIGN NAME = "l.defaults:mail_after:from" VALUE = "{ g.Store:email }" />
-	<MvASSIGN NAME = "l.defaults:mail_after:cc" VALUE = "" />
-	<MvASSIGN NAME = "l.defaults:mail_after:bcc" VALUE = "" />
-	<MvASSIGN NAME = "l.defaults:mail_after:subject" VALUE = "{ 'Please Review Your Recent Purchase on ' $ g.Store:name }" />
+	<MvASSIGN NAME = "l.defaults:mail_after:notify" VALUE = 0>
+	<MvASSIGN NAME = "l.defaults:mail_after:days" VALUE = 7>
+	<MvASSIGN NAME = "l.defaults:mail_after:after" VALUE = "order">
+	<MvASSIGN NAME = "l.defaults:mail_after:from" VALUE = "{ g.Store:email }">
+	<MvASSIGN NAME = "l.defaults:mail_after:cc" VALUE = "">
+	<MvASSIGN NAME = "l.defaults:mail_after:bcc" VALUE = "">
+	<MvASSIGN NAME = "l.defaults:mail_after:subject" VALUE = "{ 'Please Review Your Recent Purchase on ' $ g.Store:name }">
 
 	<MvASSIGN NAME = "l.mail_after" VALUE = "{ miva_array_serialize( l.defaults:mail_after ) }">
-	<MvASSIGN NAME = "l.mail_after_name" VALUE = "mail_after" />
+	<MvASSIGN NAME = "l.mail_after_name" VALUE = "mail_after">
 
 
-	<MvASSIGN NAME = "l.defaults:merchant_email:notify" VALUE = 0 />
-	<MvASSIGN NAME = "l.defaults:merchant_email:to" VALUE = "{ g.Store:email }" />
-	<MvASSIGN NAME = "l.defaults:merchant_email:from" VALUE = "{ g.Store:email }" />
-	<MvASSIGN NAME = "l.defaults:merchant_email:cc" VALUE = "" />
-	<MvASSIGN NAME = "l.defaults:merchant_email:bcc" VALUE = "" />
-	<MvASSIGN NAME = "l.defaults:merchant_email:subject" VALUE = "{ 'You have Received a Product Review on ' $ g.Store:name }" />
+	<MvASSIGN NAME = "l.defaults:merchant_email:notify" VALUE = 0>
+	<MvASSIGN NAME = "l.defaults:merchant_email:to" VALUE = "{ g.Store:email }">
+	<MvASSIGN NAME = "l.defaults:merchant_email:from" VALUE = "{ g.Store:email }">
+	<MvASSIGN NAME = "l.defaults:merchant_email:cc" VALUE = "">
+	<MvASSIGN NAME = "l.defaults:merchant_email:bcc" VALUE = "">
+	<MvASSIGN NAME = "l.defaults:merchant_email:subject" VALUE = "{ 'You have Received a Product Review on ' $ g.Store:name }">
 
 	<MvASSIGN NAME = "l.merchant_email" VALUE = "{ miva_array_serialize( l.defaults:merchant_email ) }">
-	<MvASSIGN NAME = "l.merchant_email_name" VALUE = "merchant_email" />
+	<MvASSIGN NAME = "l.merchant_email_name" VALUE = "merchant_email">
 
 
-	<MvASSIGN NAME = "l.defaults:customer_email:from" VALUE = "{ g.Store:email }" />
-	<MvASSIGN NAME = "l.defaults:customer_email:cc" VALUE = "" />
-	<MvASSIGN NAME = "l.defaults:customer_email:bcc" VALUE = "" />
-	<MvASSIGN NAME = "l.defaults:customer_email:subject" VALUE = "{ 'Your Recent Product Review on ' $ g.Store:name }" />
+	<MvASSIGN NAME = "l.defaults:customer_email:from" VALUE = "{ g.Store:email }">
+	<MvASSIGN NAME = "l.defaults:customer_email:cc" VALUE = "">
+	<MvASSIGN NAME = "l.defaults:customer_email:bcc" VALUE = "">
+	<MvASSIGN NAME = "l.defaults:customer_email:subject" VALUE = "{ 'Your Recent Product Review on ' $ g.Store:name }">
 
 	<MvASSIGN NAME = "l.customer_email" VALUE = "{ miva_array_serialize( l.defaults:customer_email ) }">
-	<MvASSIGN NAME = "l.customer_email_name" VALUE = "customer_email" />
+	<MvASSIGN NAME = "l.customer_email_name" VALUE = "customer_email">
 
 	<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_Item( 'tgreviews',  l.module:code ) }">
 		<MvASSIGN NAME = "l.void" VALUE = "{ Module_Uninstall_Store( l.module ) }">
@@ -107,17 +111,17 @@
 	<MvASSIGN NAME = "l.reviews_template:id" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplate( l.reviews_template:code, NULL, 'tgr_reviews.mvc' ) }">
 	<MvASSIGN NAME = "l.reviews_template:name" VALUE = "reviews_template">
 
-	<MvASSIGN NAME = "l.reviews_per_page" VALUE = "5" />
-	<MvASSIGN NAME = "l.reviews_per_page_name" VALUE = "reviews_per_page" />
+	<MvASSIGN NAME = "l.reviews_per_page" VALUE = "5">
+	<MvASSIGN NAME = "l.reviews_per_page_name" VALUE = "reviews_per_page">
 
-	<MvASSIGN NAME = "l.reviews_default_sorting" VALUE = "-id" />
-	<MvASSIGN NAME = "l.reviews_default_sorting_name" VALUE = "reviews_default_sorting" />
+	<MvASSIGN NAME = "l.reviews_default_sorting" VALUE = "-id">
+	<MvASSIGN NAME = "l.reviews_default_sorting_name" VALUE = "reviews_default_sorting">
 
-	<MvASSIGN NAME = "l.auto_approve" VALUE = "0" />
-	<MvASSIGN NAME = "l.auto_approve_name" VALUE = "auto_approve" />
+	<MvASSIGN NAME = "l.auto_approve" VALUE = "0">
+	<MvASSIGN NAME = "l.auto_approve_name" VALUE = "auto_approve">
 
-	<MvASSIGN NAME = "l.recaptcha" VALUE = "" />
-	<MvASSIGN NAME = "l.recaptcha_name" VALUE = "recaptcha" />
+	<MvASSIGN NAME = "l.recaptcha" VALUE = "">
+	<MvASSIGN NAME = "l.recaptcha_name" VALUE = "recaptcha">
 
 	<MvQUERY	NAME	=	"Merchant"
 				QUERY	=	"{	'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviews_Settings
@@ -322,7 +326,7 @@
 		<MvASSIGN NAME = "l.void" VALUE = "{ Module_Uninstall_Store( l.module ) }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-INSTALL-0014', 'An error occured while creating the store key, TGRAdditional. Please make sure this does not already exsist.' ) }">
 	</MvIF>
-	<MvFUNCTIONRETURN VALUE = 1 />
+	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Upgrade_Store" PARAMETERS = "module var, version" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
@@ -371,7 +375,7 @@
 
 	<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Library_DB ].StoreKey_Delete( 'TGRProduct' ) }">
 	<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Library_DB ].StoreKey_Delete( 'TGRAdditional' ) }">
-	<MvFUNCTIONRETURN VALUE = 1 />
+	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 
@@ -463,7 +467,7 @@
 	<MvIF EXPR = "{ ( g.Review_Tab EQ 'TGR_SETT' )  }">
 		<MvASSIGN NAME = "l.void" VALUE = "{ Review_Settings_Update( g.Required, g.Mail_After, g.Merchant_Email, g.Customer_Email, g.Reviews_Per_Page, g.Reviews_Default_Sorting, g.Auto_Approve, g.Recaptcha) }">
 		<MvASSIGN NAME = "l.void" VALUE = "{ Reviews_Templates_Update( g.Reviews_Template ) }">
-		<MvASSIGN NAME = "g.Tab" VALUE = "TGR_SETT" />
+		<MvASSIGN NAME = "g.Tab" VALUE = "TGR_SETT">
 	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
@@ -601,7 +605,7 @@
 	</MvCOMMENT>
 
 	<MvIF EXPR = "{ ISNULL l.new_param }">
-		<MvFUNCTIONRETURN VALUE = "" />
+		<MvFUNCTIONRETURN VALUE = "">
 	</MvIF>
 
 	<MvASSEMBLY>
@@ -643,12 +647,16 @@
 
 	<MvASSIGN NAME = "l.fields" INDEX = "1" MEMBER = "code" VALUE = "tgr_rating">
 	<MvASSIGN NAME = "l.fields" INDEX = "1" MEMBER = "name" VALUE = "Product Rating">
+	<MvASSIGN NAME = "l.fields" INDEX = "2" MEMBER = "code" VALUE = "tgr_review_count">
+	<MvASSIGN NAME = "l.fields" INDEX = "2" MEMBER = "name" VALUE = "Product Review Count">
 
-	<MvFUNCTIONRETURN VALUE = 1>
+	<MvFUNCTIONRETURN VALUE = 2>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Product_Field_Name" PARAMETERS = "module var, code" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ l.code EQ 'tgr_rating' }">
+		<MvFUNCTIONRETURN VALUE = "Product Rating">
+	<MvELSEIF EXPR = "{ l.code EQ 'tgr_review_count' }">
 		<MvFUNCTIONRETURN VALUE = "Product Rating">
 	</MvIF>
 
@@ -656,8 +664,17 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Product_Field_Value" PARAMETERS = "module var, product_id, code" STANDARDOUTPUTLEVEL = "">
-	<MvASSIGN NAME = "l.void" VALUE = "{ Product_Rating( l.module, l.param, l.all_settings, l.product_id, l.rating ) }">
-	<MvFUNCTIONRETURN VALUE = "{ l.rating }" />
+	<MvIF EXPR = "{ l.code EQ 'tgr_rating' }">
+		<MvASSIGN NAME = "l.void" VALUE = "{ Product_Rating_Review_Count( l.product_id, l.return ) }">
+		
+		<MvFUNCTIONRETURN VALUE = "{ l.return:rating }">
+	<MvELSEIF EXPR = "{ l.code EQ 'tgr_review_count' }">
+		<MvASSIGN NAME = "l.void" VALUE = "{ Product_Rating_Review_Count( l.product_id, l.return ) }">
+
+		<MvFUNCTIONRETURN VALUE = "{ l.return:review_count }">
+	<MvELSE>
+		<MvFUNCTIONRETURN VALUE = "">
+	</MvIF>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Product_Set_Field" PARAMETERS = "module var, product_id, code, value" STANDARDOUTPUTLEVEL = "">
@@ -679,17 +696,17 @@
 	<MvASSIGN NAME = "l.mail_after" VALUE = "{ miva_array_deserialize( l.mail_after ) }">
 
 	<MvIF EXPR = "{ l.mail_after:notify NE 1 }">
-		<MvFUNCTIONRETURN VALUE = 1 />
+		<MvFUNCTIONRETURN VALUE = 1>
 	</MvIF>
 
 	<MvASSIGN NAME = "l.order_source"		VALUE = "{ tolower( l.order:source ) }">
 	<MvIF EXPR = "{ [ g.Module_Library_Utilities ].Value_In_List( l.order_source, 'subscription,marketplaces_ebay,marketplaces_amazon,marketplaces_etsy' ) }">
-		<MvFUNCTIONRETURN VALUE = 1 />
+		<MvFUNCTIONRETURN VALUE = 1>
 	</MvIF>
 
 	<MvASSIGN NAME = "l.void" VALUE = "{ Reviews_Add_Order( l.order:id ) }">
 
-	<MvFUNCTIONRETURN VALUE = 1 />
+	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvCOMMENT>
@@ -773,7 +790,7 @@
 		var TGR_Product_Code = "<MvEVAL EXPR = "{ encodejavascriptstring( l.product:code ) }">";
 		MMScreen_LoadFinished( function() { new Reviews_Batchlist(); } );
 	</script>
-	<MvFUNCTIONRETURN VALUE = 1 />
+	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 
@@ -788,7 +805,7 @@
 
 
 <MvFUNCTION NAME = "Module_Product_Update" PARAMETERS = "module var, product var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
-	<MvFUNCTIONRETURN VALUE = 1 />
+	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Product_Insert" PARAMETERS = "module var, product var" STANDARDOUTPUTLEVEL = "compresswhitespace">
@@ -817,7 +834,7 @@
 	|
 	</MvCOMMENT>
 
-	<MvASSIGN NAME = "g.Exp_Count" VALUE = "250" />
+	<MvASSIGN NAME = "g.Exp_Count" VALUE = "250">
 
 	<MvIF EXPR = "{ NOT g.Review_Export_Continue }">
 		<MvIF EXPR = "{ fexists( '/' $ g.Reviews_Export_File ) }">
@@ -839,7 +856,7 @@
 
 	<MvEVAL EXPR = "{ Export_Reviews( l.reviews ) }">
 	
-	<MvASSIGN NAME = "l.output" VALUE = "" />
+	<MvASSIGN NAME = "l.output" VALUE = "">
 	<MvFOREACH ITERATOR = "l.review" ARRAY = "l.reviews">
 		<MvASSIGN NAME = "l.output" VALUE = "{ l.output $ CSV_Add( l.review, g.Exp_Addl_Fields ) }">
 
@@ -936,7 +953,7 @@
 					<tr>
 						<td valign="top"><strong>Export Product Reviews to File:</strong></td>
 						<td width="100%">
-							<input type="text" name="Reviews_Export_File" size="40" value="{ encodeentities( g.Reviews_Export_File ) }"><br />
+							<input type="text" name="Reviews_Export_File" size="40" value="{ encodeentities( g.Reviews_Export_File ) }"><br>
 							<em>This is located in the private directory. This will be deleted if it already exists.</em>
 						</td>
 					</tr>
