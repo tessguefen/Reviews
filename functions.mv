@@ -1286,12 +1286,20 @@
 	<MvASSIGN NAME = "g.TGR_Count"			VALUE = "{ int( g.TGR_Count ) }">
 	<MvASSIGN NAME = "g.TGR_Show_Rating"	VALUE = "{ int( g.TGR_Show_Rating ) }">
 	<MvASSIGN NAME = "g.TGR_Product_ID"		VALUE = "{ int( l.product_id ) }">
-	<MvASSIGN NAME = "l.search_query"	VALUE = "">
+
+	<MvASSIGN NAME = "l.search_query"						VALUE = "">
+	<MvASSIGN NAME = "l.output:pagination"					VALUE = "">
+	<MvASSIGN NAME = "l.output:full_pagination"				VALUE = "">
+	<MvASSIGN NAME = "l.output:reviews"						VALUE = "">
+	<MvASSIGN NAME = "l.output:total_reviews_filtered"		VALUE = "">
+	<MvASSIGN NAME = "l.output:start_offset"				VALUE = "">
 
 	<MvIF EXPR = "{ g.TGR_Count LE 0 }">
 		<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'reviews_per_page', g.TGR_Count ) }">
 	</MvIF>
-	<MvASSIGN NAME = "g.TGR_Count"			VALUE = "{ int( g.TGR_Count ) }">
+
+	<MvASSIGN NAME = "g.TGR_Count" VALUE = "{ int( g.TGR_Count ) }">
+
 	<MvIF EXPR = "{ g.TGR_Count LE 0 }">
 		<MvASSIGN NAME = "g.TGR_Count" VALUE = "5" />
 	</MvIF>
@@ -1354,8 +1362,8 @@
 
 		<MvSKIP NAME = "Merchant" VIEW = "TGReviews_Products" ROWS = 1>
 	</MvWHILE>
-	<MvASSIGN NAME = "l.output" MEMBER = "total_reviews_filtered" VALUE = "{ int( l.total_count ) }">
-	<MvASSIGN NAME = "l.output" MEMBER = "start_offset" VALUE = "{ int( g.TGR_Offset ) }">
+	<MvASSIGN NAME = "l.output:total_reviews_filtered" VALUE = "{ int( l.total_count ) }">
+	<MvASSIGN NAME = "l.output:start_offset"			VALUE = "{ int( g.TGR_Offset ) }">
 	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_Products">
 
 	<MvASSIGN NAME = "l.void" VALUE = "{ Product_Rating( l.module, l.param, l.all_settings, l.product_id, l.output:product_rating ) }">
@@ -1367,9 +1375,11 @@
 	|	Pagination
 	|
 	</MvCOMMENT>
+
 	<MvIF EXPR = "{ l.output:total_reviews_filtered EQ 0 }">
 		<MvFUNCTIONRETURN VALUE = 1 />
 	</MvIF>
+
 	<MvASSIGN NAME = "l.output:pagination" MEMBER ="total" VALUE = "{ ceil( l.output:total_reviews_filtered / g.TGR_Count ) }">
 	<MvASSIGN NAME = "l.prev_offset" VALUE = "{ g.TGR_Offset - g.TGR_Count }">
 	<MvIF EXPR = "{ l.prev_offset GE g.TGR_Count }">
