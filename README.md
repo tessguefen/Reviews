@@ -1,6 +1,6 @@
 # Reviews
 
-**Current Version 1.004**
+**Current Version 1.005**
 
 ## Item Functions
 ```xml
