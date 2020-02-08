@@ -1,5 +1,7 @@
-function Reviews_Batchlist() {
+function Reviews_Batchlist( auto_approve ) {
 	var self = this;
+	self.auto_approve = auto_approve;
+
 	Load_Additional_Fields( function( response) {
 		if ( response.success ) {
 			self.additional_fields = response.data;
@@ -112,7 +114,7 @@ Reviews_Batchlist.prototype.onCreate = function() {
 	var i, i_len;
 	var record;
 	record = new Object();
-	record.approved = TGR_Auto_Approve;
+	record.approved = self.auto_approve ? 1 : 0;
 	record.question = '';
 	record.created = Date.now() / 1000 | 0;
 	record.cust_id = 0;
