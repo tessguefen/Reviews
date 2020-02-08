@@ -2,7 +2,7 @@
 	<MvASSIGN NAME = "l.module:code"		VALUE = "tgreviews">
 	<MvASSIGN NAME = "l.module:name"		VALUE = "Product Reviews">
 	<MvASSIGN NAME = "l.module:provider"	VALUE = "Tess Guefen">
-	<MvASSIGN NAME = "l.module:version"		VALUE = "1.004">
+	<MvASSIGN NAME = "l.module:version"		VALUE = "1.005">
 	<MvASSIGN NAME = "l.module:api_ver"		VALUE = "9.06">
 	<MvASSIGN NAME = "l.module:description"	VALUE = "Product Reviews module allows your customers to easily write reviews for products. This module also allows for importing and exporting product reviews.">
 	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside, component, fields_prod, fulfill, scheduledtask, vis_product, export, import">
@@ -18,6 +18,10 @@
 	v1.004 Changes
 	- Fixed Module_Product_Field_Value
 	- Added tgr_review_count
+
+	v1.005
+	- Bugfix for pagination (just resetting variables)
+	- Javascript Variable bug
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "Module_Install_Store" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
@@ -424,12 +428,12 @@
 		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_ProductLookup.js' }"></script>
 		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_Functions.js' }"></script>
 		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_Batchlist.js' }"></script>
+		<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'auto_approve', l.auto_approve ) }">
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].JavaScript_Set_A_Variable_Boolean( 'tgreviews_auto_approve', l.auto_approve ) }">
 		<script language="JavaScript">
-			<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'auto_approve', l.auto_approve ) }">
-			<MvIF EXPR = "{ l.auto_approve EQ 1 }">var TGR_Auto_Approve = 1;<MvELSE>var TGR_Auto_Approve = 0;</MvIF>
 			var TGR_Product_ID = 0;
 			var TGR_Product_Code = '';
-			MMScreen_LoadFinished( function() { new Reviews_Batchlist(); } );
+			MMScreen_LoadFinished( function() { new Reviews_Batchlist( tgreviews_auto_approve ); } );
 		</script>
 	</MvIF>
 	<MvIF EXPR = "{ l.tab EQ 'TGR_ADDL' }">
@@ -785,10 +789,12 @@
 	<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_CSS() }">
 	<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_Functions.js' }"></script>
 	<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_Batchlist.js' }"></script>
+	<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'auto_approve', l.auto_approve ) }">
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].JavaScript_Set_A_Variable_Boolean( 'tgreviews_auto_approve', l.auto_approve ) }">
 	<script language="JavaScript">
 		var TGR_Product_ID = <MvEVAL EXPR = "{ int( l.product:id ) }">;
 		var TGR_Product_Code = "<MvEVAL EXPR = "{ encodejavascriptstring( l.product:code ) }">";
-		MMScreen_LoadFinished( function() { new Reviews_Batchlist(); } );
+		MMScreen_LoadFinished( function() { new Reviews_Batchlist( tgreviews_auto_approve ); } );
 	</script>
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
