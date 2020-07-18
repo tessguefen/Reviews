@@ -800,7 +800,7 @@
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "Module_System_Tabs" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
-	<MvFUNCTIONRETURN VALUE = "TGR_SETT:Product Reviews: Settings,TGR_SETT/FIELDS:Field Settings,TGR_SETT/REVIEW:Review Settings,TGR_SETT/RECAPTCHA:Recaptcha Settings,TGR_SETT/MAIL_AFTER:Mail After Notification,TGR_SETT/MERCHANT:Merchant Notification Email,TGR_SETT/CUSTOMER:Customer Notification Email,TGR_SETT/PRERENDER_LOGIC_TEMPLATE:Pre-Submission Logic Template,TGR_SETT/FORM_TEMPLATE:Review Form Template,TGR_SETT/REVIEWS_TEMPLATE:Reviews Template,TGR_PROD:Product Reviews: Reviews,TGR_ADDL:Reviews: Additional Fields">
+	<MvFUNCTIONRETURN VALUE = "TGR_SETT:Product Reviews: Settings,TGR_SETT/FIELDS:Field Settings,TGR_SETT/REVIEW:Review Settings,TGR_SETT/RECAPTCHA:reCAPTCHA Settings,TGR_SETT/MAIL_AFTER:Mail After Notification,TGR_SETT/MERCHANT:Merchant Notification Email,TGR_SETT/CUSTOMER:Customer Notification Email,TGR_SETT/PRERENDER_LOGIC_TEMPLATE:Pre-Submission Logic Template,TGR_SETT/FORM_TEMPLATE:Review Form Template,TGR_SETT/REVIEWS_TEMPLATE:Reviews Template,TGR_SETT/FUNCTIONS:Item Functions,TGR_PROD:Product Reviews: Reviews,TGR_ADDL:Reviews: Additional Fields">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_System_Head" PARAMETERS = "module var, tab" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
@@ -1128,7 +1128,9 @@
 		<table border="0" cellpadding="2" cellspacing="0" width="100%">
 			<tr>
 				<td align="left" nowrap valign="top" colspan="2">
-					Some Text Here.
+					On form submission (front-end submissions only), you can add extra validation before the review is submitted.<br>
+					You can set <code>l.settings:review_submission</code> to 0, and it will prevent the review from being submitted.<br>
+					You will need to handle the error messaging, and highlighting of fields via the Template Code.
 					<br><br>
 				</td>
 			</tr>
@@ -1140,7 +1142,7 @@
 		<table border="0" cellpadding="2" cellspacing="0" width="100%">
 			<tr>
 				<td align="left" nowrap valign="top" colspan="2">
-					Some Text Here.
+					<MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Form', '' ) }">
 					<br><br>
 				</td>
 			</tr>
@@ -1152,13 +1154,70 @@
 		<table border="0" cellpadding="2" cellspacing="0" width="100%">
 			<tr>
 				<td align="left" nowrap valign="top" colspan="2">
-					Some Text Here.
+					<MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Reviews_Template', ' l.settings:product:id ' ) }">
 					<br><br>
 				</td>
 			</tr>
 			<MvEVAL EXPR = "{ Admin_Template( 'Reviews', 'TGReviewsTemplates:rvws_tmpl_', l.templates:rvws_tmpl , l.load_fields ) }">
 		</table>
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
+
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'TGR_SETT', 'FUNCTIONS' ) }">
+		<div class="mm9_table_container">
+			<table class="mm9_table">
+				<thead>
+					<tr>
+						<td align="left" valign="middle">Function</td>
+						<td align="left" valign="middle">Information</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Form_Template', '') }"></td>
+						<td>Render the Form Template.</td>
+					</tr>
+					<tr>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Reviews_Template', ' l.settings:product:id ') }"></td>
+						<td>Render the Reviews Template. Returns <pre style="display:inline;">reviews array</pre> in <pre style="display:inline;">l.settings:tgr:reviews</pre>. If you do not pass an id (i.e. put 0, or an empty string), it will return all approved reviews for the store.</td>
+					</tr>
+					<tr>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Load_Product_Reviews', ' l.settings:product:id, l.settings:product:reviews ') }"></td>
+						<td>Use this to save all the review data to a variable and utilize in template code.</td>
+					</tr>
+					<tr>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Date', ' \'F jS, Y\', l.settings:review:created, l.settings:review:formatted_created ') }"></td>
+						<td>Format a timestamp, and save to a variable (3rd parameter). Uses PHP's date function as a reference.</td>
+					</tr>
+					<tr>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Product_Rating', ' l.settings:product:id, l.settings:product:product_rating ') }"></td>
+						<td>Returns the average product rating value to a variable (2nd parameter).</td>
+					</tr>
+					<tr>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Product_Review_Breakdowns', ' l.settings:product:id, l.settings:tgr:breakdown ') }"></td>
+						<td>Returns a breakdown of ratings for a product to a variable (2nd parameter). Array has 2 members: <pre style="display:inline;">count</pre> and <pre style="display:inline;">rating</pre></td>
+					</tr>
+					<tr>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Product_Review_Count', ' l.settings:product:id, l.settings:tgr:review_count ') }"></td>
+						<td>Returns a total number of approved reviews for a product to a variable (2nd parameter).</td>
+					</tr>
+					<tr>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Test_MailAfter_Email', ' 12345, \'hello@email.com\' ') }"></td>
+						<td>This will trigger the email for any order you specify, to the email you specify. This is specifically made to test the email template. Please note: BCC and CC will not carry through. If you have left a review on a product in the order, it will skip that product.</td>
+					</tr>
+					<tr>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Customer_Product_Reviews', ' g.Basket:cust_id, l.settings:customer:reviews ') }"></td>
+						<td>Load all reviews written by a customer (cust_id). This will load all approved, and non approved reviews.</td>
+					</tr>
+					<tr>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Customer_Product_Reviews_Product', ' g.Basket:cust_id, l.settings:product:id, l.settings:customer:reviews ') }"></td>
+						<td>Load all reviews written by a customer (cust_id) for a specific product (product_id). This will load all approved, and non approved reviews.</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
+	
+	
 	</MvIF>
 
 	<MvFUNCTIONRETURN VALUE = 1>
@@ -1925,6 +1984,93 @@
 
 <MvCOMMENT>
 |
+|	sNN_TGReviewsProducts
+|
+</MvCOMMENT>
+
+<MvFUNCTION NAME = "TGReviewsProduct_Read" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.review:id"			VALUE = "{ TGReviewsProducts.d.id }">
+	<MvASSIGN NAME = "l.review:created"		VALUE = "{ TGReviewsProducts.d.created }">
+	<MvASSIGN NAME = "l.review:product_id"	VALUE = "{ TGReviewsProducts.d.product_id }">
+	<MvASSIGN NAME = "l.review:cust_id"		VALUE = "{ TGReviewsProducts.d.cust_id }">
+	<MvASSIGN NAME = "l.review:order_id"	VALUE = "{ TGReviewsProducts.d.order_id }">
+	<MvASSIGN NAME = "l.review:approved"	VALUE = "{ TGReviewsProducts.d.approved }">
+	<MvASSIGN NAME = "l.review:rating"		VALUE = "{ TGReviewsProducts.d.rating }">
+	<MvASSIGN NAME = "l.review:name"		VALUE = "{ TGReviewsProducts.d.name }">
+	<MvASSIGN NAME = "l.review:email"		VALUE = "{ TGReviewsProducts.d.email }">
+	<MvASSIGN NAME = "l.review:location"	VALUE = "{ TGReviewsProducts.d.location }">
+	<MvASSIGN NAME = "l.review:notify"		VALUE = "{ TGReviewsProducts.d.notify }">
+	<MvASSIGN NAME = "l.review:title"		VALUE = "{ TGReviewsProducts.d.title }">
+	<MvASSIGN NAME = "l.review:summary"		VALUE = "{ TGReviewsProducts.d.summary }">
+	<MvASSIGN NAME = "l.review:store_rply"	VALUE = "{ TGReviewsProducts.d.store_rply }">
+	<MvASSIGN NAME = "l.review:notified"	VALUE = "{ TGReviewsProducts.d.notified }">
+	<MvASSIGN NAME = "l.review:verified"	VALUE = "{ TGReviewsProducts.d.verified }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsProduct_Load" PARAMETERS = "id, review var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvOPENVIEW NAME	= "Merchant"
+				VIEW	= "TGReviewsProducts"
+				QUERY	= "{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'TGReviewsProducts WHERE id = ?' }"
+				FIELDS	= "l.id">
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ TGReviewsProducts.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error#' ) }">
+	</MvIF>
+
+	<MvEVAL EXPR = "{ TGReviewsProduct_Read( l.review ) }">
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsProduct_Insert" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
+	<MvTRANSACT NAME = "Merchant">
+	
+	<MvIF EXPR = "{ NOT TGReviewsProduct_Insert_LowLevel( l.review ) OR
+					NOT TGReviewsAdditionalValues_Insert( l.review ) }"
+		<MvROLLBACK NAME = "Merchant">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvCOMMIT NAME = "Merchant">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsProduct_Insert_LowLevel" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.review:id" VALUE = "{ [ g.Module_Library_DB ].StoreKey_Generate( 'TGRProduct' ) }">
+
+	<MvIF EXPR = "{ ISNULL l.review:created }">		<MvASSIGN NAME = "l.review:created"		VALUE = "{ s.dyn_time_t }"> </MvIF>
+	<MvIF EXPR = "{ ISNULL l.review:product_id }">	<MvASSIGN NAME = "l.review:product_id"	VALUE = 0> </MvIF>
+	<MvIF EXPR = "{ ISNULL l.review:cust_id }">		<MvASSIGN NAME = "l.review:cust_id"		VALUE = 0> </MvIF>
+	<MvIF EXPR = "{ ISNULL l.review:order_id }">	<MvASSIGN NAME = "l.review:order_id"	VALUE = 0> </MvIF>
+	<MvIF EXPR = "{ ISNULL l.review:approved }">	<MvASSIGN NAME = "l.review:approved"	VALUE = 0> </MvIF>
+	<MvIF EXPR = "{ ISNULL l.review:rating }">		<MvASSIGN NAME = "l.review:rating"		VALUE = 0> </MvIF>
+	<MvIF EXPR = "{ ISNULL l.review:notify }">		<MvASSIGN NAME = "l.review:notify"		VALUE = 0> </MvIF>
+	<MvIF EXPR = "{ ISNULL l.review:notified }">	<MvASSIGN NAME = "l.review:notified"	VALUE = 0> </MvIF>
+	<MvIF EXPR = "{ ISNULL l.review:verified }">	<MvASSIGN NAME = "l.review:verified"	VALUE = 0> </MvIF>
+
+	<MvQUERY NAME	= "Merchant"
+			 QUERY	= "{ 'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviewsProducts
+							( id, created, product_id, cust_id, order_id, approved, rating, name, email, location, notify, title, summary, store_rply, notified, verified )
+						  VALUES
+							( ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ? )' }"
+			 FIELDS	= "l.review:id, l.review:created, l.review:product_id, l.review:cust_id, l.review:order_id,
+					   l.review:approved, l.review:rating, l.review:name, l.review:email, l.review:location, l.review:notify,
+					   l.review:title, l.review:summary, l.review:store_rply, l.review:notified, l.review:verified">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+
+<MvCOMMENT>
+|
 |	System Module Content: Template Helper Function
 |
 </MvCOMMENT>
@@ -2030,4 +2176,10 @@
 	</MvIF>
 
 	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Admin_Formatted_Item_Function" PARAMETERS = "function_name, parameters" STANDARDOUTPUTLEVEL = "html, text">
+<div style="background: #ffffff; overflow:auto;width:auto;padding:.2em 0;">
+<pre style="margin: 0; line-height: 125%;"><span style="color: #446fbd">&lt;mvt:item</span> <span style="color: #6d8600">name=</span><span style="color: #535353">&quot;tgreviews&quot;</span> <span style="color: #6d8600">param=</span><span style="color: #535353">&quot;<span style="color: #446fbd"><MvEVAL EXPR = "{ l.function_name }"></span>(<MvEVAL EXPR = "{ l.parameters }">)&quot;</span> <span style="color: #446fbd">/&gt;</span></pre>
+</div>
 </MvFUNCTION>
