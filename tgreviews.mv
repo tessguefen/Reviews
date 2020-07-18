@@ -138,6 +138,10 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
 	</MvIF>
 
+	<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_Item( 'tgreviews', l.module:code ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.Error_Message ) }">
+	</MvIF>
+
 	<MvCOMMENT>
 	|
 	|	ma_tmpl_id: TGR_MailAfter_Email
@@ -408,7 +412,7 @@
 		<MvQUERY NAME	= "Merchant"
 				 QUERY	= "{ 'ALTER TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Products CHANGE store_reply store_rply ' $ [ g.Module_Library_Native_DBAPI ].DB_Type_MEMO() }">
 		<MvIF EXPR = "{ g.MvQUERY_Error }">
-			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-UPDATE-1001', 'Could not Rename store_reply to store_rply' ) }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', 'Could not Rename store_reply to store_rply' ) }">
 		</MvIF>
 	</MvIF>
 
@@ -591,11 +595,32 @@
 			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
 
+		<MvASSIGN NAME = "l.mail_after_page:admin"	VALUE = 1>
+		<MvASSIGN NAME = "l.mail_after_page:ui_id"	VALUE = "{ l.module:id }">
+
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].Page_Update( l.mail_after_page ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
 		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].Page_Load_Code( 'TGR_Merchant_Email', l.merchant_notification_page ) }">
 			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
 
+		<MvASSIGN NAME = "l.merchant_notification_page:admin"	VALUE = 1>
+		<MvASSIGN NAME = "l.merchant_notification_page:ui_id"	VALUE = "{ l.module:id }">
+
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].Page_Update( l.merchant_notification_page ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
 		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].Page_Load_Code( 'TGR_Customer_Email', l.customer_notification_page ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvASSIGN NAME = "l.customer_notification_page:admin"	VALUE = 1>
+		<MvASSIGN NAME = "l.customer_notification_page:ui_id"	VALUE = "{ l.module:id }">
+
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].Page_Update( l.customer_notification_page ) }">
 			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
 
@@ -717,6 +742,35 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Uninstall_Store" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvIF EXPR = "{ TGReviewsTemplates_Load( l.templates ) }">
+		<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_ManagedTemplate( l.templates:form_tmpl ) }">
+		<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_ManagedTemplate( l.templates:rvws_tmpl ) }">
+		<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_ManagedTemplate( l.templates:prlog_tmpl ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ [ g.Module_Feature_TUI_DB ].Page_Load_Code( 'TGR_Merchant_Email', l.merchant_email_page ) }">
+		<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_Page( l.merchant_email_page ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ [ g.Module_Feature_TUI_DB ].Page_Load_Code( 'TGR_MailAfter_Email', l.mail_after_page ) }">
+		<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_Page( l.mail_after_page ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ [ g.Module_Feature_TUI_DB ].Page_Load_Code( 'TGR_Customer_Email', l.customer_notification_page ) }">
+		<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_Page( l.customer_notification_page ) }">
+	</MvIF>
+
+	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $ g.Store_Table_Prefix $ 'TGReviewsGeneralSettings' }">
+	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $ g.Store_Table_Prefix $ 'TGReviewsNotificationSettings' }">
+	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $ g.Store_Table_Prefix $ 'TGReviewsTemplates' }">
+	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $ g.Store_Table_Prefix $ 'TGReviewsProducts'}">
+	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalFields'}">
+	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues'}">
+	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $ g.Store_Table_Prefix $ 'TGReviewsOrders' }">
+
+	<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Library_DB ].StoreKey_Delete( 'TGRProduct' ) }">
+	<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Library_DB ].StoreKey_Delete( 'TGRAdditional' ) }">
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
