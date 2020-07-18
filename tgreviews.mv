@@ -217,10 +217,10 @@
 		<MvINCLUDE FILE = "templates/tgr_form.mvt" INTERPRET = "OFF">
 	</MvCAPTURE>
 
-	<MvASSIGN NAME = "l.form_settings"						VALUE = "">
-	<MvASSIGN NAME = "l.notification_settings:form_tmpl"	VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplate( l.form_template_code, l.form_settings, 'tgr_form.mvc' ) }">
+	<MvASSIGN NAME = "l.form_settings"			VALUE = "">
+	<MvASSIGN NAME = "l.templates:form_tmpl"	VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplate( l.form_template_code, l.form_settings, 'tgr_form.mvc' ) }">
 
-	<MvIF EXPR = "{ NOT l.notification_settings:form_tmpl }">
+	<MvIF EXPR = "{ NOT l.templates:form_tmpl }">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 
@@ -234,10 +234,10 @@
 		<MvINCLUDE FILE = "templates/tgr_reviews.mvt" INTERPRET = "OFF">
 	</MvCAPTURE>
 
-	<MvASSIGN NAME = "l.review_settings"					VALUE = "">
-	<MvASSIGN NAME = "l.notification_settings:rvws_tmpl"	VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplate( l.reviews_template_code, l.review_settings, 'tgr_reviews.mvc' ) }">
+	<MvASSIGN NAME = "l.review_settings"		VALUE = "">
+	<MvASSIGN NAME = "l.templates:rvws_tmpl"	VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplate( l.reviews_template_code, l.review_settings, 'tgr_reviews.mvc' ) }">
 
-	<MvIF EXPR = "{ NOT l.notification_settings:rvws_tmpl }">
+	<MvIF EXPR = "{ NOT l.templates:rvws_tmpl }">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 
@@ -251,16 +251,20 @@
 		<MvINCLUDE FILE = "templates/tgr_prelogic.mvt" INTERPRET = "OFF">
 	</MvCAPTURE>
 
-	<MvASSIGN NAME = "l.prelogic_settings"					VALUE = "">
-	<MvASSIGN NAME = "l.notification_settings:rvws_tmpl"	VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplate( l.prelogic_template_code, l.prelogic_settings, 'tgr_prelogic.mvc' ) }">
+	<MvASSIGN NAME = "l.prelogic_settings"		VALUE = "">
+	<MvASSIGN NAME = "l.templates:prlog_tmpl"	VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplate( l.prelogic_template_code, l.prelogic_settings, 'tgr_prelogic.mvc' ) }">
 
-	<MvIF EXPR = "{ NOT l.notification_settings:rvws_tmpl }">
+	<MvIF EXPR = "{ NOT l.templates:prlog_tmpl }">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 
-	<MvASSIGN NAME = "l.notification_settings:ma_tmpl_id"	VALUE = "{ l.ma_template:id }">
-	<MvASSIGN NAME = "l.notification_settings:mn_tmpl_id"	VALUE = "{ l.mn_template:id }">
-	<MvASSIGN NAME = "l.notification_settings:cn_tmpl_id"	VALUE = "{ l.cn_template:id }">
+	<MvASSIGN NAME = "l.templates:ma_tmpl_id"	VALUE = "{ l.ma_template:id }">
+	<MvASSIGN NAME = "l.templates:mn_tmpl_id"	VALUE = "{ l.mn_template:id }">
+	<MvASSIGN NAME = "l.templates:cn_tmpl_id"	VALUE = "{ l.cn_template:id }">
+
+	<MvIF EXPR = "{ NOT TGReviewsTemplates_Insert( l.templates ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
 
 	<MvCOMMENT>
 	|
@@ -293,7 +297,13 @@
 	</MvIF>
 
 	<MvQUERY	NAME	= "Merchant"
-				QUERY	= "{ 'CREATE UNIQUE INDEX ' $ g.Store_Table_Prefix $ 'TGReviewsProducts ON ' $ g.Store_Table_Prefix $ 'TGReviewsProducts ( id )' }">
+				QUERY	= "{ 'CREATE UNIQUE INDEX ' $ g.Store_Table_Prefix $ 'TGReviewsProducts_1 ON ' $ g.Store_Table_Prefix $ 'TGReviewsProducts ( id )' }">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvQUERY NAME = "Merchant"
+			 QUERY = "{ 'CREATE INDEX ' $ g.Store_Table_Prefix $ 'TGReviewsProducts_2 ON ' $ g.Store_Table_Prefix $ 'TGReviewsProducts ( product_id )' }">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
 	</MvIF>
@@ -316,7 +326,13 @@
 	</MvIF>
 
 	<MvQUERY	NAME	= "Merchant"
-				QUERY	= "{ 'CREATE UNIQUE INDEX ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalFields ON ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalFields ( id )' }">
+				QUERY	= "{ 'CREATE UNIQUE INDEX ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalFields_1 ON ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalFields ( id )' }">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvQUERY	NAME	= "Merchant"
+				QUERY	= "{ 'CREATE UNIQUE INDEX ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalFields_2 ON ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalFields ( code )' }">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
 	</MvIF>
@@ -331,12 +347,19 @@
 				QUERY = "{ 'CREATE TABLE ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues
 							(
 								field_id	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
-								rating_id	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+								review_id	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
 								value		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 255 )		$ '
 							)' }">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
 	</MvIF>
+
+	<MvQUERY	NAME	= "Merchant"
+				QUERY	= "{ 'CREATE INDEX ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues_1 ON ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues ( field_id, review_id )' }">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+	</MvIF>
+
 
 	<MvCOMMENT>
 	|
@@ -354,7 +377,7 @@
 	</MvIF>
 
 	<MvQUERY	NAME	= "Merchant"
-				QUERY	= "{ 'CREATE UNIQUE INDEX ' $ g.Store_Table_Prefix $ 'TGReviewsOrders ON ' $ g.Store_Table_Prefix $ 'TGReviewsOrders ( order_id )' }">
+				QUERY	= "{ 'CREATE UNIQUE INDEX ' $ g.Store_Table_Prefix $ 'TGReviewsOrders_1 ON ' $ g.Store_Table_Prefix $ 'TGReviewsOrders ( order_id )' }">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
 	</MvIF>
@@ -377,49 +400,323 @@
 <MvFUNCTION NAME = "Module_Upgrade_Store" PARAMETERS = "module var, version" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvIF EXPR = "{ l.version LT 1.002 }">
 		<MvCOMMENT>
-			Change `store_reply` to `store_rply` for MivaSQL
+		|
+		|	Change `store_reply` to `store_rply` for MivaSQL
+		|
 		</MvCOMMENT>
+
 		<MvQUERY NAME	= "Merchant"
 				 QUERY	= "{ 'ALTER TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Products CHANGE store_reply store_rply ' $ [ g.Module_Library_Native_DBAPI ].DB_Type_MEMO() }">
 		<MvIF EXPR = "{ g.MvQUERY_Error }">
 			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-UPDATE-1001', 'Could not Rename store_reply to store_rply' ) }">
 		</MvIF>
 	</MvIF>
+
+	<MvIF EXPR = "{ l.version LT 2.000 }">
+		<MvCOMMENT>
+		|
+		|	Upgrade path for 2.000
+		|
+		</MvCOMMENT>
+
+		<MvCOMMENT>
+		|
+		|	sNN_TGReviewsGeneralSettings
+		|
+		</MvCOMMENT>
+
+		<MvQUERY	NAME = "Merchant"
+					QUERY = "{ 'CREATE TABLE ' $ g.Store_Table_Prefix $ 'TGReviewsGeneralSettings
+								(
+									fld_name	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_BOOL()			$ ',
+									fld_email	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_BOOL()			$ ',
+									fld_loc		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_BOOL()			$ ',
+									fld_summry	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_BOOL()			$ ',
+									fld_title	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_BOOL()			$ ',
+									per_page	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+									sort		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 50 )		$ ',
+									auto_apprv	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_BOOL()			$ ',
+									rc_enabled	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_BOOL()			$ ',
+									rc_pub_key	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 254 )		$ ',
+									rc_prv_key	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 254 )		$ '
+								)' }">
+		<MvIF EXPR = "{ g.MvQUERY_Error }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+		</MvIF>
+
+		<MvCOMMENT>
+		|
+		|	sNN_TGReviewsNotificationSettings
+		|
+		</MvCOMMENT>
+
+		<MvQUERY	NAME = "Merchant"
+					QUERY = "{ 'CREATE TABLE ' $ g.Store_Table_Prefix $ 'TGReviewsNotificationSettings
+								(
+									ma_enable	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_BOOL()			$ ',
+									ma_days		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+									ma_after	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 50 )		$ ',
+									ma_from		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 254 )		$ ',
+									ma_cc		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 254 )		$ ',
+									ma_bcc		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 254 )		$ ',
+									ma_subject	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 254 )		$ ',
+									mn_enable	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_BOOL()			$ ',
+									mn_to		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 254 )		$ ',
+									mn_from		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 254 )		$ ',
+									mn_cc		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 254 )		$ ',
+									mn_bcc		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 254 )		$ ',
+									mn_subject	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 254 )		$ ',
+									cn_from		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 254 )		$ ',
+									cn_cc		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 254 )		$ ',
+									cn_bcc		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 254 )		$ ',
+									cn_subject	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 254 )		$ '
+								)' }">
+		<MvIF EXPR = "{ g.MvQUERY_Error }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+		</MvIF>
+
+		<MvCOMMENT>
+		|
+		|	sNN_TGReviewsTemplates
+		|
+		</MvCOMMENT>
+
+		<MvQUERY	NAME = "Merchant"
+					QUERY = "{ 'CREATE TABLE ' $ g.Store_Table_Prefix $ 'TGReviewsTemplates
+								(
+									ma_tmpl_id	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+									mn_tmpl_id	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+									cn_tmpl_id	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+									form_tmpl	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+									rvws_tmpl	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
+									prlog_tmpl	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ '
+								)' }">
+		<MvIF EXPR = "{ g.MvQUERY_Error }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+		</MvIF>
+
+		<MvASSIGN NAME = "l.previous_settings"	VALUE = "">
+
+		<MvOPENVIEW NAME	= "Merchant"
+					VIEW 	= "TGReviews_Settings"
+					QUERY 	= "{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'TGReviews_Settings' }">
+		<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+		</MvIF>
+
+		<MvASSIGN NAME = "l.count" VALUE = 0>
+
+		<MvWHILE EXPR = "{ NOT TGReviews_Settings.d.EOF }">
+			<MvASSIGN NAME = "l.previous_settings" MEMBER = "{ TGReviews_Settings.d.name }" VALUE = "{ TGReviews_Settings.d.value }">
+
+			<MvSKIP NAME = "Merchant" VIEW = "TGReviews_Settings" ROWS = 1>
+		</MvWHILE>
+
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviews_Settings">
+
+		<MvASSIGN NAME = "l.previous_settings:required"			VALUE = "{ miva_array_deserialize( l.previous_settings:required ) }">
+		<MvASSIGN NAME = "l.previous_settings:recaptcha"		VALUE = "{ miva_array_deserialize( l.previous_settings:recaptcha ) }">
+		<MvASSIGN NAME = "l.previous_settings:mail_after"		VALUE = "{ miva_array_deserialize( l.previous_settings:mail_after ) }">
+		<MvASSIGN NAME = "l.previous_settings:merchant_email"	VALUE = "{ miva_array_deserialize( l.previous_settings:merchant_email ) }">
+		<MvASSIGN NAME = "l.previous_settings:customer_email"	VALUE = "{ miva_array_deserialize( l.previous_settings:customer_email ) }">
+
+		<MvCOMMENT>
+		|
+		|	Copy over General Settings
+		|
+		</MvCOMMENT>
+
+		<MvASSIGN NAME = "l.general_settings:fld_name"		VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.previous_settings:required:name ) }">
+		<MvASSIGN NAME = "l.general_settings:fld_email"		VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.previous_settings:required:email ) }">
+		<MvASSIGN NAME = "l.general_settings:fld_loc"		VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.previous_settings:required:location ) }">
+		<MvASSIGN NAME = "l.general_settings:fld_summry"	VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.previous_settings:required:summary ) }">
+		<MvASSIGN NAME = "l.general_settings:fld_title"		VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.previous_settings:required:title ) }">
+		<MvASSIGN NAME = "l.general_settings:per_page"		VALUE = "{ int( l.previous_settings:reviews_per_page ) }">
+		<MvASSIGN NAME = "l.general_settings:sort"			VALUE = "{ l.previous_settings:reviews_default_sorting }">
+		<MvASSIGN NAME = "l.general_settings:auto_apprv"	VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.previous_settings:auto_approve ) }">
+		<MvASSIGN NAME = "l.general_settings:rc_enabled"	VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.previous_settings:recaptcha:enable ) }">
+		<MvASSIGN NAME = "l.general_settings:rc_pub_key"	VALUE = "{ l.previous_settings:recaptcha:public_key }">
+		<MvASSIGN NAME = "l.general_settings:rc_prv_key"	VALUE = "{ l.previous_settings:recaptcha:private_key }">
+
+		<MvIF EXPR = "{ NOT TGReviewsGeneralSettings_Insert( l.general_settings ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvCOMMENT>
+		|
+		|	Copy over Email Settings
+		|
+		</MvCOMMENT>
+
+		<MvASSIGN NAME = "l.email_settings:ma_enable"	VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.previous_settings:mail_after:notify ) }">
+		<MvASSIGN NAME = "l.email_settings:ma_days"		VALUE = "{ int( l.previous_settings:mail_after:days ) }">
+		<MvASSIGN NAME = "l.email_settings:ma_after"	VALUE = "{ l.previous_settings:mail_after:after }">
+		<MvASSIGN NAME = "l.email_settings:ma_from"		VALUE = "{ l.previous_settings:mail_after:from }">
+		<MvASSIGN NAME = "l.email_settings:ma_cc"		VALUE = "{ l.previous_settings:mail_after:cc }">
+		<MvASSIGN NAME = "l.email_settings:ma_bcc"		VALUE = "{ l.previous_settings:mail_after:bcc }">
+		<MvASSIGN NAME = "l.email_settings:ma_subject"	VALUE = "{ l.previous_settings:mail_after:subject }">
+		<MvASSIGN NAME = "l.email_settings:mn_enable"	VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.previous_settings:merchant_email:notify ) }">
+		<MvASSIGN NAME = "l.email_settings:mn_to"		VALUE = "{ l.previous_settings:merchant_email:to }">
+		<MvASSIGN NAME = "l.email_settings:mn_from"		VALUE = "{ l.previous_settings:merchant_email:from }">
+		<MvASSIGN NAME = "l.email_settings:mn_cc"		VALUE = "{ l.previous_settings:merchant_email:cc }">
+		<MvASSIGN NAME = "l.email_settings:mn_bcc"		VALUE = "{ l.previous_settings:merchant_email:bcc }">
+		<MvASSIGN NAME = "l.email_settings:mn_subject"	VALUE = "{ l.previous_settings:merchant_email:subject }">
+		<MvASSIGN NAME = "l.email_settings:cn_from"		VALUE = "{ l.previous_settings:customer_email:from }">
+		<MvASSIGN NAME = "l.email_settings:cn_cc"		VALUE = "{ l.previous_settings:customer_email:cc }">
+		<MvASSIGN NAME = "l.email_settings:cn_bcc"		VALUE = "{ l.previous_settings:customer_email:bcc }">
+		<MvASSIGN NAME = "l.email_settings:cn_subject"	VALUE = "{ l.previous_settings:customer_email:subject }">
+
+		<MvIF EXPR = "{ NOT TGReviewsNotificationSettings_Insert( l.email_settings ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvCOMMENT>
+		|
+		|	prlog_tmpl: Pre-Submission Logic
+		|
+		</MvCOMMENT>
+
+		<MvCAPTURE VARIABLE = "l.prelogic_template_code">
+			<MvINCLUDE FILE = "templates/tgr_prelogic.mvt" INTERPRET = "OFF">
+		</MvCAPTURE>
+
+		<MvASSIGN NAME = "l.prelogic_settings"		VALUE = "">
+		<MvASSIGN NAME = "l.templates:prlog_tmpl"	VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplate( l.prelogic_template_code, l.prelogic_settings, 'tgr_prelogic.mvc' ) }">
+
+		<MvIF EXPR = "{ NOT l.templates:prlog_tmpl }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].Page_Load_Code( 'TGR_MailAfter_Email', l.mail_after_page ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].Page_Load_Code( 'TGR_Merchant_Email', l.merchant_notification_page ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].Page_Load_Code( 'TGR_Customer_Email', l.customer_notification_page ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvASSIGN NAME = "l.templates:form_tmpl"	VALUE = "{ l.previous_settings:form_template }">
+		<MvASSIGN NAME = "l.templates:rvws_tmpl"	VALUE = "{ l.previous_settings:reviews_template }">
+		<MvASSIGN NAME = "l.templates:mn_tmpl_id"	VALUE = "{ l.merchant_notification_page:templ_id }">
+		<MvASSIGN NAME = "l.templates:ma_tmpl_id"	VALUE = "{ l.mail_after_page:templ_id }">
+		<MvASSIGN NAME = "l.templates:cn_tmpl_id"	VALUE = "{ l.customer_notification_page:templ_id }">
+
+		<MvIF EXPR = "{ NOT TGReviewsTemplates_Insert( l.templates ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Settings' }">
+
+		<MvCOMMENT>
+		|
+		|	Rename sNN_TGReviews_Products to sNN_TGReviewsProducts
+		|	Update Indexes
+		|
+		</MvCOMMENT>
+
+		<MvQUERY	NAME = "Merchant"
+					QUERY = "{ 'RENAME TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Products TO ' $ g.Store_Table_Prefix $ 'TGReviewsProducts' }">
+		<MvIF EXPR = "{ g.MvQUERY_Error }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+		</MvIF>
+
+		<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Library_Native_DBAPI ].DB_Drop_Index( g.Store_Table_Prefix $ 'TGReviewsProducts', g.Store_Table_Prefix $ 'TGReviews_Products' ) }">
+
+		<MvQUERY	NAME	= "Merchant"
+					QUERY	= "{ 'CREATE UNIQUE INDEX ' $ g.Store_Table_Prefix $ 'TGReviewsProducts_1 ON ' $ g.Store_Table_Prefix $ 'TGReviewsProducts ( id )' }">
+		<MvIF EXPR = "{ g.MvQUERY_Error }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+		</MvIF>
+
+		<MvQUERY	NAME = "Merchant"
+					QUERY = "{ 'CREATE INDEX ' $ g.Store_Table_Prefix $ 'TGReviewsProducts_2 ON ' $ g.Store_Table_Prefix $ 'TGReviewsProducts ( product_id )' }">
+		<MvIF EXPR = "{ g.MvQUERY_Error }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+		</MvIF>
+
+		<MvCOMMENT>
+		|
+		|	Rename sNN_TGReviews_AdditionalFields to sNN_TGReviewsAdditionalFields
+		|	Update Indexes
+		|
+		</MvCOMMENT>
+
+		<MvQUERY NAME = "Merchant"
+				 QUERY = "{ 'RENAME TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalFields TO ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalFields' }">
+		<MvIF EXPR = "{ g.MvQUERY_Error }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+		</MvIF>
+
+		<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Library_Native_DBAPI ].DB_Drop_Index( g.Store_Table_Prefix $ 'TGReviewsAdditionalFields', g.Store_Table_Prefix $ 'TGReviews_AdditionalFields' ) }">
+
+		<MvQUERY	NAME	= "Merchant"
+					QUERY	= "{ 'CREATE UNIQUE INDEX ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalFields_1 ON ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalFields ( id )' }">
+		<MvIF EXPR = "{ g.MvQUERY_Error }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+		</MvIF>
+
+		<MvQUERY	NAME	= "Merchant"
+					QUERY	= "{ 'CREATE UNIQUE INDEX ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalFields_2 ON ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalFields ( code )' }">
+		<MvIF EXPR = "{ g.MvQUERY_Error }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+		</MvIF>
+		
+		<MvCOMMENT>
+		|
+		|	Rename sNN_TGReviews_AdditionalValues to sNN_TGReviewsAdditionalValues
+		|	Rename rating_id to review_id
+		|	Update Indexes
+		|
+		</MvCOMMENT>
+
+		<MvQUERY NAME = "Merchant"
+				 QUERY = "{ 'RENAME TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalValues TO ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues' }">
+		<MvIF EXPR = "{ g.MvQUERY_Error }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+		</MvIF>
+
+		<MvQUERY NAME = "Merchant"
+				 QUERY = "{ 'ALTER TABLE ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues CHANGE COLUMN rating_id review_id ' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 ) }">
+		<MvIF EXPR = "{ g.MvQUERY_Error }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+		</MvIF>
+
+		<MvQUERY	NAME	= "Merchant"
+					QUERY	= "{ 'CREATE INDEX ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues_1 ON ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues ( field_id, review_id )' }">
+		<MvIF EXPR = "{ g.MvQUERY_Error }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+		</MvIF>
+
+		<MvCOMMENT>
+		|
+		|	Rename sNN_TGReviews_Orders to sNN_TGReviewsOrders
+		|	Update Indexes
+		|
+		</MvCOMMENT>
+		
+		<MvQUERY NAME = "Merchant"
+				 QUERY = "{ 'RENAME TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Orders  TO ' $ g.Store_Table_Prefix $ 'TGReviewsOrders' }">
+		<MvIF EXPR = "{ g.MvQUERY_Error }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+		</MvIF>
+
+		<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Library_Native_DBAPI ].DB_Drop_Index( g.Store_Table_Prefix $ 'TGReviewsOrders', g.Store_Table_Prefix $ 'TGReviews_Orders' ) }">
+
+		<MvQUERY	NAME	= "Merchant"
+					QUERY	= "{ 'CREATE UNIQUE INDEX ' $ g.Store_Table_Prefix $ 'TGReviewsOrders_1 ON ' $ g.Store_Table_Prefix $ 'TGReviewsOrders ( order_id )' }">
+		<MvIF EXPR = "{ g.MvQUERY_Error }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+		</MvIF>
+	</MvIF>
+	
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Uninstall_Store" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
-	<MvASSIGN NAME = "l.void" VALUE = "{ Module_Settings( l.mod_settings ) }">
-
-	<MvIF EXPR = "{ [ g.Module_Library_DB ].Module_Load_Code( l.module:code, l.module ) }">
-		<MvASSIGN NAME = "l.item:code"		VALUE = "{ 'tgreviews' }">
-		<MvASSIGN NAME = "l.item:module_id"	VALUE = "{ l.module:id }">
-		<MvASSIGN NAME = "l.void" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_Item( l.item ) }">
-	</MvIF>	
-
-	<MvASSIGN NAME = "l.void"	VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_ManagedTemplate( l.mod_settings:form_template ) }">
-	<MvASSIGN NAME = "l.void"	VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_ManagedTemplate( l.mod_settings:reviews_template ) }">
-
-	<MvIF EXPR = "{ [ g.Module_Feature_TUI_DB ].Page_Load_Code( 'TGR_Merchant_Email', l.merchant_email_page ) }">
-		<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_Page( l.merchant_email_page ) }">
-	</MvIF>
-
-	<MvIF EXPR = "{ [ g.Module_Feature_TUI_DB ].Page_Load_Code( 'TGR_Customer_Email', l.merchant_email_page ) }">
-		<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_Page( l.merchant_email_page ) }">
-	</MvIF>
-
-	<MvIF EXPR = "{ [ g.Module_Feature_TUI_DB ].Page_Load_Code( 'TGR_MailAfter_Email', l.mail_after_page ) }">
-		<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_Page( l.mail_after_page ) }">
-	</MvIF>
-
-	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Settings' }">
-	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Products'}">
-	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalFields'}">
-	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_AdditionalValues'}">
-	<MvQUERY NAME = "Merchant" QUERY = "{ 'DROP TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Orders' }">
-
-	<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Library_DB ].StoreKey_Delete( 'TGRProduct' ) }">
-	<MvASSIGN NAME = "l.success" VALUE = "{ [ g.Module_Library_DB ].StoreKey_Delete( 'TGRAdditional' ) }">
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -431,9 +728,6 @@
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "SystemModule_Action" PARAMETERS = "module var, action" STANDARDOUTPUTLEVEL = "">
-	<MvIF EXPR = "{ l.action EQ 'TGRADD' }">
-		<MvASSIGN NAME = "l.void" VALUE = "{ FrontEnd_Add_Review() }">
-	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -445,75 +739,25 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-
 <MvCOMMENT>
 | ====================================================================================
 |	VIS_SYSTEM
 | ====================================================================================
 </MvCOMMENT>
 
-
 <MvFUNCTION NAME = "Module_System_Tabs" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
 	<MvFUNCTIONRETURN VALUE = "TGR_PROD:Reviews: Product Reviews,TGR_SETT:Reviews: Settings,TGR_SETT/TGR_FIELDS:General Settings,TGR_SETT/TGR_EMAIL:Email Notifications,TGR_SETT/TGR_TEMPL:Templates & Items,TGR_ADDL:Reviews: Additional Fields">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_System_Head" PARAMETERS = "module var, tab" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
-	<MvIF EXPR = "{ ( l.tab NE 'TGR_SETT' ) AND ( l.tab NE 'TGR_PROD' ) AND ( l.tab NE 'TGR_ADDL' ) }">
-		<MvFUNCTIONRETURN VALUE = 1>
-	</MvIF>
-	<MvIF EXPR = "{ ( l.tab EQ 'TGR_PROD' ) }">
-		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_JavaScript() }">
-		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_CSS() }">
-		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_ProductLookup_Dialog_JavaScript() }">
-		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_ProductLookup_Dialog_CSS() }">
-		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_ProductLookup.js' }"></script>
-		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_Functions.js' }"></script>
-		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_Batchlist.js' }"></script>
-		<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'auto_approve', l.auto_approve ) }">
-		<MvEVAL EXPR = "{ [ g.Module_Admin ].JavaScript_Set_A_Variable_Boolean( 'tgreviews_auto_approve', l.auto_approve ) }">
-		<script language="JavaScript">
-			var TGR_Product_ID = 0;
-			var TGR_Product_Code = '';
-			MMScreen_LoadFinished( function() { new Reviews_Batchlist( tgreviews_auto_approve ); } );
-		</script>
-	</MvIF>
-	<MvIF EXPR = "{ l.tab EQ 'TGR_ADDL' }">
-		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_JavaScript() }">
-		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_CSS() }">
-		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=AdditionalFields_Functions.js' }"></script>
-		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=AdditionalFields_Batchlist.js' }"></script>
-		<script language="JavaScript">
-			MMScreen_LoadFinished( function() { new AdditionalFields_Batchlist(); } );
-		</script>
-	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_System_Content" PARAMETERS = "module var, tab, load_fields" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
-	<MvIF EXPR = "{ ( l.tab NE 'TGR_SETT' ) AND ( l.tab NE 'TGR_PROD' ) AND ( l.tab NE 'TGR_ADDL') }">
-		<MvFUNCTIONRETURN VALUE = 1>
-	</MvIF>
-	<MvIF EXPR = "{ ( l.tab EQ 'TGR_SETT' ) }">
-		<MvFUNCTIONRETURN VALUE = "{ Settings_UI( l.module ) }">
-	</MvIF>
-	<MvIF EXPR = "{ ( l.tab EQ 'TGR_PROD' ) }">
-		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_HTML() }">
-		<div id="jsReviews_Batchlist"></div>
-		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_ProductLookup_Dialog_HTML() }">
-	</MvIF>
-	<MvIF EXPR = "{ ( l.tab EQ 'TGR_ADDL' ) }">
-		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_HTML() }">
-		<div id="jsAdditionalFields_Batchlist"></div>
-	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_System_Update" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
-	<MvIF EXPR = "{ ( g.Review_Tab EQ 'TGR_SETT' )  }">
-		<MvASSIGN NAME = "l.void" VALUE = "{ Review_Settings_Update( g.Required, g.Mail_After, g.Merchant_Email, g.Customer_Email, g.Reviews_Per_Page, g.Reviews_Default_Sorting, g.Auto_Approve, g.Recaptcha) }">
-		<MvASSIGN NAME = "l.void" VALUE = "{ Reviews_Templates_Update( g.Reviews_Template ) }">
-		<MvASSIGN NAME = "g.Tab" VALUE = "TGR_SETT">
-	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -528,22 +772,6 @@
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "Module_JSON" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
-	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }">
-		<MvFUNCTIONRETURN>
-	</MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Load_Query'			}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Load_Query( l.module )		}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Update'				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Update( l.module )			}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Insert'				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Insert( l.module )			}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'Load_Additional_Fields'		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Load_Additional_Fields( l.module )			}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'Reviews_Delete' 				}"><MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Delete( l.module ) 		}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'Review_Approved_Update' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Review_Approved_Update( l.module ) 		}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'Review_Notify_Update' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Review_Notify_Update( l.module ) 			}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'Review_Verified_Update'		}"><MvFUNCTIONRETURN VALUE = "{ JSON_Review_Verified_Update( l.module ) 		}"></MvIF>
-
-	<MvIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Load_Query' 	}"><MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalFields_Load_Query( l.module ) 	}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Update' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalFields_Update( l.module ) 		}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Insert' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalFields_Insert( l.module ) 		}"></MvIF>
-	<MvIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Delete' 		}"><MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalFields_Delete( l.module ) 		}"></MvIF>
 </MvFUNCTION>
 
 <MvCOMMENT>
@@ -552,26 +780,6 @@
 | ====================================================================================
 </MvCOMMENT>
 <MvFUNCTION NAME = "Module_Clientside" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, compresswhitespace" ERROROUTPUTLEVEL = "">
-	<MvIF EXPR = "{ g.Filename EQ 'Reviews_Batchlist.js' }">
-		<MvEVAL EXPR = "{ [ g.Module_Clientside ].Module_Content_Type( l.module, 'text/javascript' ) }">
-		<MvINCLUDE FILE = "js/reviews_batchlist.js">
-	</MvIF>
-	<MvIF EXPR = "{ g.Filename EQ 'Reviews_Functions.js' }">
-		<MvEVAL EXPR = "{ [ g.Module_Clientside ].Module_Content_Type( l.module, 'text/javascript' ) }">
-		<MvINCLUDE FILE = "js/reviews_functions.js">
-	</MvIF>
-	<MvIF EXPR = "{ g.Filename EQ 'Reviews_ProductLookup.js' }">
-		<MvEVAL EXPR = "{ [ g.Module_Clientside ].Module_Content_Type( l.module, 'text/javascript' ) }">
-		<MvINCLUDE FILE = "js/reviews_productlookup.js">
-	</MvIF>
-	<MvIF EXPR = "{ g.Filename EQ 'AdditionalFields_Batchlist.js' }">
-		<MvEVAL EXPR = "{ [ g.Module_Clientside ].Module_Content_Type( l.module, 'text/javascript' ) }">
-		<MvINCLUDE FILE = "js/additionalfields_batchlist.js">
-	</MvIF>
-	<MvIF EXPR = "{ g.Filename EQ 'AdditionalFields_Functions.js' }">
-		<MvEVAL EXPR = "{ [ g.Module_Clientside ].Module_Content_Type( l.module, 'text/javascript' ) }">
-		<MvINCLUDE FILE = "js/additionalfields_functions.js">
-	</MvIF>
 </MvFUNCTION>
 
 <MvCOMMENT>
@@ -616,70 +824,6 @@
 </MVFUNCTION>
 
 <MvFUNCTION NAME = "ComponentModule_Render_Start" PARAMETERS = "module var, item, settings var, item_settings var, param" STANDARDOUTPUTLEVEL = "">
-	<MvIF EXPR = "{ NOT Parse_Function_Parameters( l.param, l.function_name, l.parameters, l.parameter_count ) }">
-		<MvFUNCTIONRETURN VALUE = 0>
-	</MvIF>
-
-	<MvCOMMENT>
-	|
-	|	Parameters & Function check
-	|
-	</MvCOMMENT>
-
-
-	<MvIF EXPR = "{ ( l.function_name EQ 'form_template' )				OR
-					( l.function_name EQ 'reviews_template' )			OR
-					( l.function_name EQ 'date' )						OR
-					( l.function_name EQ 'product_rating' )				OR
-					( l.function_name EQ 'product_review_breakdowns' )	OR
-					( l.function_name EQ 'product_review_count' )		OR
-					( l.function_name EQ 'test_mailafter_email' )		OR
-					( l.function_name EQ 'load_product_reviews' )
-				}">
-		<MvASSIGN NAME = "l.new_param" VALUE = "{ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
-	</MvIF>
-
-	<MvCOMMENT>
-	|
-	|	tagerror
-	|	22, 3 = display
-	|	22, 0 = no display
-	|
-	|	FOR DEBUGGING, leave as 22, 3
-	|
-	</MvCOMMENT>
-
-	<MvIF EXPR = "{ ISNULL l.new_param }">
-		<MvFUNCTIONRETURN VALUE = "">
-	</MvIF>
-
-	<MvASSEMBLY>
-		.string asm_0 "l.new_param"
-		.string asm_1 "g.Module_Root"
-		.string asm_2 "l.module"
-		.string asm_3 "module"
-		.string asm_4 "g.MvDO_Error"
-
-			pushc		asm_1
-			pushn
-			pushc		asm_2
-			pushn
-			pushc		asm_3
-			memb_ro
-			cat
-			pushc		asm_0
-			pushn
-			tagerror	22, 0
-			do_function
-			pop
-			tagerror	22, 3
-			pushc		asm_4
-			pushn
-			jmp_eq		L_asm_success
-			retn
-		L_asm_success:
-	</MvASSEMBLY>
-
 </MvFUNCTION>
 
 <MvCOMMENT>
@@ -689,37 +833,15 @@
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "Module_Product_Fields" PARAMETERS = "module var, fields var" STANDARDOUTPUTLEVEL = "">
-
-	<MvASSIGN NAME = "l.fields" INDEX = "1" MEMBER = "code" VALUE = "tgr_rating">
-	<MvASSIGN NAME = "l.fields" INDEX = "1" MEMBER = "name" VALUE = "Product Rating">
-	<MvASSIGN NAME = "l.fields" INDEX = "2" MEMBER = "code" VALUE = "tgr_review_count">
-	<MvASSIGN NAME = "l.fields" INDEX = "2" MEMBER = "name" VALUE = "Product Review Count">
-
-	<MvFUNCTIONRETURN VALUE = 2>
+	<MvFUNCTIONRETURN VALUE = 0>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Product_Field_Name" PARAMETERS = "module var, code" STANDARDOUTPUTLEVEL = "">
-	<MvIF EXPR = "{ l.code EQ 'tgr_rating' }">
-		<MvFUNCTIONRETURN VALUE = "Product Rating">
-	<MvELSEIF EXPR = "{ l.code EQ 'tgr_review_count' }">
-		<MvFUNCTIONRETURN VALUE = "Product Rating">
-	</MvIF>
-
 	<MvFUNCTIONRETURN VALUE = "">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Product_Field_Value" PARAMETERS = "module var, product_id, code" STANDARDOUTPUTLEVEL = "">
-	<MvIF EXPR = "{ l.code EQ 'tgr_rating' }">
-		<MvASSIGN NAME = "l.void" VALUE = "{ Product_Rating_Review_Count( l.product_id, l.return ) }">
-		
-		<MvFUNCTIONRETURN VALUE = "{ l.return:rating }">
-	<MvELSEIF EXPR = "{ l.code EQ 'tgr_review_count' }">
-		<MvASSIGN NAME = "l.void" VALUE = "{ Product_Rating_Review_Count( l.product_id, l.return ) }">
-
-		<MvFUNCTIONRETURN VALUE = "{ l.return:review_count }">
-	<MvELSE>
-		<MvFUNCTIONRETURN VALUE = "">
-	</MvIF>
+	<MvFUNCTIONRETURN VALUE = "">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Product_Set_Field" PARAMETERS = "module var, product_id, code, value" STANDARDOUTPUTLEVEL = "">
@@ -732,25 +854,6 @@
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "FulfillmentModule_ProcessOrder" PARAMETERS = "module var, order var" STANDARDOUTPUTLEVEL = "">
-	<MvCOMMENT>
-	|
-	|	Send order:id to Reviews Order table.
-	|
-	</MvCOMMENT>
-	<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'mail_after', l.mail_after ) }">
-	<MvASSIGN NAME = "l.mail_after" VALUE = "{ miva_array_deserialize( l.mail_after ) }">
-
-	<MvIF EXPR = "{ l.mail_after:notify NE 1 }">
-		<MvFUNCTIONRETURN VALUE = 1>
-	</MvIF>
-
-	<MvASSIGN NAME = "l.order_source"		VALUE = "{ tolower( l.order:source ) }">
-	<MvIF EXPR = "{ [ g.Module_Library_Utilities ].Value_In_List( l.order_source, 'subscription,marketplaces_ebay,marketplaces_amazon,marketplaces_etsy' ) }">
-		<MvFUNCTIONRETURN VALUE = 1>
-	</MvIF>
-
-	<MvASSIGN NAME = "l.void" VALUE = "{ Reviews_Add_Order( l.order:id ) }">
-
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -799,11 +902,7 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ScheduledTaskModule_Execute" PARAMETERS = "module var, task var" STANDARDOUTPUTLEVEL = "">
-	<MvIF EXPR = "{ l.task:operation EQ 'tgr_order_emails' }">
-		<MvFUNCTIONRETURN VALUE = "{ Trigger_MailAfter_Email() }">
-	</MvIF>
-
-	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-MOD-1000', 'Unsupported operation' ) }">
+	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', 'Unsupported operation' ) }">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ScheduledTaskModule_Provision_Settings" PARAMETERS = "module var, task var, provide_xml var" STANDARDOUTPUTLEVEL = "">
@@ -816,40 +915,17 @@
 | ====================================================================================
 </MvCOMMENT>
 
-
 <MvFUNCTION NAME = "Module_Product_Tabs" PARAMETERS = "module var, product var" STANDARDOUTPUTLEVEL = "compresswhitespace">
 	<MvFUNCTIONRETURN VALUE = "TGR_PROD:Product Reviews">
 </MvFUNCTION>
 
-
 <MvFUNCTION NAME = "Module_Product_Head" PARAMETERS = "module var, tab, product var" STANDARDOUTPUTLEVEL = "html, text">
-	<MvIF EXPR = "{ l.tab NE 'TGR_PROD' }">
-		<MvFUNCTIONRETURN VALUE = 1>
-	</MvIF>
-	<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_JavaScript() }">
-	<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_CSS() }">
-	<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_Functions.js' }"></script>
-	<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=Reviews_Batchlist.js' }"></script>
-	<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'auto_approve', l.auto_approve ) }">
-	<MvEVAL EXPR = "{ [ g.Module_Admin ].JavaScript_Set_A_Variable_Boolean( 'tgreviews_auto_approve', l.auto_approve ) }">
-	<script language="JavaScript">
-		var TGR_Product_ID = <MvEVAL EXPR = "{ int( l.product:id ) }">;
-		var TGR_Product_Code = "<MvEVAL EXPR = "{ encodejavascriptstring( l.product:code ) }">";
-		MMScreen_LoadFinished( function() { new Reviews_Batchlist( tgreviews_auto_approve ); } );
-	</script>
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
-
 
 <MvFUNCTION NAME = "Module_Product_Content" PARAMETERS = "module var, tab, load_fields, product var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
-<MvIF EXPR = "{ l.tab NE 'TGR_PROD'}">
-		<MvFUNCTIONRETURN VALUE = 1>
-	</MvIF>
-	<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_HTML() }">
-	<div id="jsReviews_Batchlist"></div>
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
-
 
 <MvFUNCTION NAME = "Module_Product_Update" PARAMETERS = "module var, product var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
 	<MvFUNCTIONRETURN VALUE = 1>
@@ -875,160 +951,14 @@
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "ExportModule_Export" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
-	<MvCOMMENT>
-	|
-	|	Starting at 250 each iteration.
-	|
-	</MvCOMMENT>
-
-	<MvASSIGN NAME = "g.Exp_Count" VALUE = "250">
-
-	<MvIF EXPR = "{ NOT g.Review_Export_Continue }">
-		<MvIF EXPR = "{ fexists( '/' $ g.Reviews_Export_File ) }">
-			<MvASSIGN NAME = "l.success" VALUE = "{ fdelete( '/' $ g.Reviews_Export_File ) }">
-		</MvIF>
-	</MvIF>
-
-	<MvIF EXPR = "{ ISNULL g.Exp_Review_Count }">
-		<MvASSIGN NAME = "l.csv_header" VALUE = "{ Export_Header_Template() }">
-		<MvASSIGN NAME = "l.success" VALUE = "{ file_create( '/' $ g.Reviews_Export_File, 'data', l.csv_header ) }">
-	</MvIF>
-
-	<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Draw_ExportProgressBar_Start( 'Review Export Progress', 'EXPT' ) }">
-	<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Draw_ExportProgressBar_Show() }">
-
-	<MvIF EXPR = "{ g.Total_Review_Count }">
-		<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Draw_ExportProgressBar_Update( g.Exp_Review_Count, g.Total_Review_Count ) }">
-	</MvIF>
-
-	<MvEVAL EXPR = "{ Export_Reviews( l.reviews ) }">
-	
-	<MvASSIGN NAME = "l.output" VALUE = "">
-	<MvFOREACH ITERATOR = "l.review" ARRAY = "l.reviews">
-		<MvASSIGN NAME = "l.output" VALUE = "{ l.output $ CSV_Add( l.review, g.Exp_Addl_Fields ) }">
-
-		<MvASSIGN NAME = "g.Exp_Review_Count" VALUE = "{ g.Exp_Review_Count + 1 }">
-		<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Draw_ExportProgressBar_Update( g.Exp_Review_Count, g.Total_Review_Count ) }">
-	</MvFOREACH>
-
-	<MvIF EXPR = "{ fexists( '/' $ g.Reviews_Export_File ) }">
-		<MvASSIGN NAME = "l.success" VALUE = "{ file_append( '/' $ g.Reviews_Export_File, 'data', l.output ) }">
-	<MvELSE>
-		<MvASSIGN NAME = "l.success" VALUE = "{ file_create( '/' $ g.Reviews_Export_File, 'data', l.output ) }">
-	</MvIF>
-
-	<MvIF EXPR = "{ g.Exp_Review_Count GE g.Total_Review_Count }">
-
-		<MvIF EXPR = "{ g.ReviewsExport_SendEmail }">
-			<MvDO FILE = "{ g.Module_Library_Utilities }" NAME = "l.void" VALUE = "{ Send_Email_Attachment( g.ReviewsExport_Email, g.ReviewsExport_Email, '', 'Reviews Export', g.Reviews_Export_File, '/', 'data' ) }">
-			<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( 'TGReviews-SUCCESS-1', 'Review Export Email Sent' ) }">
-		</MvIF>
-
-		<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Draw_ExportProgressBar_ProgressComplete( 'Exported Reviews.' ) }">
-		<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( 'TGReviews-SUCCESS-2', 'Reviews Exported to ' $ g.Reviews_Export_File  ) }">
-
-		<MvASSIGN NAME = "g.Review_Export_Continue" VALUE = "0">
-		<MvASSIGN NAME = "g.Exp_Review_Count" VALUE = "0">
-	<MvELSE>
-		<MvASSIGN NAME = "g.Review_Export_Continue" VALUE = "1">
-	</MvIF>
-
-	<MvHIDE FIELDS = "	g.Exp_Offset,
-						g.Review_Export_Continue,
-						g.Module_Code,
-						g.Exp_Review_Count,
-						g.Reviews_Export_File,
-						g.ReviewsExport_SendEmail,
-						g.ReviewsExport_Email,
-						g.Total_Review_Count,
-						g.Exp_Addl_Fields">
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ExportModule_Validate" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
-	<MvASSIGN NAME = "g.Reviews_Export_File"	VALUE = "{ trim( g.Reviews_Export_File ) }">
-
-	<MvIF EXPR = "{ len( g.Reviews_Export_File ) EQ 0 }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( '', 'Reviews_Export_File', 'Please specify a file' ) }">
-	<MvELSE>
-		<MvIF EXPR = "{ '/' IN g.Reviews_Export_File }">
-			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( '', 'Reviews_Export_File', 'Please do not include a path in the file name' ) }">
-		</MvIF>
-	</MvIF>
-
-	<MvASSIGN NAME = "g.ReviewsExport_Email" 	VALUE = "{ trim( g.ReviewsExport_Email ) }">
-
-	<MvIF EXPR = "{ g.ReviewsExport_SendEmail }">
-		<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Email( g.ReviewsExport_Email ) }">
-			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( '', 'ReviewsExport_Email', 'Please specify a valid email address' ) }">
-		</MvIF>
-	</MvIF>
-
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ExportModule_Screen" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
-	<MvIF EXPR = "{ ISNULL g.Reviews_Export_File }">
-		<MvASSIGN NAME = "g.Reviews_Export_File" VALUE = "reviews.csv">
-	</MvIF>
-
-	<MvIF EXPR = "{ g.Review_Export_Continue EQ 1 }">
-		<script type="text/javascript">
-			function exp_continue()
-			{
-				document.forms[ Screen ].submit();
-			}
-			window.onload = exp_continue;
-		</script>
-
-		<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Draw_ExportProgressBar_End() }">
-
-		<MvFUNCTIONRETURN VALUE = 1>
-	</MvIF>
-
-	<MvEVAL EXPR = "{ [ g.Module_Admin ].BeginScreen_Start( 'Export Reviews to CSV', 'EXPT', '' ) }">
-		<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Element_ExportProgressBar_JavaScript( 'Exporting Reviews...', 'EXPT', 'EXPT' ) }">
-		<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Element_ExportProgressBar_CSS() }">
-
-		<MvEVAL EXPR = "{ [ g.Module_Admin ].BeginScreen_End( 'Export Reviews to CSV', 'EXPT', '' ) }">
-		<MvDO FILE = "{ g.Module_Admin }" NAME = "l.ok" VALUE = "{ BeginContent() }">
-
-		<div style="font-family: sans-serif;">
-			<MvHIDE FIELDS = "g.Module_Code">
-			<MvEVAL EXPR = "{ [ g.Module_Admin ].Draw_FieldSet_Open( 'Export Settings', 150 ) }">
-				<table cellspacing="5">
-					<tr>
-						<td valign="top"><strong>Export Product Reviews to File:</strong></td>
-						<td width="100%">
-							<input type="text" name="Reviews_Export_File" size="40" value="{ encodeentities( g.Reviews_Export_File ) }"><br>
-							<em>This is located in the private directory. This will be deleted if it already exists.</em>
-						</td>
-					</tr>
-					<tr>
-						<td valign="top">Email File To:</td>
-						<td width="100%">
-							<MvIF EXPR = "{ NOT g.ReviewsExport_SendEmail }">
-								<label><input type="radio" name="ReviewsExport_SendEmail" value="0" checked>Do Not Email<br></label>
-								<input type="radio" name="ReviewsExport_SendEmail" value="1">
-							<MvELSE>
-								<label><input type="radio" name="ReviewsExport_SendEmail" value="0">Do Not Email<br></label>
-								<input type="radio" name="ReviewsExport_SendEmail" value="1" checked>
-							</MvIF>
-							<MvIF EXPR = "{ ISNULL g.ReviewsExport_Email }"><MvASSIGN NAME = "g.ReviewsExport_Email" VALUE = "{ g.Store:email }"></MvIF>
-							<input type="text" size="40" name="ReviewsExport_Email" value="{ encodeentities( g.ReviewsExport_Email ) }">
-						</td>
-					</tr>
-				</table>
-			<MvEVAL EXPR = "{ [ g.Module_Admin ].Draw_FieldSet_Close() }">
-		</div>
-		<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Element_ExportProgressBar_HTML() }">
-
-		<MvEVAL EXPR = "{ [ g.Module_Admin ].EndContent() }">
-
-		<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Draw_ExportProgressBar_Buttons( 'Export', 'EXPT' ) }">
-
-	<MvEVAL EXPR = "{ [ g.Module_Admin ].EndScreen() }">
-
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -1043,79 +973,18 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ImportModule_Capabilities" PARAMETERS = "module var, capabilities var" STANDARDOUTPUTLEVEL = "">
-	<MvASSIGN NAME = "l.capabilities:screen"				VALUE = 0>
-	<MvASSIGN NAME = "l.capabilities:persistent"			VALUE = 1>
-	<MvASSIGN NAME = "l.capabilities:format"				VALUE = "delimited">
-	<MvASSIGN NAME = "l.capabilities:persistent_provision"	VALUE = 0>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ImportModule_Delimited_Columns" PARAMETERS = "module var, import var, columns var" STANDARDOUTPUTLEVEL = "">
-	<MvASSIGN NAME = "l.void" VALUE = "{ Load_Setting( 'required', l.required_fields ) }">
-	<MvASSIGN NAME = "l.required_fields" VALUE = "{ miva_array_deserialize( l.required_fields ) }">
-	<MvCOMMENT>											field					name						header				required	default			validation		</MvCOMMENT>
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'created',				'Created',					'CREATED',				0,							'',			'string' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'product_code',			'Product Code',				'PRODUCT_CODE',			1,							'',			'code' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'order_id',				'Order ID',					'ORDER_ID',				0,							0,			'integer_nonneg' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'approved',				'Approved',					'APPROVED',				1,							0,			'bool' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'rating',				'Rating',					'RATING',				1,							'',			'integer_nonneg' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'name',					'Name',						'NAME',					l.required_fields:name,		'',			'string' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'email',				'Email',					'EMAIL',				l.required_fields:email,	'',			'email' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'location',				'Location',					'LOCATION',				l.required_fields:location,	'',			'string' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'notify',				'Notify',					'NOTIFY',				0,							0,			'bool' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'title',				'Title',					'TITLE',				l.required_fields:title,	'',			'string' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'summary',				'Summary',					'SUMMARY',				l.required_fields:summary,	'',			'string' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'store_reply',			'Store Reply',				'STORE_REPLY',			0,							'',			'string' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'notified',				'Notified',					'NOTIFIED',				0,							0,			'integer_nonneg' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'verified',				'Verified',					'VERIFIED',				0,							0,			'bool' ) }">
-
-	<MvFOREACH ITERATOR = "l.field" ARRAY = "g.Exp_Addl_Fields" COUNT = "{ Load_Additional_Fields( g.Exp_Addl_Fields ) }">
-		<MvEVAL EXPR = "{ Add_Standard_Column( l.columns, 'field_' $ l.field:code, 'Field: ' $ l.field:name, 'FIELD:'$ toupper( l.field:code ), 0, 0, 'string' ) }">
-	</MvFOREACH>
-
-	<MvFUNCTIONRETURN VALUE = "{ miva_array_max( l.columns ) }">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ImportModule_Persistent_StatusFields" PARAMETERS = "module var, import var, fields var" STANDARDOUTPUTLEVEL = "">
-	<MvASSIGN NAME = "l.fields"	VALUE = "">
-
-	<MvEVAL EXPR = "{ Add_Status_Field( l.fields, 'records_processed',	'Records Processed:',	0 ) }">
-	<MvEVAL EXPR = "{ Add_Status_Field( l.fields, 'records_skipped',	'Records Skipped:',		0 ) }">
-	<MvEVAL EXPR = "{ Add_Status_Field( l.fields, 'record_problems',	'Record Problems:',		0 ) }">
-
-	<MvFUNCTIONRETURN VALUE = "{ miva_array_max( l.fields ) }">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ImportModule_Delimited_Import_Begin" PARAMETERS = "module var, import var, session var, run_data var" STANDARDOUTPUTLEVEL = "">
-	<MvEVAL EXPR = "{ Create_Columns_Present( l.import, l.run_data:columns_present ) }">
-
-	<MvIF EXPR = "{ l.import:automap EQ 1 }">
-		<MvIF EXPR = "{ NOT Validate_Columns( l.import, l.run_data:columns_present ) }">
-			<MvFUNCTIONRETURN VALUE = 0>
-		</MvIF>
-	</MvIF>
-
-	<MvASSIGN NAME = "l.list_pos"				VALUE = 0>
-	<MvFOREACH ITERATOR = "l.column" ARRAY = "l.run_data:columns_all" INDEX = "l.index" COUNT = "{ ImportModule_Delimited_Columns( l.module, l.import, l.run_data:columns_all ) }">
-		<MvIF EXPR = "{ miva_variable_value( 'l.run_data:columns_present:' $ l.column:field ) }">
-			<MvASSIGN NAME = "l.column:present"	VALUE = 1>
-
-			<MvREFERENCE NAME = "l.run_data:columns_list"		INDEX = "{ ++l.list_pos }"		VARIABLE = "{ 'l.run_data:columns_all[' $ l.index $ ']' }">
-			<MvREFERENCE NAME = "l.run_data:columns_present"	MEMBER = "{ l.column:field }"	VARIABLE = "{ 'l.run_data:columns_all[' $ l.index $ ']' }">
-		</MvIF>
-	</MvFOREACH>
-
-	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ImportModule_Delimited_Import_Record" PARAMETERS = "module var, import var, session var, record var, run_data var" STANDARDOUTPUTLEVEL = "">
-	<MvEVAL EXPR = "{ [ g.Module_Feature_IMP_UT ].Import_Session_StatusField_Increment( l.session, 'records_processed', 1 ) }">
-
-	<MvIF EXPR = "{ ISNULL l.record:product_code OR ISNULL l.record:rating OR ISNULL l.record:title OR ISNULL l.record:summary }">
-		<MvEVAL EXPR = "{ Record_Skip( l.session, 'Product Code, Rating, Title & Summary are required.' ) }">
-		<MvFUNCTIONRETURN VALUE = 1>
-	</MvIF>
-
-	<MvFUNCTIONRETURN VALUE = "{ Reviews_Import( l.import, l.session, l.record, l.run_data ) }">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ImportModule_Delimited_Import_End" PARAMETERS = "module var, import var, session var, run_data var" STANDARDOUTPUTLEVEL = "">
@@ -1139,14 +1008,6 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ImportModule_Persistent_Validate" PARAMETERS = "module var, import var" STANDARDOUTPUTLEVEL = "">
-	<MvIF EXPR = "{ l.import:automap EQ 0 }">
-		<MvEVAL EXPR = "{ Create_Columns_Present( l.import, l.columns_present ) }">
-
-		<MvIF EXPR = "{ NOT Validate_Columns( l.import, l.columns_present ) }">
-			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( '', '', g.Error_Message ) }">
-		</MvIF>
-	</MvIF>
-
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -1157,14 +1018,6 @@
 <MvFUNCTION NAME = "ImportModule_Persistent_Provision" PARAMETERS = "module var, import var, provide_xml var" STANDARDOUTPUTLEVEL = "">
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
-
-
-<MvINCLUDE FILE = "functions.mv">
-<MvINCLUDE FILE = "settings.mv">
-<MvINCLUDE FILE = "component_helpers.mv">
-<MvINCLUDE FILE = "export.mv">
-<MvINCLUDE FILE = "import.mv">
-
 
 <MvCOMMENT>
 |
@@ -1379,6 +1232,92 @@
 					   l.notification_settings:mn_from, l.notification_settings:mn_cc, l.notification_settings:mn_bcc,
 					   l.notification_settings:mn_subject, l.notification_settings:cn_from, l.notification_settings:cn_cc,
 					   l.notification_settings:cn_bcc, l.notification_settings:cn_subject">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvCOMMENT>
+|
+|	sNN_TGReviewsTemplates
+|
+</MvCOMMENT>
+
+<MvFUNCTION NAME = "TGReviewsTemplates_Read" PARAMETERS = "templates var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.templates:ma_tmpl_id"	VALUE = "{ TGReviewsTemplates.d.ma_tmpl_id }">
+	<MvASSIGN NAME = "l.templates:mn_tmpl_id"	VALUE = "{ TGReviewsTemplates.d.mn_tmpl_id }">
+	<MvASSIGN NAME = "l.templates:cn_tmpl_id"	VALUE = "{ TGReviewsTemplates.d.cn_tmpl_id }">
+	<MvASSIGN NAME = "l.templates:form_tmpl"	VALUE = "{ TGReviewsTemplates.d.form_tmpl }">
+	<MvASSIGN NAME = "l.templates:rvws_tmpl"	VALUE = "{ TGReviewsTemplates.d.rvws_tmpl }">
+	<MvASSIGN NAME = "l.templates:prlog_tmpl"	VALUE = "{ TGReviewsTemplates.d.prlog_tmpl }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsTemplates_Load" PARAMETERS = "templates var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvOPENVIEW NAME	= "Merchant"
+				VIEW	= "TGReviewsTemplates"
+				QUERY	= "{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'TGReviewsTemplates' }">
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvEVAL EXPR = "{ TGReviewsTemplates_Read( l.templates ) }">
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsTemplates">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsTemplates_Load_Cached" PARAMETERS = "templates var" STANDARDOUTPUTLEVEL = "">
+	<MvREFERENCE NAME = "l.cache"						VARIABLE = "g.Session:cache:TGReviewsTemplates_load_cached">
+
+	<MvIF EXPR = "{ ISNULL l.cache:result }">
+		<MvASSIGN NAME = "l.cache:result"				VALUE = "{ TGReviewsTemplates_Load( l.cache:TGReviewsTemplates ) }">
+		<MvIF EXPR = "{ NOT l.cache:result }">
+			<MvASSIGN NAME = "l.cache:error_code"		VALUE = "{ g.Error_Code }">
+			<MvASSIGN NAME = "l.cache:error_message"	VALUE = "{ g.Error_Message }">
+			<MvASSIGN NAME = "l.cache:error_db_eof"		VALUE = "{ g.Error_DB_EOF }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT l.cache:result }">
+		<MvIF EXPR = "{ l.cache:error_db_eof }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( l.cache:error_code ) }">
+		</MvIF>
+
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( l.cache:error_code, l.cache:error_message ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.templates"						VALUE = "{ l.cache:TGReviewsTemplates }">
+
+	<MvFUNCTIONRETURN VALUE = "{ l.cache:result }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsTemplates_Insert" PARAMETERS = "templates var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvQUERY NAME	= "Merchant"
+			 QUERY	= "{ 'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviewsTemplates
+							( ma_tmpl_id, mn_tmpl_id, cn_tmpl_id, form_tmpl, rvws_tmpl, prlog_tmpl )
+						  VALUES
+							( ?, ?, ?, ?, ?, ? )' }"
+			 FIELDS = "l.templates:ma_tmpl_id, l.templates:mn_tmpl_id, l.templates:cn_tmpl_id, l.templates:form_tmpl, l.templates:rvws_tmpl, l.templates:prlog_tmpl">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsTemplates_Update" PARAMETERS = "settings var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvQUERY NAME 	= "Merchant"
+			 QUERY 	= "{ 'UPDATE ' $ g.Store_Table_Prefix $ 'TGReviewsTemplates
+			 			  SET
+							ma_tmpl_id = ?,
+							mn_tmpl_id = ?,
+							cn_tmpl_id = ?,
+							form_tmpl = ?,
+							rvws_tmpl = ?,
+							prlog_tmpl = ?' }"
+			 FIELDS = "l.templates:ma_tmpl_id, l.templates:mn_tmpl_id, l.templates:cn_tmpl_id, l.templates:form_tmpl, l.templates:rvws_tmpl, l.templates:prlog_tmpl">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
 	</MvIF>
