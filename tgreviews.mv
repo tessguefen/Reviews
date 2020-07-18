@@ -2031,7 +2031,7 @@
 	<MvTRANSACT NAME = "Merchant">
 	
 	<MvIF EXPR = "{ NOT TGReviewsProduct_Insert_LowLevel( l.review ) OR
-					NOT TGReviewsAdditionalValues_Insert( l.review ) }"
+					NOT TGReviewsAdditionalValues_InsertUpdate( l.review ) }">
 		<MvROLLBACK NAME = "Merchant">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
@@ -2061,6 +2061,383 @@
 			 FIELDS	= "l.review:id, l.review:created, l.review:product_id, l.review:cust_id, l.review:order_id,
 					   l.review:approved, l.review:rating, l.review:name, l.review:email, l.review:location, l.review:notify,
 					   l.review:title, l.review:summary, l.review:store_rply, l.review:notified, l.review:verified">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsProduct_Update" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
+	<MvTRANSACT NAME = "Merchant">
+	
+	<MvIF EXPR = "{ NOT TGReviewsProduct_Update_LowLevel( l.review ) OR
+					NOT TGReviewsAdditionalValues_InsertUpdate( l.review ) }">
+		<MvROLLBACK NAME = "Merchant">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvCOMMIT NAME = "Merchant">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsProduct_Update_LowLevel" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvQUERY NAME 	= "Merchant"
+			 QUERY 	= "{ 'UPDATE ' $ g.Store_Table_Prefix $ 'TGReviewsProducts
+			 			  SET
+							created = ?,
+							product_id = ?,
+							cust_id = ?,
+							order_id = ?,
+							approved = ?,
+							rating = ?,
+							name = ?,
+							email = ?,
+							location = ?,
+							notify = ?,
+							title = ?,
+							summary = ?,
+							store_rply = ?,
+							notified = ?,
+							verified = ?
+			 			  WHERE
+			 				id	= ?' }"
+			 FIELDS = "l.review:created, l.review:product_id, l.review:cust_id, l.review:order_id, l.review:approved,
+					   l.review:rating, l.review:name, l.review:email, l.review:location, l.review:notify, l.review:title,
+					   l.review:summary, l.review:store_rply, l.review:notified, l.review:verified, l.review:id">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsProduct_Update_Approved" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvQUERY NAME 	= "Merchant"
+			 QUERY 	= "{ 'UPDATE ' $ g.Store_Table_Prefix $ 'TGReviewsProducts
+			 			  SET
+							approved = ?
+			 			  WHERE
+			 				id	= ?' }"
+			 FIELDS = "l.review:approved, l.review:id">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsProduct_Delete" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
+	<MvTRANSACT NAME = "Merchant">
+	
+	<MvIF EXPR = "{ NOT TGReviewsProduct_Delete_LowLevel( l.review ) OR
+					NOT TGReviewsAdditionalValues_Delete_Review( l.review:id ) }">
+		<MvROLLBACK NAME = "Merchant">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvCOMMIT NAME = "Merchant">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsProduct_Delete_LowLevel" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvQUERY NAME	= "Merchant"
+			 QUERY	= "{ 'DELETE FROM ' $ g.Store_Table_Prefix $ 'TGReviewsProducts WHERE id = ?' }"
+			 FIELDS	= "l.review:id">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvCOMMENT>
+|
+|	sNN_TGReviewsAdditionalFields
+|
+</MvCOMMENT>
+
+<MvFUNCTION NAME = "TGReviewsAdditionalField_Read" PARAMETERS = "additionalfield var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.additionalfield:id"		VALUE = "{ TGReviewsAdditionalFields.d.id }">
+	<MvASSIGN NAME = "l.additionalfield:code"	VALUE = "{ TGReviewsAdditionalFields.d.code }">
+	<MvASSIGN NAME = "l.additionalfield:name"	VALUE = "{ TGReviewsAdditionalFields.d.name }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsAdditionalField_Load_ID" PARAMETERS = "id, additionalfield var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvOPENVIEW NAME	= "Merchant"
+				VIEW	= "TGReviewsAdditionalFields"
+				QUERY	= "{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalFields WHERE id = ?' }"
+				FIELDS	= "l.id">
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ TGReviewsAdditionalFields.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsAdditionalFields">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error#' ) }">
+	</MvIF>
+
+	<MvEVAL EXPR = "{ TGReviewsAdditionalField_Read( l.additionalfield ) }">
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsAdditionalFields">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsAdditionalField_Load_ID_Cached" PARAMETERS = "id, additionalfield var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.id"								VALUE = "{ int( l.id ) }">
+
+	<MvIF EXPR = "{ l.id LE 0 }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error#' ) }">
+	</MvIF>
+
+	<MvREFERENCEARRAY NAME = "l.cache"					VARIABLE = "g.Session:cache:tgreviewsadditionalfield_load_id_cached">
+		<MvDIMENSION INDEX = "{ l.id }">
+	</MvREFERENCEARRAY>
+
+	<MvIF EXPR = "{ ISNULL l.cache:result }">
+		<MvASSIGN NAME = "l.cache:result" 				VALUE = "{ TGReviewsAdditionalField_Load_ID( l.id, l.cache:additionalfield ) }">
+		<MvIF EXPR = "{ NOT l.cache:result }">
+			<MvASSIGN NAME = "l.cache:error_code"		VALUE = "{ g.Error_Code }">
+			<MvASSIGN NAME = "l.cache:error_message"	VALUE = "{ g.Error_Message }">
+			<MvASSIGN NAME = "l.cache:error_db_eof"		VALUE = "{ g.Error_DB_EOF }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT l.cache:result }">
+		<MvIF EXPR = "{ l.cache:error_db_eof }">
+			<MvFUNCTIONRETURN VALUE =  "{ [ g.Module_Library_DB ].Error_Load_EOF( l.cache:error_code ) }">
+		</MvIF>
+
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( l.cache:error_code, l.cache:error_message ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.additionalfield"				VALUE = "{ l.cache:additionalfield }">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsAdditionalField_Load_Code" PARAMETERS = "code, additionalfield var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvOPENVIEW NAME	= "Merchant"
+				VIEW	= "TGReviewsAdditionalFields"
+				QUERY	= "{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalFields WHERE ' $ [ g.Library_Filename_Native_DBAPI ].DB_Compare_UPPER( 'code' ) $ ' = ' $ [ g.Library_Filename_Native_DBAPI ].DB_Compare_UPPER( '?' ) }"
+				FIELDS	= "l.code">
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Library_Filename_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ TGReviewsAdditionalFields.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsAdditionalFields">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error#' ) }">
+	</MvIF>
+
+	<MvEVAL EXPR = "{ TGReviewsAdditionalField_Read( l.product ) }">
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsAdditionalFields">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsAdditionalField_Load_Code_Cached" PARAMETERS = "code, additionalfield var" STANDARDOUTPUTLEVEL = "">
+	<MvREFERENCEARRAY NAME = "l.cache" 					VARIABLE = "g.Session:cache:tgreviewsadditionalfield_load_code_cached">
+		<MvMEMBER NAME = "{ l.code }">
+	</MvREFERENCEARRAY>
+
+	<MvIF EXPR = "{ ISNULL l.cache:result }">
+		<MvASSIGN NAME = "l.cache:result"				VALUE = "{ TGReviewsAdditionalField_Load_Code( l.code, l.cache:additionalfield ) }">
+
+		<MvIF EXPR = "{ l.cache:result }">
+			<MvREFERENCE NAME = "g.Session:cache:tgreviewsadditionalfield_load_id_cached" INDEX = "{ l.cache:additionalfield:id }" VARIABLE = "l.cache">
+		<MvELSE>
+			<MvASSIGN NAME = "l.cache:error_code"		VALUE = "{ g.Error_Code }">
+			<MvASSIGN NAME = "l.cache:error_message"	VALUE = "{ g.Error_Message }">
+			<MvASSIGN NAME = "l.cache:error_db_eof"		VALUE = "{ g.Error_DB_EOF }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT l.cache:result }">
+		<MvIF EXPR = "{ l.cache:error_db_eof }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( l.cache:error_code ) }">
+		</MvIF>
+
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( l.cache:error_code, l.cache:error_message ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.additionalfield"				VALUE = "{ l.cache:additionalfield }">
+
+	<MvFUNCTIONRETURN VALUE = "{ l.cache:result }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsAdditionalField_Insert" PARAMETERS = "additionalfield var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.additionalfield:id" VALUE = "{ [ g.Module_Library_DB ].StoreKey_Generate( 'TGRAdditional' ) }">
+
+	<MvQUERY NAME	= "Merchant"
+			 QUERY	= "{ 'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalFields
+							( id, code, name )
+						  VALUES
+							( ?, ?, ? )' }"
+			 FIELDS	= "l.additionalfield:id, l.additionalfield:code, l.additionalfield:name">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsAdditionalField_Update" PARAMETERS = "additionalfield var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvQUERY NAME 	= "Merchant"
+			 QUERY 	= "{ 'UPDATE ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalFields
+			 			  SET
+							code = ?,
+							name = ?
+			 			  WHERE
+			 				id	= ?' }"
+			 FIELDS = "l.additionalfield:code, l.additionalfield:name, l.additionalfield:id">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsAdditionalField_Delete" PARAMETERS = "additionalfield var" STANDARDOUTPUTLEVEL = "">	
+	<MvIF EXPR = "{ NOT TGReviewsAdditionalField_Delete_LowLevel( l.additionalfield ) OR
+					NOT TGReviewsAdditionalValues_Delete_Field( l.additionalfield:id ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsAdditionalField_Delete_LowLevel" PARAMETERS = "additionalfield var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvQUERY NAME	= "Merchant"
+			 QUERY	= "{ 'DELETE FROM ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalFields WHERE id = ?' }"
+			 FIELDS	= "l.additionalfield:id">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvCOMMENT>
+|
+|	sNN_TGReviewsAdditionalValues
+|
+</MvCOMMENT>
+
+<MvFUNCTION NAME = "TGReviewsAdditionalValue_Read" PARAMETERS = "additionalvalue var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.additionalvalue:field_id"	VALUE = "{ TGReviewsAdditionalValue.d.field_id }">
+	<MvASSIGN NAME = "l.additionalvalue:review_id"	VALUE = "{ TGReviewsAdditionalValue.d.review_id }">
+	<MvASSIGN NAME = "l.additionalvalue:value"		VALUE = "{ TGReviewsAdditionalValue.d.value }">
+
+	<MvCOMMENT>
+	|
+	|	For backwards compatibility
+	|
+	</MvCOMMENT>
+
+	<MvASSIGN NAME = "l.additionalvalue:rating_id" VALUE = "{ l.additionalvalue:review_id }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsAdditionalValue_Load" PARAMETERS = "additionalvalue var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvOPENVIEW NAME	= "Merchant"
+				VIEW	= "TGReviewsAdditionalValues"
+				QUERY	= "{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues WHERE field_id = ? AND review_id = ?' }"
+				FIELDS	= "l.additionalvalue:field_id, l.additionalvalue:review_id">
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ TGReviewsAdditionalValues.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsAdditionalValues">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error#' ) }">
+	</MvIF>
+
+	<MvEVAL EXPR = "{ TGReviewsAdditionalValue_Read( l.additionalvalue ) }">
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsAdditionalValues">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsAdditionalValue_Insert" PARAMETERS = "additionalvalue var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvQUERY NAME	= "Merchant"
+			 QUERY	= "{ 'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues
+							( field_id, review_id, value )
+						  VALUES
+							( ?, ?, ? )' }"
+			 FIELDS	= "l.additionalvalue:field_id, l.additionalvalue:review_id, l.additionalvalue:value">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsAdditionalValues_InsertUpdate" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ ISNULL l.review:additional_fields }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvFOREACH ITERATOR = "l.additionalfield_code" ARRAY = "l.additionalfields" COUNT = "{ miva_struct_members( l.review:additional_fields, l.additionalfields ) }">
+		<MvIF EXPR = "{ NOT TGReviewsAdditionalField_Load_Code_Cached( l.additionalfield_code, l.additionalfield ) }">
+			<MvFOREACHCONTINUE>
+		</MvIF>
+
+		<MvASSIGN NAME = "l.additionalvalue:field_id"	VALUE = "{ l.additionalfield:id }">
+		<MvASSIGN NAME = "l.additionalvalue:review_id"	VALUE = "{ l.review:id }">
+		<MvASSIGN NAME = "l.additionalvalue:value"		VALUE = "{ miva_variable_value( 'l.review:additional_fields:' $ l.additionalfield_code) }">
+
+		<MvIF EXPR = "{ NOT TGReviewsAdditionalValue_Insert( l.additionalvalue ) }">
+			<MvIF EXPR = "{ NOT [ g.Module_Library_Native_DBAPI ].DB_Error_IsIndexDuplicate( g.Error_Message ) }">	<MvFUNCTIONRETURN VALUE = 0>
+			<MvELSEIF EXPR = "{ NOT TGReviewsAdditionalValue_Update( l.additionalvalue ) }">						<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+		</MvIF>
+	</MvFOREACH>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsAdditionalValue_Update" PARAMETERS = "additionalvalue var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvQUERY NAME 	= "Merchant"
+			 QUERY 	= "{ 'UPDATE ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues
+			 			  SET
+							value = ?,
+			 			  WHERE
+							field_id = ? AND
+							review_id = ?' }"
+			 FIELDS = "l.additionalvalue:value, l.additionalvalue:field_id, l.additionalvalue:review_id">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsAdditionalValue_Delete" PARAMETERS = "additionalvalue var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvQUERY NAME	= "Merchant"
+			 QUERY	= "{ 'DELETE FROM ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues WHERE field_id = ? AND review_id = ?' }"
+			 FIELDS	= "l.additionalvalue:field_id, l.additionalvalue:review_id">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsAdditionalValues_Delete_Field" PARAMETERS = "field_id" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvQUERY NAME	= "Merchant"
+			 QUERY	= "{ 'DELETE FROM ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues WHERE field_id = ?' }"
+			 FIELDS	= "l.field_id">
+	<MvIF EXPR = "{ g.MvQUERY_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsAdditionalValues_Delete_Review" PARAMETERS = "review_id" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvQUERY NAME	= "Merchant"
+			 QUERY	= "{ 'DELETE FROM ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues WHERE review_id = ?' }"
+			 FIELDS	= "l.review_id">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
 	</MvIF>
