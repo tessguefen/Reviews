@@ -800,22 +800,566 @@
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "Module_System_Tabs" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
-	<MvFUNCTIONRETURN VALUE = "TGR_PROD:Reviews: Product Reviews,TGR_SETT:Reviews: Settings,TGR_SETT/TGR_FIELDS:General Settings,TGR_SETT/TGR_EMAIL:Email Notifications,TGR_SETT/TGR_TEMPL:Templates & Items,TGR_ADDL:Reviews: Additional Fields">
+	<MvFUNCTIONRETURN VALUE = "TGR_SETT:Product Reviews: Settings,TGR_SETT/FIELDS:Field Settings,TGR_SETT/REVIEW:Review Settings,TGR_SETT/RECAPTCHA:Recaptcha Settings,TGR_SETT/MAIL_AFTER:Mail After Notification,TGR_SETT/MERCHANT:Merchant Notification Email,TGR_SETT/CUSTOMER:Customer Notification Email,TGR_SETT/PRERENDER_LOGIC_TEMPLATE:Pre-Submission Logic Template,TGR_SETT/FORM_TEMPLATE:Review Form Template,TGR_SETT/REVIEWS_TEMPLATE:Reviews Template,TGR_PROD:Product Reviews: Reviews,TGR_ADDL:Reviews: Additional Fields">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_System_Head" PARAMETERS = "module var, tab" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvIF EXPR = "{ l.tab EQ 'TGR_SETT' }">
+		<style>
+			.tgreviews_fields_table_container {
+				width: 375px;
+			}
+		</style>
+	</MvIF>
+
+	<MvIF EXPR = "{ l.tab NE 'TGR_PROD' AND l.tab NE 'TGR_ADDL' }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Module_System_Content" PARAMETERS = "module var, tab, load_fields" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+<MvFUNCTION NAME = "Module_System_Content" PARAMETERS = "module var, tab, load_fields" STANDARDOUTPUTLEVEL = "html, text, compresswhitespace">
+	<MvIF EXPR = "{ l.tab EQ 'TGR_SETT' }">
+		<MvIF EXPR = "{ l.load_fields }">
+			<MvIF EXPR = "{ NOT TGReviewsGeneralSettings_Load( g.TGReviewsGeneralSettings ) }">
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+	
+			<MvIF EXPR = "{ NOT TGReviewsNotificationSettings_Load( g.TGReviewsNotificationSettings ) }">
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+		</MvIF>
+	</MvIF>
+	
+	<MvIF EXPR = "{ l.tab NE 'TGR_SETT' }">
+		<MvHIDE FIELDS = "g.TGReviewsGeneralSettings, g.TGReviewsNotificationSettings">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvIF EXPR = "{ l.tab EQ 'TGR_SETT' }">
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'TGR_SETT', 'FIELDS' ) }">
+		<div class="mm9_table_container tgreviews_fields_table_container">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%" class="mm9_table">
+				<thead>
+					<tr>
+						<td align="left" valign="middle" vnowrap>Field</td>
+						<td align="center" valign="middle" nowrap>Required</td>
+						<td align="center" valign="middle" nowrap>Optional</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr>
+						<td align="left" valign="middle" vnowrap>
+							Email
+						</td>
+						<td align="center" valign="middle" nowrap>
+							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( 'TGReviewsGeneralSettings:fld_email', 1, g.TGReviewsGeneralSettings:fld_email, '' ) }">
+						</td>
+						<td align="center" valign="middle" nowrap>
+							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( 'TGReviewsGeneralSettings:fld_email', 0, g.TGReviewsGeneralSettings:fld_email, '' ) }">
+						</td>
+					</tr>
+					<tr>
+						<td align="left" valign="middle" vnowrap>
+							Location
+						</td>
+						<td align="center" valign="middle" nowrap>
+							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( 'TGReviewsGeneralSettings:fld_loc', 1, g.TGReviewsGeneralSettings:fld_loc, '' ) }">
+						</td>
+						<td align="center" valign="middle" nowrap>
+							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( 'TGReviewsGeneralSettings:fld_loc', 0, g.TGReviewsGeneralSettings:fld_loc, '' ) }">
+						</td>
+					</tr>
+					<tr>
+						<td align="left" valign="middle" vnowrap>
+							Name
+						</td>
+						<td align="center" valign="middle" nowrap>
+							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( 'TGReviewsGeneralSettings:fld_name', 1, g.TGReviewsGeneralSettings:fld_name, '' ) }">
+						</td>
+						<td align="center" valign="middle" nowrap>
+							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( 'TGReviewsGeneralSettings:fld_name', 0, g.TGReviewsGeneralSettings:fld_name, '' ) }">
+						</td>
+					</tr>
+					<tr>
+						<td align="left" valign="middle" vnowrap>
+							Summary
+						</td>
+						<td align="center" valign="middle" nowrap>
+							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( 'TGReviewsGeneralSettings:fld_summry', 1, g.TGReviewsGeneralSettings:fld_summry, '' ) }">
+						</td>
+						<td align="center" valign="middle" nowrap>
+							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( 'TGReviewsGeneralSettings:fld_summry', 0, g.TGReviewsGeneralSettings:fld_summry, '' ) }">
+						</td>
+					</tr>
+					<tr>
+						<td align="left" valign="middle" vnowrap>
+							Title
+						</td>
+						<td align="center" valign="middle" nowrap>
+							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( 'TGReviewsGeneralSettings:fld_title', 1, g.TGReviewsGeneralSettings:fld_title, '' ) }">
+						</td>
+						<td align="center" valign="middle" nowrap>
+							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( 'TGReviewsGeneralSettings:fld_title', 0, g.TGReviewsGeneralSettings:fld_title, '' ) }">
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
+	
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'TGR_SETT', 'REVIEW' ) }">
+		<table border="0" cellpadding="2" cellspacing="0" width="100%">
+			<tbody>
+				<tr valign="top">
+					<td nowrap><strong>Reviews Per Page:</strong></td>
+					<td width="100%">
+						<input type="text" name="TGReviewsGeneralSettings:per_page" size="20" value="{ encodeentities( g.TGReviewsGeneralSettings:per_page ) }">
+					</td>
+				</tr>
+				<tr valign="top">
+					<td nowrap><strong>Default Sorting Method:</strong></td>
+					<td width="100%">
+						<select name="TGReviewsGeneralSettings:sort">
+							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( '-id',			g.TGReviewsGeneralSettings:sort, 'Default' ) }">
+							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( '-created',	g.TGReviewsGeneralSettings:sort, 'Most Recent Reviews' ) }">
+							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'created',		g.TGReviewsGeneralSettings:sort, 'Least Recent Reviews' ) }">
+							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( '-rating',		g.TGReviewsGeneralSettings:sort, 'Highest To Lowest Rating' ) }">
+							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'rating',		g.TGReviewsGeneralSettings:sort, 'Lowest to Highest Rating' ) }">
+						</select>
+					</td>
+				</tr>
+				<tr valign="top">
+					<td colspan="2">
+						<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawCheckbox_With_Label( g.TGReviewsGeneralSettings:auto_apprv, 'TGReviewsGeneralSettings:auto_apprv', 1, 'Auto Approve Reviews' ) }">
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
+	
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'TGR_SETT', 'RECAPTCHA' ) }">
+		<table border="0" cellpadding="2" cellspacing="0" width="100%">
+			<tbody>
+				<tr valign="top">
+					<td colspan="2">
+						<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawCheckbox_With_Label( g.TGReviewsGeneralSettings:rc_enabled, 'TGReviewsGeneralSettings:rc_enabled', 1, 'reCAPTCHA Enabled' ) }">
+					</td>
+				</tr>
+				<tr valign="top">
+					<td nowrap><strong>Public Key:</strong></td>
+					<td width="100%">
+						<input type="text" name="TGReviewsGeneralSettings:rc_pub_key" size="50" value="{ encodeentities( g.TGReviewsGeneralSettings:rc_pub_key ) }">
+					</td>
+				</tr>
+				<tr valign="top">
+					<td nowrap><strong>Private Key:</strong></td>
+					<td width="100%">
+						<input type="password" name="TGReviewsGeneralSettings:rc_prv_key" size="50" value="">
+					</td>
+				</tr>
+				<tr valign="top">
+					<td nowrap><strong>Confirm Private Key:</strong></td>
+					<td width="100%">
+						<input type="password" name="TGReviewsGeneralSettings:rc_prv_key_confirm" size="50" value="">
+					</td>
+				</tr>
+			</tbody>
+		</table>
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
+
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'TGR_SETT', 'MAIL_AFTER' ) }">
+		<div class="mm9_table_container tgreviews_fields_table_container">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%" class="mm9_table">
+				<thead>
+					<tr>
+						<td colspan="2">
+							Page Template Used: <strong>TGR_MailAfter_Email</strong>
+						</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr valign="top">
+						<td colspan="2">
+							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawCheckbox_With_Label( g.TGReviewsNotificationSettings:ma_enable, 'TGReviewsNotificationSettings:ma_enable', 1, 'Notification Enabled' ) }">
+						</td>
+					</tr>
+					<tr valign="top">
+						<td nowrap><strong>Send After:</strong></td>
+						<td width="100%">
+							<input type="text" name="TGReviewsNotificationSettings:ma_days" value="{ encodeentities( g.TGReviewsNotificationSettings:ma_days ) }"> day(s)
+						</td>
+					</tr>
+					<tr valign="top">
+						<td nowrap><strong>After:</strong></td>
+						<td width="100%">
+							<select name="TGReviewsNotificationSettings:ma_after">
+								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'order',	g.TGReviewsNotificationSettings:ma_after, 'Order Date' ) }">
+								<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'ship',	g.TGReviewsNotificationSettings:ma_after, 'Shipment Date' ) }">
+							</select>
+						</td>
+					</tr>
+					<tr valign="top">
+						<td nowrap><strong>From:</strong></td>
+						<td width="100%">
+							<input type="text" name="TGReviewsNotificationSettings:ma_from" value="{ encodeentities( g.TGReviewsNotificationSettings:ma_from ) }">
+						</td>
+					</tr>
+					<tr valign="top">
+						<td nowrap>CC:</td>
+						<td width="100%">
+							<input type="text" name="TGReviewsNotificationSettings:ma_cc" value="{ encodeentities( g.TGReviewsNotificationSettings:ma_cc ) }">
+						</td>
+					</tr>
+					<tr valign="top">
+						<td nowrap>BCC:</td>
+						<td width="100%">
+							<input type="text" name="TGReviewsNotificationSettings:ma_bcc" value="{ encodeentities( g.TGReviewsNotificationSettings:ma_bcc ) }">
+						</td>
+					</tr>
+					<tr valign="top">
+						<td nowrap><strong>Subject:</strong></td>
+						<td width="100%">
+							<input type="text" name="TGReviewsNotificationSettings:ma_subject" value="{ encodeentities( g.TGReviewsNotificationSettings:ma_subject ) }">
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
+
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'TGR_SETT', 'MERCHANT' ) }">
+		<div class="mm9_table_container tgreviews_fields_table_container">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%" class="mm9_table">
+				<thead>
+					<tr>
+						<td colspan="2">
+							Page Template Used: <strong>TGR_Merchant_Email</strong>
+						</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr valign="top">
+						<td colspan="2">
+							<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawCheckbox_With_Label( g.TGReviewsNotificationSettings:mn_enable, 'TGReviewsNotificationSettings:mn_enable', 1, 'Notification Enabled' ) }">
+						</td>
+					</tr>
+					<tr valign="top">
+						<td nowrap><strong>To:</strong></td>
+						<td width="100%">
+							<input type="text" name="TGReviewsNotificationSettings:mn_to" value="{ encodeentities( g.TGReviewsNotificationSettings:mn_to ) }">
+						</td>
+					</tr>
+					<tr valign="top">
+						<td nowrap><strong>From:</strong></td>
+						<td width="100%">
+							<input type="text" name="TGReviewsNotificationSettings:mn_from" value="{ encodeentities( g.TGReviewsNotificationSettings:mn_from ) }">
+						</td>
+					</tr>
+					<tr valign="top">
+						<td nowrap>CC:</td>
+						<td width="100%">
+							<input type="text" name="TGReviewsNotificationSettings:mn_cc" value="{ encodeentities( g.TGReviewsNotificationSettings:mn_cc ) }">
+						</td>
+					</tr>
+					<tr valign="top">
+						<td nowrap>BCC:</td>
+						<td width="100%">
+							<input type="text" name="TGReviewsNotificationSettings:mn_bcc" value="{ encodeentities( g.TGReviewsNotificationSettings:mn_bcc ) }">
+						</td>
+					</tr>
+					<tr valign="top">
+						<td nowrap><strong>Subject:</strong></td>
+						<td width="100%">
+							<input type="text" name="TGReviewsNotificationSettings:mn_subject" value="{ encodeentities( g.TGReviewsNotificationSettings:mn_subject ) }">
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
+
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'TGR_SETT', 'CUSTOMER' ) }">
+		<div class="mm9_table_container tgreviews_fields_table_container">
+			<table border="0" cellpadding="0" cellspacing="0" width="100%" class="mm9_table">
+				<thead>
+					<tr>
+						<td colspan="2">
+							Page Template Used: <strong>TGR_Customer_Email</strong>
+						</td>
+					</tr>
+				</thead>
+				<tbody>
+					<tr valign="top">
+						<td nowrap><strong>From:</strong></td>
+						<td width="100%">
+							<input type="text" name="TGReviewsNotificationSettings:cn_from" value="{ encodeentities( g.TGReviewsNotificationSettings:cn_from ) }">
+						</td>
+					</tr>
+					<tr valign="top">
+						<td nowrap>CC:</td>
+						<td width="100%">
+							<input type="text" name="TGReviewsNotificationSettings:cn_cc" value="{ encodeentities( g.TGReviewsNotificationSettings:cn_cc ) }">
+						</td>
+					</tr>
+					<tr valign="top">
+						<td nowrap>BCC:</td>
+						<td width="100%">
+							<input type="text" name="TGReviewsNotificationSettings:cn_bcc" value="{ encodeentities( g.TGReviewsNotificationSettings:cn_bcc ) }">
+						</td>
+					</tr>
+					<tr valign="top">
+						<td nowrap><strong>Subject:</strong></td>
+						<td width="100%">
+							<input type="text" name="TGReviewsNotificationSettings:cn_subject" value="{ encodeentities( g.TGReviewsNotificationSettings:cn_subject ) }">
+						</td>
+					</tr>
+				</tbody>
+			</table>
+		</div>
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
+
+		<MvIF EXPR = "{ NOT TGReviewsTemplates_Load_Cached( l.templates ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'TGR_SETT', 'PRERENDER_LOGIC_TEMPLATE' ) }">
+		<table border="0" cellpadding="2" cellspacing="0" width="100%">
+			<tr>
+				<td align="left" nowrap valign="top" colspan="2">
+					Some Text Here.
+					<br><br>
+				</td>
+			</tr>
+			<MvEVAL EXPR = "{ Admin_Template( 'Pre-Render Logic', 'TGReviewsTemplates:prlog_tmpl_', l.templates:prlog_tmpl, l.load_fields ) }">
+		</table>
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
+
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'TGR_SETT', 'FORM_TEMPLATE' ) }">
+		<table border="0" cellpadding="2" cellspacing="0" width="100%">
+			<tr>
+				<td align="left" nowrap valign="top" colspan="2">
+					Some Text Here.
+					<br><br>
+				</td>
+			</tr>
+			<MvEVAL EXPR = "{ Admin_Template( 'Form', 'TGReviewsTemplates:form_tmpl_', l.templates:form_tmpl , l.load_fields ) }">
+		</table>
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
+		
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'TGR_SETT', 'REVIEWS_TEMPLATE' ) }">
+		<table border="0" cellpadding="2" cellspacing="0" width="100%">
+			<tr>
+				<td align="left" nowrap valign="top" colspan="2">
+					Some Text Here.
+					<br><br>
+				</td>
+			</tr>
+			<MvEVAL EXPR = "{ Admin_Template( 'Reviews', 'TGReviewsTemplates:rvws_tmpl_', l.templates:rvws_tmpl , l.load_fields ) }">
+		</table>
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
+	</MvIF>
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_System_Update" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT TGReviewsGeneralSettings_Load_Cached( l.general_settings ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvASSIGN NAME = "l.general_settings:fld_name"		VALUE = "{ g.TGReviewsGeneralSettings:fld_name }">
+	<MvASSIGN NAME = "l.general_settings:fld_email"		VALUE = "{ g.TGReviewsGeneralSettings:fld_email }">
+	<MvASSIGN NAME = "l.general_settings:fld_loc"		VALUE = "{ g.TGReviewsGeneralSettings:fld_loc }">
+	<MvASSIGN NAME = "l.general_settings:fld_summry"	VALUE = "{ g.TGReviewsGeneralSettings:fld_summry }">
+	<MvASSIGN NAME = "l.general_settings:fld_title"		VALUE = "{ g.TGReviewsGeneralSettings:fld_title }">
+	<MvASSIGN NAME = "l.general_settings:per_page"		VALUE = "{ g.TGReviewsGeneralSettings:per_page }">
+	<MvASSIGN NAME = "l.general_settings:sort"			VALUE = "{ g.TGReviewsGeneralSettings:sort }">
+	<MvASSIGN NAME = "l.general_settings:auto_apprv"	VALUE = "{ g.TGReviewsGeneralSettings:auto_apprv }">
+	<MvASSIGN NAME = "l.general_settings:rc_enabled"	VALUE = "{ g.TGReviewsGeneralSettings:rc_enabled }">
+	<MvASSIGN NAME = "l.general_settings:rc_pub_key"	VALUE = "{ g.TGReviewsGeneralSettings:rc_pub_key }">
+
+	<MvIF EXPR = "{ NOT ISNULL g.TGReviewsGeneralSettings:rc_prv_key }">
+		<MvASSIGN NAME = "l.general_settings:rc_prv_key"	VALUE = "{ g.TGReviewsGeneralSettings:rc_prv_key }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.notification_settings:ma_enable"	VALUE = "{ g.TGReviewsNotificationSettings:ma_enable }">
+	<MvASSIGN NAME = "l.notification_settings:ma_days"		VALUE = "{ g.TGReviewsNotificationSettings:ma_days }">
+	<MvASSIGN NAME = "l.notification_settings:ma_after"		VALUE = "{ g.TGReviewsNotificationSettings:ma_after }">
+	<MvASSIGN NAME = "l.notification_settings:ma_from"		VALUE = "{ g.TGReviewsNotificationSettings:ma_from }">
+	<MvASSIGN NAME = "l.notification_settings:ma_cc"		VALUE = "{ g.TGReviewsNotificationSettings:ma_cc }">
+	<MvASSIGN NAME = "l.notification_settings:ma_bcc"		VALUE = "{ g.TGReviewsNotificationSettings:ma_bcc }">
+	<MvASSIGN NAME = "l.notification_settings:ma_subject"	VALUE = "{ g.TGReviewsNotificationSettings:ma_subject }">
+	<MvASSIGN NAME = "l.notification_settings:mn_enable"	VALUE = "{ g.TGReviewsNotificationSettings:mn_enable }">
+	<MvASSIGN NAME = "l.notification_settings:mn_to"		VALUE = "{ g.TGReviewsNotificationSettings:mn_to }">
+	<MvASSIGN NAME = "l.notification_settings:mn_from"		VALUE = "{ g.TGReviewsNotificationSettings:mn_from }">
+	<MvASSIGN NAME = "l.notification_settings:mn_cc"		VALUE = "{ g.TGReviewsNotificationSettings:mn_cc }">
+	<MvASSIGN NAME = "l.notification_settings:mn_bcc"		VALUE = "{ g.TGReviewsNotificationSettings:mn_bcc }">
+	<MvASSIGN NAME = "l.notification_settings:mn_subject"	VALUE = "{ g.TGReviewsNotificationSettings:mn_subject }">
+	<MvASSIGN NAME = "l.notification_settings:cn_from"		VALUE = "{ g.TGReviewsNotificationSettings:cn_from }">
+	<MvASSIGN NAME = "l.notification_settings:cn_cc"		VALUE = "{ g.TGReviewsNotificationSettings:cn_cc }">
+	<MvASSIGN NAME = "l.notification_settings:cn_bcc"		VALUE = "{ g.TGReviewsNotificationSettings:cn_bcc }">
+	<MvASSIGN NAME = "l.notification_settings:cn_subject"	VALUE = "{ g.TGReviewsNotificationSettings:cn_subject }">
+
+	<MvIF EXPR = "{ NOT TGReviewsGeneralSettings_Update( l.general_settings ) OR
+					NOT TGReviewsNotificationSettings_Update( l.notification_settings ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ g.Tab EQ 'TGR_SETT' }">
+		<MvIF EXPR = "{ NOT TGReviewsTemplates_Load_Cached( l.templates ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvIF EXPR = "{ NOT Admin_Template_Update( l.module, 'Pre-Render Logic', 'TGReviewsTemplates:prlog_tmpl_', l.templates:prlog_tmpl )	OR
+						NOT Admin_Template_Update( l.module, 'Form', 'TGReviewsTemplates:form_tmpl_', l.templates:form_tmpl )				OR
+						NOT Admin_Template_Update( l.module, 'Reviews', 'TGReviewsTemplates:rvws_tmpl_', l.templates:rvws_tmpl ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+	</MvIF>
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_System_Validate" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT TGReviewsGeneralSettings_Load_Cached( l.general_settings ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvASSIGN NAME = "g.TGReviewsGeneralSettings:fld_name"				VALUE = "{ [ g.Module_Admin ].Trim_Boolean( g.TGReviewsGeneralSettings:fld_name ) }">
+	<MvASSIGN NAME = "g.TGReviewsGeneralSettings:fld_email"				VALUE = "{ [ g.Module_Admin ].Trim_Boolean( g.TGReviewsGeneralSettings:fld_email ) }">
+	<MvASSIGN NAME = "g.TGReviewsGeneralSettings:fld_loc" 				VALUE = "{ [ g.Module_Admin ].Trim_Boolean( g.TGReviewsGeneralSettings:fld_loc ) }">
+	<MvASSIGN NAME = "g.TGReviewsGeneralSettings:fld_summry"			VALUE = "{ [ g.Module_Admin ].Trim_Boolean( g.TGReviewsGeneralSettings:fld_summry ) }">
+	<MvASSIGN NAME = "g.TGReviewsGeneralSettings:fld_title"				VALUE = "{ [ g.Module_Admin ].Trim_Boolean( g.TGReviewsGeneralSettings:fld_title ) }">
+	<MvASSIGN NAME = "g.TGReviewsGeneralSettings:fld_title"				VALUE = "{ [ g.Module_Admin ].Trim_Boolean( g.TGReviewsGeneralSettings:fld_title ) }">
+	<MvASSIGN NAME = "g.TGReviewsGeneralSettings:auto_apprv"			VALUE = "{ [ g.Module_Admin ].Trim_Boolean( g.TGReviewsGeneralSettings:auto_apprv ) }">
+	<MvASSIGN NAME = "g.TGReviewsGeneralSettings:per_page"				VALUE = "{ trim( g.TGReviewsGeneralSettings:per_page ) }">
+	<MvASSIGN NAME = "g.TGReviewsGeneralSettings:sort"					VALUE = "{ trim( g.TGReviewsGeneralSettings:sort ) }">
+	<MvASSIGN NAME = "g.TGReviewsGeneralSettings:rc_enabled"			VALUE = "{ [ g.Module_Admin ].Trim_Boolean( g.TGReviewsGeneralSettings:rc_enabled ) }">
+	<MvASSIGN NAME = "g.TGReviewsGeneralSettings:rc_pub_key"			VALUE = "{ trim( g.TGReviewsGeneralSettings:rc_pub_key ) }">
+	<MvASSIGN NAME = "g.TGReviewsGeneralSettings:rc_prv_key"			VALUE = "{ trim( g.TGReviewsGeneralSettings:rc_prv_key ) }">
+	<MvASSIGN NAME = "g.TGReviewsGeneralSettings:rc_prv_key_confirm"	VALUE = "{ trim( g.TGReviewsGeneralSettings:rc_prv_key_confirm ) }">
+
+	<MvIF EXPR = "{ g.TGReviewsGeneralSettings:rc_enabled AND ISNULL l.general_settings:rc_prv_key }">	<MvASSIGN NAME = "l.private_key_required" VALUE = 1>
+	<MvELSE>																							<MvASSIGN NAME = "l.private_key_required" VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_WholeNumber_Positive_Required( g.TGReviewsGeneralSettings:per_page ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', 'TGReviewsGeneralSettings:per_page', g.Validation_Message ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ ( g.TGReviewsGeneralSettings:sort NE '-id' )		AND
+					( g.TGReviewsGeneralSettings:sort NE '-created' )	AND
+					( g.TGReviewsGeneralSettings:sort NE 'created' )	AND
+					( g.TGReviewsGeneralSettings:sort NE '-rating' )	AND
+					( g.TGReviewsGeneralSettings:sort NE 'rating' ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', 'TGReviewsGeneralSettings:sort', 'Please select a value for the default sorting method' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ g.TGReviewsGeneralSettings:rc_enabled AND ISNULL g.TGReviewsGeneralSettings:rc_pub_key }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', 'TGReviewsGeneralSettings:rc_pub_key', 'Public key cannot be blank' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ l.private_key_required }">
+		<MvIF EXPR = "{ ISNULL g.TGReviewsGeneralSettings:rc_prv_key }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', 'TGReviewsGeneralSettings:rc_prv_key', 'Private key cannot be blank' ) }">
+		<MvELSEIF EXPR = "{ g.TGReviewsGeneralSettings:rc_prv_key NE g.TGReviewsGeneralSettings:rc_prv_key_confirm }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', 'TGReviewsGeneralSettings:rc_prv_key', 'Private keys do not match' ) }">
+		</MvIF>
+	</MvIF>
+
+	<MvASSIGN NAME = "g.TGReviewsNotificationSettings:ma_enable"	VALUE = "{ [ g.Module_Admin ].Trim_Boolean( g.TGReviewsNotificationSettings:ma_enable ) }">
+	<MvASSIGN NAME = "g.TGReviewsNotificationSettings:ma_days"		VALUE = "{ trim( g.TGReviewsNotificationSettings:ma_days ) }">
+	<MvASSIGN NAME = "g.TGReviewsNotificationSettings:ma_after"		VALUE = "{ trim( g.TGReviewsNotificationSettings:ma_after ) }">
+	<MvASSIGN NAME = "g.TGReviewsNotificationSettings:ma_from"		VALUE = "{ trim( g.TGReviewsNotificationSettings:ma_from ) }">
+	<MvASSIGN NAME = "g.TGReviewsNotificationSettings:ma_cc"		VALUE = "{ trim( g.TGReviewsNotificationSettings:ma_cc ) }">
+	<MvASSIGN NAME = "g.TGReviewsNotificationSettings:ma_bcc"		VALUE = "{ trim( g.TGReviewsNotificationSettings:ma_bcc ) }">
+	<MvASSIGN NAME = "g.TGReviewsNotificationSettings:ma_subject"	VALUE = "{ trim( g.TGReviewsNotificationSettings:ma_subject ) }">
+	<MvASSIGN NAME = "g.TGReviewsNotificationSettings:mn_enable"	VALUE = "{ [ g.Module_Admin ].Trim_Boolean( g.TGReviewsNotificationSettings:mn_enable ) }">
+	<MvASSIGN NAME = "g.TGReviewsNotificationSettings:mn_to"		VALUE = "{ trim( g.TGReviewsNotificationSettings:mn_to ) }">
+	<MvASSIGN NAME = "g.TGReviewsNotificationSettings:mn_from"		VALUE = "{ trim( g.TGReviewsNotificationSettings:mn_from ) }">
+	<MvASSIGN NAME = "g.TGReviewsNotificationSettings:mn_cc"		VALUE = "{ trim( g.TGReviewsNotificationSettings:mn_cc ) }">
+	<MvASSIGN NAME = "g.TGReviewsNotificationSettings:mn_bcc"		VALUE = "{ trim( g.TGReviewsNotificationSettings:mn_bcc ) }">
+	<MvASSIGN NAME = "g.TGReviewsNotificationSettings:mn_subject"	VALUE = "{ trim( g.TGReviewsNotificationSettings:mn_subject ) }">
+	<MvASSIGN NAME = "g.TGReviewsNotificationSettings:cn_from"		VALUE = "{ trim( g.TGReviewsNotificationSettings:cn_from ) }">
+	<MvASSIGN NAME = "g.TGReviewsNotificationSettings:cn_cc"		VALUE = "{ trim( g.TGReviewsNotificationSettings:cn_cc ) }">
+	<MvASSIGN NAME = "g.TGReviewsNotificationSettings:cn_bcc"		VALUE = "{ trim( g.TGReviewsNotificationSettings:cn_bcc ) }">
+	<MvASSIGN NAME = "g.TGReviewsNotificationSettings:cn_subject"	VALUE = "{ trim( g.TGReviewsNotificationSettings:cn_subject ) }">
+
+	<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Email( g.TGReviewsNotificationSettings:ma_from ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', 'TGReviewsNotificationSettings:ma_from', g.Validation_Message ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT ISNULL g.TGReviewsNotificationSettings:ma_cc }">
+		<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Email( g.TGReviewsNotificationSettings:ma_cc ) }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', 'TGReviewsNotificationSettings:ma_cc', g.Validation_Message ) }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT ISNULL g.TGReviewsNotificationSettings:ma_bcc }">
+		<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Email( g.TGReviewsNotificationSettings:ma_bcc ) }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', 'TGReviewsNotificationSettings:ma_bcc', g.Validation_Message ) }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ ISNULL g.TGReviewsNotificationSettings:ma_subject }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', 'TGReviewsNotificationSettings:ma_subject', 'Please enter a value for Subject' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_WholeNumber_Positive_Required( g.TGReviewsNotificationSettings:ma_days ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', 'TGReviewsNotificationSettings:ma_days', g.Validation_Message ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ ( g.TGReviewsNotificationSettings:ma_after NE 'order' ) AND
+					( g.TGReviewsNotificationSettings:ma_after NE 'ship' )}">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', 'TGReviewsNotificationSettings:ma_after', 'Please select a value for after' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Email( g.TGReviewsNotificationSettings:mn_to ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', 'TGReviewsNotificationSettings:mn_to', g.Validation_Message ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Email( g.TGReviewsNotificationSettings:mn_from ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', 'TGReviewsNotificationSettings:mn_from', g.Validation_Message ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT ISNULL g.TGReviewsNotificationSettings:mn_cc }">
+		<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Email( g.TGReviewsNotificationSettings:mn_cc ) }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', 'TGReviewsNotificationSettings:mn_cc', g.Validation_Message ) }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT ISNULL g.TGReviewsNotificationSettings:mn_bcc }">
+		<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Email( g.TGReviewsNotificationSettings:mn_bcc ) }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', 'TGReviewsNotificationSettings:mn_bcc', g.Validation_Message ) }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ ISNULL g.TGReviewsNotificationSettings:mn_subject }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', 'TGReviewsNotificationSettings:mn_subject', 'Please enter a value for Subject' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Email( g.TGReviewsNotificationSettings:cn_from ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', 'TGReviewsNotificationSettings:cn_from', g.Validation_Message ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT ISNULL g.TGReviewsNotificationSettings:cn_cc }">
+		<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Email( g.TGReviewsNotificationSettings:cn_cc ) }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', 'TGReviewsNotificationSettings:cn_cc', g.Validation_Message ) }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT ISNULL g.TGReviewsNotificationSettings:cn_bcc }">
+		<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Email( g.TGReviewsNotificationSettings:cn_bcc ) }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', 'TGReviewsNotificationSettings:cn_bcc', g.Validation_Message ) }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ ISNULL g.TGReviewsNotificationSettings:cn_subject }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', 'TGReviewsNotificationSettings:cn_subject', 'Please enter a value for Subject' ) }">
+	</MvIF>
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -1259,7 +1803,7 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "TGReviewsNotificationSettings_Update" PARAMETERS = "settings var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+<MvFUNCTION NAME = "TGReviewsNotificationSettings_Update" PARAMETERS = "notification_settings var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvQUERY NAME 	= "Merchant"
 			 QUERY 	= "{ 'UPDATE ' $ g.Store_Table_Prefix $ 'TGReviewsNotificationSettings
 			 			  SET
@@ -1374,6 +1918,115 @@
 			 FIELDS = "l.templates:ma_tmpl_id, l.templates:mn_tmpl_id, l.templates:cn_tmpl_id, l.templates:form_tmpl, l.templates:rvws_tmpl, l.templates:prlog_tmpl">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvCOMMENT>
+|
+|	System Module Content: Template Helper Function
+|
+</MvCOMMENT>
+
+<MvFUNCTION NAME = "Admin_Template" PARAMETERS = "name, field_prefix, template_id, load_fields" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvIF EXPR = "{ miva_variable_value( 'g.' $ l.field_prefix $ 'template_clear_history' ) }">
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplate_Delete_History( l.template_id ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+	
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_Template_Current( l.template_id, l.template ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+	
+		<MvASSIGN NAME = "{ l.field_prefix $ 'template_version' }"				VALUE = "{ l.template:id }">
+		<MvASSIGN NAME = "{ l.field_prefix $ 'template_version_selected' }"		VALUE = "{ l.template:id }">
+	<MvELSEIF EXPR = "{ miva_variable_value( 'g.' $ l.field_prefix $ 'template_recall' ) }">
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_ID(  miva_variable_value( 'g.' $ l.field_prefix $ 'template_version_selected' ), l.template ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+	
+		<MvASSIGN NAME = "l.template_id"										VALUE = "{ l.template_id }">
+		<MvASSIGN NAME = "l.template_id"										VALUE = "{ l.template_id }">
+	
+		<MvASSIGN NAME = "l.load_fields"										VALUE = 1>
+	<MvELSE>
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_Template_Current( l.template_id, l.template ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+	</MvIF>
+	
+	<MvASSIGN NAME = "{ 'g.' $ l.field_prefix $ 'notes' }"						VALUE = "">
+
+	<MvIF EXPR = "{ g.Data_Entry_Error AND NOT ISNULL miva_variable_value( 'g.' $ l.field_prefix $ 'template_code' ) }">
+		<MvASSIGN NAME = "{ 'g.' $ l.field_prefix $ 'template_code' }"			VALUE = "{ miva_variable_value( 'g.' $ l.field_prefix $ 'template_code' ) }">
+	<MvELSE>
+		<MvASSIGN NAME = "{ 'g.' $ l.field_prefix $ 'template_code' }"			VALUE = "{ l.template:source }">
+	</MvIF>
+	
+	<MvASSIGN NAME = "{ 'g.' $ l.field_prefix $ 'template_version' }"			VALUE = "{ l.template:id }">
+	<MvASSIGN NAME = "{ 'g.' $ l.field_prefix $ 'template_version_selected' }"	VALUE = "{ l.template:id }">
+	
+	<tr>
+		<td colspan="2" width="100%">
+			<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawTemplateTextArea( l.field_prefix $ 'template_code', miva_variable_value( 'g.' $  l.field_prefix $ 'template_code' ), 20, 100 ) }">
+		</td>
+	</tr>
+	<tr>
+		<td>
+			Notes:
+		</td>
+		<td width="100%">
+			<input type="text" name="{ encodeentities( l.field_prefix ) $ 'notes' }" value="{ encodeentities( miva_variable_value( 'g.' $  l.field_prefix $ 'notes' ) ) }" size="40">
+		</td>
+	</tr>
+	<tr>
+		<td>
+			Versions:
+		</td>
+		<td width="100%">
+			<input type="hidden" name="{ encodeentities( l.field_prefix ) $ 'template_recall' }" value="0">
+			<input type="hidden" name="{ encodeentities( l.field_prefix ) $ 'template_clear_history' }" value="0">
+			<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_AD ].TUI_Hide_ComponentFields( l.field_prefix, 'template_version' ) }">
+			<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_ManagedTemplate_Version_Select( l.template_id, l.field_prefix $ 'template_version_selected', miva_variable_value( 'g.' $ l.field_prefix $ 'template_version_selected' ) ) }">
+			<a href="#" onclick="{ 'Toggle( \'' $ [ g.Module_Admin ].JavaScriptEncode( l.field_prefix ) $ 'template_recall' $ '\', 1 ); return false;' }">Recall</a>
+			<a href="#" onclick="{ 'Toggle_Prompt( \'Are you sure you wish to delete all templates for ' $ l.name $ '?\\r\\nThis action cannot be undone.\', \'' $ [ g.Module_Admin ].JavaScriptEncode( l.field_prefix ) $ 'template_clear_history' $ '\', 1 ); return false;' }">Clear History</a>
+		</td>
+	</tr>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Admin_Template_Update" PARAMETERS = "module var, name, field_prefix, template_id" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_ID( miva_variable_value( 'g.' $ l.field_prefix $ 'template_version' ), l.template ) OR
+					NOT [ g.Module_Feature_TUI_DB ].ManagedTemplate_Load_ID( l.template_id, l.managedtemplate ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ crypto_md5( miva_variable_value( 'g.' $ l.field_prefix $ 'template_code' ) ) EQ crypto_md5( l.template:source ) }">
+		<MvIF EXPR = "{ l.template:id NE l.managedtemplate:current_id }">
+			<MvASSIGN NAME = "l.managedtemplate:current_id"	VALUE = "{ l.template:id }">
+
+			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Revert_ManagedTemplateVersion( l.managedtemplate, l.template, l.compile_error ) }">
+				<MvIF EXPR = "{ len( l.compile_error ) }">
+					<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', l.field_prefix $ 'template_code', l.compile_error ) }">
+					<MvFUNCTIONRETURN VALUE = 1>
+				</MvIF>
+
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+
+			<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( '#Error#', l.module:name $ ' ' $ l.name $ ' template reverted' ) }">
+		</MvIF>
+	<MvELSE>
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplateVersion( l.managedtemplate, miva_variable_value( 'g.' $ l.field_prefix $ 'notes' ), miva_variable_value( 'g.' $ l.field_prefix $ 'template_code' ), l.settings, l.compile_error ) }">
+			<MvIF EXPR = "{ len( l.compile_error ) }">
+				<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', l.field_prefix $ 'template_code', l.compile_error ) }">
+				<MvFUNCTIONRETURN VALUE = 1>
+			</MvIF>
+
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( '#Error#',  l.module:name $ ' ' $ l.name $ ' template updated' ) }">
 	</MvIF>
 
 	<MvFUNCTIONRETURN VALUE = 1>
