@@ -9,6 +9,7 @@ function Reviews_ProductLookup_Column( header_text, code, fieldname )
 	this.SetHeaderAttributeList( { 'class': 'mm9_batchlist_column_header' } );
 	this.SetHeaderStyleList( { 'width': '150px' } );
 	this.SetOnDisplayEdit( this.onDisplayEdit );
+	this.SetInvalidateDataOnVisible( true )
 
 	return this;
 }

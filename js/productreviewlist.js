@@ -1,16 +1,84 @@
 /* eslint-disable */
+
+// AdditionalField_Column
+
+function AdditionalField_Column( customfield, code_field )
+{
+	var column;
+
+	column = new MMBatchList_Column_Text( 'Field: ' + customfield.name, code_field, code_field );
+
+	column.SetOnRetrieveValue( function( record )
+	{
+		if ( record.hasOwnProperty( 'AdditionalFields' ) &&
+			 record.AdditionalFields.hasOwnProperty( customfield.code ) )
+		{
+			return record.AdditionalFields[ customfield.code ];
+		}
+
+		return '';
+	} );
+
+	column.SetOnSetValue( function( record, value )
+	{
+		if ( !record.hasOwnProperty( 'AdditionalFields' ) ) {
+			record.AdditionalFields = new Object();
+		}
+
+		record.AdditionalFields[ customfield.code ] = value;
+	} );
+
+	return column;
+}
+
+// Product Columns
+
+function ProductField_Column( field, code_field )
+{
+	var column;
+
+	if ( code_field === 'code' ) {
+		column = new Reviews_ProductLookup_Column( 'Product ' + field.name, code_field, code_field )
+	} else {
+		column = new MMBatchList_Column_Text( 'Product ' + field.name, code_field, code_field );
+	}
+
+	column.SetOnRetrieveValue( function( record )
+	{
+		if ( record.hasOwnProperty( 'Product' ) &&
+			 record.Product.hasOwnProperty( field.code ) )
+		{
+			return record.Product[ field.code ];
+		}
+
+		return '';
+	} );
+
+	column.SetOnSetValue( function( record, value )
+	{
+		if ( !record.hasOwnProperty( 'Product' ) ) {
+			record.Product = new Object();
+		}
+
+		record.Product[ field.code ] = value;
+	} );
+
+	return column;
+}
+
 function ProductReview_List( product, auto_approve )
 {
 	var self = this;
 	self.auto_approve = auto_approve;
 	self.product = product;
 
-	Load_Additional_Fields( function( response )
+	AdditionalFields_Load_Query_All( function( response )
 	{
-		self.additional_fields = response.data;
+		self.additional_fields = response.data.data;
 		self.additional_fields_length = self.additional_fields.length;
 
-		if ( CanI( 'SYSM', 0, 0, 1, 0 ) ) {
+		if ( CanI( 'SYSM', 0, 0, 1, 0 ) )
+		{
 			self.approved_column =	new MMBatchList_Column_CheckboxSlider('Approved', 'approved', 'approved', function( item, checked, delegator ) {
 										self.Update_Approved( item, checked, function(){}, delegator );
 									} );
@@ -30,6 +98,7 @@ function ProductReview_List( product, auto_approve )
 		MMBatchList.call( self, 'batchlist_productreviews' );
 		self.Feature_SearchBar_SetPlaceholderText( 'Search Reviews...' );
 		self.SetDefaultSort( 'id', '-' );
+		self.Feature_OnDemandColumns_Enable();
 
 		if (self.product && self.product.id) {
 			self.OnSearch_GetFilter_AddHook( this.Product_onSearch_GetFilter );
@@ -73,19 +142,16 @@ ProductReview_List.prototype.onCreateRootColumnList = function()
 
 		if ( !self.product ) {
 			columnlist.push(
-				new Reviews_ProductLookup_Column( 'Product Code', 'product_code', 'Product_Code'),
+				new ProductField_Column( {
+					name: 'Code',
+					code: 'code'
+				}, 'code', 'Product_Code'),
 
-				new MMBatchList_Column_Name( 'Product Name', 'product_name', 'Product_Name')
-				.SetOnDisplayEdit( function( record ) { return DrawMMBatchListString_Data( record.product_name ? record.product_name : 'N/A' ); } )
-				.SetUpdateOnModifiedOnly( true )
+				new ProductField_Column( {
+					name: 'Name',
+					code: 'name'
+				}, 'name', 'Product_Name')
 			);
-		} else {
-				columnlist.push(
-					new MMBatchList_Column_Code( 'Product Code', 'product_code', 'Product_Code')
-					.SetAdvancedSearchEnabled(false)
-					.SetDisplayInMenu(false)
-					.SetDisplayInList(false)
-				);
 		}
 
 		columnlist.push(
@@ -132,7 +198,15 @@ ProductReview_List.prototype.onCreateRootColumnList = function()
 		
 		if (self.additional_fields_length) {
 			for ( i = 0, i_len = self.additional_fields_length; i < i_len; i++ ) {
-				columnlist.push( new MMBatchList_Column_Text( 'Field: ' + self.additional_fields[ i ].name, 'AdditionalFields_' + self.additional_fields[ i ].code, 'AdditionalFields:' + self.additional_fields[ i ].code ).SetAdvancedSearchEnabled(false).SetSortByField( '' ) );
+				code_field		= 'AdditionalFields:' + self.additional_fields[ i ].code;
+		
+				columnlist.push(
+					new AdditionalField_Column( self.additional_fields[ i ], code_field )
+					.SetDefaultActive( false )
+					.SetUpdateOnModifiedOnly( true )
+					.SetSearchable( true )
+					.SetInvalidateDataOnVisible( true )
+				);
 			}
 		}
 
@@ -164,7 +238,7 @@ ProductReview_List.prototype.onCreate = function()
 	record.notified = 0;
 
 	for ( i = 0, i_len = self.additional_fields_length; i < i_len; i++ ) {
-		var code = 'AdditionalFields_' + self.additional_fields[ i ].code;
+		var code = 'AdditionalFields:' + self.additional_fields[ i ].code;
 		record[code] = '';
 	}
 
@@ -176,9 +250,8 @@ ProductReview_List.prototype.Product_onSearch_GetFilter = function()
 	return [ 'Product_ID:' + encodeURIComponent( this.product.id ) ];
 }
 
-
 ProductReview_List.prototype.onSave = function( item, callback, delegator ) {
-	Product_Review_Update( item.record, callback, delegator );
+	Product_Review_Update( item.record, this.additional_fields, callback, delegator );
 }
 
 ProductReview_List.Update_Approved = function( item, checked, callback, delegator ) {
@@ -197,7 +270,7 @@ ProductReview_List.Update_Verified = function( item, checked, callback, delegato
 }
 
 ProductReview_List.prototype.onInsert = function( item, callback, delegator ) {
-	Product_Review_Insert( item.record, callback, delegator );
+	Product_Review_Insert( item.record, this.additional_fields, callback, delegator );
 }
 
 ProductReview_List.prototype.onDelete = function( item, callback, delegator ) {
