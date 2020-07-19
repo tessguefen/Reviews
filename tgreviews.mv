@@ -1638,6 +1638,12 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'Rating', 'Rating must be between 1-5.' ) }">
 	</MvIF>
 
+	<MvIF EXPR = "{ NOT ISNULL l.review:email }">
+		<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Email( l.review:email ) }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'Email', g.Validation_Message ) }">
+		</MvIF>
+	</MvIF>
+
 	<MvIF EXPR = "{ NOT TGReviewsProduct_Insert( l.review ) }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( g.Error_Code, g.Error_Message ) }">
 	</MvIF>
