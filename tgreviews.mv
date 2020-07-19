@@ -812,14 +812,58 @@
 		</style>
 	</MvIF>
 
-	<MvIF EXPR = "{ l.tab NE 'TGR_PROD' AND l.tab NE 'TGR_ADDL' }">
-		<MvFUNCTIONRETURN VALUE = 1>
+	<MvIF EXPR = "{ ( l.tab EQ 'TGR_PROD' ) }">
+		<MvIF EXPR = "{ NOT TGReviewsGeneralSettings_Load_Cached( l.general_settings ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_JavaScript() }">
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_CSS() }">
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_ProductLookup_Dialog_JavaScript() }">
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_ProductLookup_Dialog_CSS() }">
+
+		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=functions.js' }"></script>
+		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=productlookupcolumn.js' }"></script>
+		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=productreviewlist.js' }"></script>
+
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].JavaScript_Set_A_Variable_Boolean( 'TGReviewsGeneralSettings_auto_apprv', l.general_settings:auto_apprv ) }">
+
+		<script language="JavaScript">
+			MMScreen_LoadFinished( function() { new ProductReview_List( null, TGReviewsGeneralSettings_auto_apprv); } );
+		</script>
+	</MvIF>
+
+	<MvIF EXPR = "{ ( l.tab EQ 'TGR_ADDL' ) }">
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_JavaScript() }">
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_CSS() }">
+
+		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=functions.js' }"></script>
+		<script language="JavaScript" src="{ g.clientside_url $ 'Module_Code=' $ encodeattribute( l.module:code ) $ '&Filename=additionalfieldlists.js' }"></script>
+
+		<script language="JavaScript">
+			MMScreen_LoadFinished( function() { new AdditionalField_List(); } );
+		</script>
 	</MvIF>
 
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_System_Content" PARAMETERS = "module var, tab, load_fields" STANDARDOUTPUTLEVEL = "html, text, compresswhitespace">
+	<MvIF EXPR = "{ ( l.tab EQ 'TGR_PROD' ) }">
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawButtons_Suppress( '[UPDATE]' ) }">
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_HTML() }">
+
+		<div id="batchlist_productreviews"></div>
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_ProductLookup_Dialog_HTML() }">
+	</MvIF>
+
+	<MvIF EXPR = "{ ( l.tab EQ 'TGR_ADDL' ) }">
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawButtons_Suppress( '[UPDATE]' ) }">
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_MMBatchList_HTML() }">
+
+		<div id="batchlist_additionalfields"></div>
+	</MvIF>
+
 	<MvIF EXPR = "{ l.tab EQ 'TGR_SETT' }">
 		<MvIF EXPR = "{ l.load_fields }">
 			<MvIF EXPR = "{ NOT TGReviewsGeneralSettings_Load( g.TGReviewsGeneralSettings ) }">
@@ -1423,26 +1467,219 @@
 </MvFUNCTION>
 
 <MvCOMMENT>
-| ====================================================================================
-|	JSON
-| ====================================================================================
+|
+|	json
+|
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "Module_JSON" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ g.Module_Function EQ 'Product_Reviews_Load_Query' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Load_Query( l.module ) }">
+	<MvCOMMENT> <MvELSEIF EXPR = "{ g.Module_Function EQ 'Product_Review_Update' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_Product_Review_Update( l.module ) }"> </MvCOMMENT>
+	<MvELSEIF EXPR = "{ g.Module_Function EQ 'Product_Review_Insert' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_Product_Review_Insert( l.module ) }">
+	<MvCOMMENT> <MvELSEIF EXPR = "{ g.Module_Function EQ 'Product_Review_Delete' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_Product_Review_Delete( l.module ) }"> </MvCOMMENT>
+	<MvELSEIF EXPR = "{ g.Module_Function EQ 'Load_All_AdditionalFields' }">	<MvFUNCTIONRETURN VALUE = "{ JSON_Load_All_AdditionalFields( l.module ) }">
+	<MvCOMMENT> <MvELSEIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Load_Query' }">	<MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalFields_Load_Query( l.module ) }">
+	<MvELSEIF EXPR = "{ g.Module_Function EQ 'AdditionalField_Update' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalField_Update( l.module ) }">
+	<MvELSEIF EXPR = "{ g.Module_Function EQ 'AdditionalField_Insert' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalField_Insert( l.module ) }">
+	<MvELSEIF EXPR = "{ g.Module_Function EQ 'AdditionalField_Delete' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalField_Delete( l.module ) }"> </MvCOMMENT>
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_TGReviewsProduct" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	"id":			<MvEVAL EXPR = "{ int( l.review:id ) }">,
+	"created":		<MvEVAL EXPR = "{ int( l.review:created ) }">,
+	"product_id":	<MvEVAL EXPR = "{ int( l.review:product_id ) }">,
+	"cust_id":		<MvEVAL EXPR = "{ int( l.review:cust_id ) }">,
+	"order_id":		<MvEVAL EXPR = "{ int( l.review:order_id ) }">,
+	"approved":		<MvEVAL EXPR = "{ int( l.review:approved ) }">,
+	"rating":		<MvEVAL EXPR = "{ int( l.review:rating ) }">,
+	"name":			"<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( l.review:name ) }">",
+	"email":		"<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( l.review:email ) }">",
+	"location":		"<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( l.review:location ) }">",
+	"notify":		<MvEVAL EXPR = "{ int( l.review:notify ) }">,
+	"title":		"<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( l.review:title ) }">",
+	"summary":		"<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( l.review:summary ) }">",
+	"store_rply":	"<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( l.review:store_rply ) }">",
+	"notified":		<MvEVAL EXPR = "{ int( l.review:notified ) }">,
+	"verified":		<MvEVAL EXPR = "{ int( l.review:verified ) }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_Product_Reviews_Load_Query" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ g.Session_Type NE 'admin' }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Access_Denied() }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Load_Query_LowLevel( l.module ) }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_Product_Reviews_Load_Query_LowLevel" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }">				<MvFUNCTIONRETURN>																	</MvIF>
+	<MvIF EXPR = "{ NOT [ g.Module_Admin ].CanI( 'SYSM', 1, 0, 0, 0 ) }">	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Access_Denied() }">	</MvIF>
+
+	<MvASSIGN NAME = "l.filter"			VALUE = "">
+	<MvASSIGN NAME = "l.sort"			VALUE = "">
+	<MvASSIGN NAME = "l.offset"			VALUE = 0>
+	<MvASSIGN NAME = "l.count"			VALUE = 0>
+
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Input_Filter(	'o', 'Filter',	l.filter )				OR
+					NOT [ g.Module_JSON ].JSON_Input_Text(		'o', 'Sort',	l.sort )				OR
+					NOT [ g.Module_JSON ].JSON_Input_Number(	'o', 'Offset',	l.offset,	-1, -1 )	OR
+					NOT [ g.Module_JSON ].JSON_Input_Number(	'o', 'Count',	l.count,	-1, -1 ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_InputErrors() }">
+	</MvIF>
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SELECT( l.search_query, 'tgrp.*,
+																				 p.code AS product_code,
+																				 p.name AS product_name' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_FROM( l.search_query, g.Store_Table_Prefix $ 'TGReviewsProducts', 'tgrp' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_LEFT_OUTER_JOIN( l.search_query, 'tgrp', g.Store_Table_Prefix $ 'Products', 'p', 'tgrp.product_id = p.id', '' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Filter( l.search_query, l.filter,
+		'id:tgrp.id,created:tgrp.created,product_id:tgrp.product_id,cust_id:tgrp.cust_id,order_id:tgrp.order_id,approved:tgrp.approved,rating:tgrp.rating,name:tgrp.name,email:tgrp.email,location:tgrp.location,notify:tgrp.notify,title:tgrp.title,summary:tgrp.summary,store_reply:tgrp.store_rply,notified:tgrp.notified,verified:tgrp.verified,product_name:p.name,product_code:p.code' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_OrderBy_Fields( l.search_query, l.sort,
+		'id:tgrp.id,created:tgrp.created,product_id:tgrp.product_id,cust_id:tgrp.cust_id,order_id:tgrp.order_id,approved:tgrp.approved,rating:tgrp.rating,name:tgrp.name,email:tgrp.email,location:tgrp.location,notify:tgrp.notify,title:tgrp.title,summary:tgrp.summary,store_reply:tgrp.store_rply,notified:tgrp.notified,verified:tgrp.verified,product_name:p.name,product_code:p.code',
+		'tgrp.id' ) }">
+		
+	<MvASSIGN NAME = "l.search_sql" VALUE = "{ [ g.Module_Library_DB ].SQL_Query_Build( l.search_query, l.search_fields ) }">
+
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].SQL_Query_Count( l.search_query, l.total_count ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( g.Error_Code, g.Error_Message ) }">
+	<MvELSEIF EXPR = "{ NOT [ g.Module_Library_Native_DBAPI ].DB_OPENVIEW_Range( 'Merchant', 'TGReviewsProducts', l.search_sql, l.search_fields, l.offset, l.count ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( '#Error#', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.review_count" VALUE = 0>
+
+	<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Response_Start() }">
+	{
+		"total_count":	<MvEVAL EXPR = "{ int( l.total_count ) }">,
+		"start_offset":	<MvEVAL EXPR = "{ int( l.offset ) }">,
+		"data":
+		[
+		<MvWHILE EXPR = "{ ( NOT TGReviewsProducts.d.EOF ) AND ( ( l.count EQ 0 ) OR ( l.review_count LT l.count ) ) }">
+			<MvEVAL EXPR = "{ TGReviewsProduct_Read( l.point ) }">
+
+			<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_ArrayElement_Start( l.review_count ) }">
+				<MvEVAL EXPR = "{ JSON_TGReviewsProduct( l.point ) }">,
+				"product_code": "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( TGReviewsProducts.d.product_code ) }">",
+				"product_name": "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( TGReviewsProducts.d.product_name ) }">"
+			<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_ArrayElement_End() }">
+
+			<MvSKIP NAME = "Merchant" VIEW = "TGReviewsProducts" ROWS = 1>
+		</MvWHILE>
+		]
+	}
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
+	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_End() }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_Product_Review_Insert" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ g.Session_Type NE 'admin' }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Access_Denied() }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = "{ JSON_Product_Review_Insert_LowLevel( l.module ) }">
+</MvFUNCTION>
+
+
+<MvFUNCTION NAME = "JSON_Product_Review_Insert_LowLevel" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }">				<MvFUNCTIONRETURN>																	</MvIF>
+	<MvIF EXPR = "{ NOT [ g.Module_Admin ].CanI( 'SYSM', 0, 1, 0, 0 ) }">	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Access_Denied() }">	</MvIF>
+
+	<MvIF EXPR = "{ NOT TGReviewsGeneralSettings_Load_Cached( l.general_settings ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( g.Error_Code, g.Error_Message ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Product_Load( l.product ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'Product_Code', 'Please select a valid Product Code.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ [ g.Module_Feature_CUS_JSON ].JSON_Customer_Load( l.customer ) }">
+		<MvASSIGN NAME = "l.review:cust_id" VALUE = "{ l.customer:id }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.review:product_id" VALUE = "{ l.product:id }">
+
+	<MvASSIGN NAME = "l.fld_name"	VALUE = "o">
+	<MvASSIGN NAME = "l.fld_email"	VALUE = "o">
+	<MvASSIGN NAME = "l.fld_loc"	VALUE = "o">
+	<MvASSIGN NAME = "l.fld_summry"	VALUE = "o">
+	<MvASSIGN NAME = "l.fld_title"	VALUE = "o">
+
+	<MvIF EXPR = "{ l.general_settings:fld_name }">		<MvASSIGN NAME = "l.fld_name"	VALUE = "R"> </MvIF>
+	<MvIF EXPR = "{ l.general_settings:fld_email }">	<MvASSIGN NAME = "l.fld_email"	VALUE = "R"> </MvIF>
+	<MvIF EXPR = "{ l.general_settings:fld_loc }">		<MvASSIGN NAME = "l.fld_loc"	VALUE = "R"> </MvIF>
+	<MvIF EXPR = "{ l.general_settings:fld_summry }">	<MvASSIGN NAME = "l.fld_summry"	VALUE = "R"> </MvIF>
+	<MvIF EXPR = "{ l.general_settings:fld_title }">	<MvASSIGN NAME = "l.fld_title"	VALUE = "R"> </MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Input_Boolean(	'o', 			'Approved',		l.review:approved )				OR
+					NOT [ g.Module_JSON ].JSON_Input_Number(	'R', 			'Created',		l.review:created,	-1, -1 )	OR
+					NOT [ g.Module_JSON ].JSON_Input_Number(	'o', 			'Order_ID',		l.review:order_id,	-1, -1 )	OR
+					NOT [ g.Module_JSON ].JSON_Input_Number(	'R', 			'Rating',		l.review:rating,	-1, -1 )	OR
+					NOT [ g.Module_JSON ].JSON_Input_Boolean(	'R', 			'Notify',		l.review:notify )				OR
+					NOT [ g.Module_JSON ].JSON_Input_Boolean(	'o', 			'Notified',		l.review:notified )				OR
+					NOT [ g.Module_JSON ].JSON_Input_Boolean(	'o', 			'Verified',		l.review:verified )				OR
+					NOT [ g.Module_JSON ].JSON_Input_Text(		'o', 			'Store_Reply',	l.review:store_rply )			OR
+					NOT [ g.Module_JSON ].JSON_Input_Text(		l.fld_name,		'Name',			l.review:name )					OR
+					NOT [ g.Module_JSON ].JSON_Input_Text(		l.fld_email,	'Email',		l.review:email )				OR
+					NOT [ g.Module_JSON ].JSON_Input_Text(		l.fld_loc,		'Location',		l.review:location )				OR
+					NOT [ g.Module_JSON ].JSON_Input_Text(		l.fld_summry,	'Summary',		l.review:summary )				OR
+					NOT [ g.Module_JSON ].JSON_Input_Text(		l.fld_title,	'Title',		l.review:title )
+				}">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_InputErrors() }">
+	</MvIF>
+
+	<MvIF EXPR = "{ l.review:rating EQ 0 }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'Rating', 'Rating must be between 1-5.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT TGReviewsProduct_Insert( l.review ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( g.Error_Code, g.Error_Message ) }">
+	</MvIF>
+
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( '#Error#', 'Added review for \'' $ l.product:id ) }">
+
+	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_Load_All_AdditionalFields" PARAMETERS = "module var"  STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }">				<MvFUNCTIONRETURN>																	</MvIF>
+	<MvIF EXPR = "{ NOT [ g.Module_Admin ].CanI( 'SYSM', 1, 0, 0, 0 ) }">	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Access_Denied() }">	</MvIF>
+	{
+		"total_count":	0,
+		"start_offset":	0,
+		"data":
+		[]
+	}
 </MvFUNCTION>
 
 <MvCOMMENT>
-| ====================================================================================
-|	CLIENTSIDE
-| ====================================================================================
+|
+|	clientside
+|
 </MvCOMMENT>
-<MvFUNCTION NAME = "Module_Clientside" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, compresswhitespace" ERROROUTPUTLEVEL = "">
+
+<MvFUNCTION NAME = "Module_Clientside" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ ( '.js' EIN g.Filename ) EQ len_var( g.Filename ) }">
+		<MvEVAL EXPR = "{ [ g.Module_Clientside ].Module_Content_Type( l.module, 'text/javascript' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ Module_Clientside_Output_File( l.module, g.Filename ) }">
+		<MvFUNCTIONRETURN>
+	</MvIF>
+
+	<MvASSIGN NAME = "l.null"	VALUE = "{ miva_output_header( 'Status', '404 Not Found' ) }">
 </MvFUNCTION>
 
 <MvCOMMENT>
-| ====================================================================================
-|	COMPONENT
-| ====================================================================================
+|
+|	component
+|
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "ComponentModule_Initialize" PARAMETERS = "module var, item, all_settings var, settings var" STANDARDOUTPUTLEVEL = "">
@@ -2112,21 +2349,6 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "TGReviewsProduct_Update_Approved" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
-	<MvQUERY NAME 	= "Merchant"
-			 QUERY 	= "{ 'UPDATE ' $ g.Store_Table_Prefix $ 'TGReviewsProducts
-			 			  SET
-							approved = ?
-			 			  WHERE
-			 				id	= ?' }"
-			 FIELDS = "l.review:approved, l.review:id">
-	<MvIF EXPR = "{ g.MvQUERY_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
-	</MvIF>
-
-	<MvFUNCTIONRETURN VALUE = 1>
-</MvFUNCTION>
-
 <MvFUNCTION NAME = "TGReviewsProduct_Delete" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
 	<MvTRANSACT NAME = "Merchant">
 	
@@ -2445,7 +2667,6 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-
 <MvCOMMENT>
 |
 |	System Module Content: Template Helper Function
@@ -2559,4 +2780,20 @@
 <div style="background: #ffffff; overflow:auto;width:auto;padding:.2em 0;">
 <pre style="margin: 0; line-height: 125%;"><span style="color: #446fbd">&lt;mvt:item</span> <span style="color: #6d8600">name=</span><span style="color: #535353">&quot;tgreviews&quot;</span> <span style="color: #6d8600">param=</span><span style="color: #535353">&quot;<span style="color: #446fbd"><MvEVAL EXPR = "{ l.function_name }"></span>(<MvEVAL EXPR = "{ l.parameters }">)&quot;</span> <span style="color: #446fbd">/&gt;</span></pre>
 </div>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_Clientside_Output_File" PARAMETERS = "module var, filename" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ l.filename EQ 'functions.js' }">
+		<MIVA STANDARDOUTPUTLEVEL = "text, html"><MvINCLUDE INTERPRET = "off" FILE = "js/functions.js"><MIVA STANDARDOUTPUTLEVEL = "">
+	<MvELSEIF EXPR = "{ l.filename EQ 'productlookupcolumn.js' }">
+		<MIVA STANDARDOUTPUTLEVEL = "text, html"><MvINCLUDE INTERPRET = "off" FILE = "js/productlookupcolumn.js"><MIVA STANDARDOUTPUTLEVEL = "">
+	<MvELSEIF EXPR = "{ l.filename EQ 'productreviewlist.js' }">
+		<MIVA STANDARDOUTPUTLEVEL = "text, html"><MvINCLUDE INTERPRET = "off" FILE = "js/productreviewlist.js"><MIVA STANDARDOUTPUTLEVEL = "">
+	<MvELSEIF EXPR = "{ l.filename EQ 'additionalfieldlist.js' }">
+		<MIVA STANDARDOUTPUTLEVEL = "text, html"><MvINCLUDE INTERPRET = "off" FILE = "js/additionalfieldlist.js"><MIVA STANDARDOUTPUTLEVEL = "">
+	<MvELSE>
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+	
+	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
