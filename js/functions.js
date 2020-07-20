@@ -61,11 +61,9 @@ function Product_Reviews_Load_Query( filter, sort, offset, count, callback, dele
 	}, delegator );
 }
 
-function Product_Review_Insert( data, additionalfields, callback, delegator )
+function Product_Review_Insert( data, callback, delegator )
 {
-	var customfields_length = additionalfields.length;
-
-	var fields = {
+	return AJAX_Call_Module_JSON( callback, 'admin', 'tgreviews', 'Product_Review_Insert', {
 		Approved:			data.approved,
 		Created:			data.created,
 		Order_ID:			data.order_id,
@@ -79,25 +77,15 @@ function Product_Review_Insert( data, additionalfields, callback, delegator )
 		Location:			data.location,
 		Summary:			data.summary,
 		Title:				data.title,
-		Product_Code:		data.product_code,
-		AdditionalFields:	{}
-	};
-
-	if ( customfields_length ) {
-		for ( i = 0, i_len = customfields_length; i < i_len; i++ ) {
-			fields.AdditionalFields[ additionalfields[ i ].code ] = data[ 'AdditionalFields:' + additionalfields[ i ].code ];
-		}
-	}
-
-	return AJAX_Call_Module_JSON( callback, 'admin', 'tgreviews', 'Product_Review_Insert', fields, delegator );
+		Product_Code:		data.Product ? data.Product.code : '',
+		AdditionalFields:	data.AdditionalFields
+	}, delegator );
 }
 
 
-function Product_Review_Update( data, additionalfields, callback, delegator )
+function Product_Review_Update( data, callback, delegator )
 {
-	var customfields_length = additionalfields.length;
-
-	var fields = {
+	return AJAX_Call_Module_JSON( callback, 'admin', 'tgreviews', 'Product_Review_Update', {
 		ID:					data.id,
 		Approved:			data.approved,
 		Created:			data.created,
@@ -112,15 +100,7 @@ function Product_Review_Update( data, additionalfields, callback, delegator )
 		Location:			data.location,
 		Summary:			data.summary,
 		Title:				data.title,
-		Product_Code:		data.product_code,
-		AdditionalFields:	{}
-	};
-
-	if ( customfields_length ) {
-		for ( i = 0, i_len = customfields_length; i < i_len; i++ ) {
-			fields.AdditionalFields[ additionalfields[ i ].code ] = data[ 'AdditionalFields:' + additionalfields[ i ].code ];
-		}
-	}
-
-	return AJAX_Call_Module_JSON( callback, 'admin', 'tgreviews', 'Product_Review_Update', fields, delegator );
+		Product_Code:		data.Product ? data.Product.code : '',
+		AdditionalFields:	data.AdditionalFields
+	}, delegator );
 }

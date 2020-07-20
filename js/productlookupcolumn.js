@@ -3,13 +3,11 @@ function Reviews_ProductLookup_Column( header_text, code, fieldname )
 {
 	MMBatchList_Column.call( this, header_text, code );
 
-	this.SetSortByField( code );
-	this.SetDefaultActive( true );
 	this.SetFieldName( fieldname );
 	this.SetHeaderAttributeList( { 'class': 'mm9_batchlist_column_header' } );
 	this.SetHeaderStyleList( { 'width': '150px' } );
 	this.SetOnDisplayEdit( this.onDisplayEdit );
-	this.SetInvalidateDataOnVisible( true )
+	this.SetInvalidateDataOnVisible( true );
 
 	return this;
 }
@@ -63,13 +61,6 @@ Reviews_ProductLookup_Column.prototype.Lookup = function( item )
 			{
 				inputlist[ i ].value = selected_record.code;
 			}
-		}
-		
-		divlist = item.row[ 'column_product_name' ].getElementsByClassName( 'mm9_batchlist_data_col_div_content' );
-
-		for ( i = 0, i_len = divlist.length; i < i_len; i++ )
-		{
-			divlist[ i ].innerText = selected_record.name;
 		}
 	};
 

@@ -1527,22 +1527,19 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_InputErrors() }">
 	</MvIF>
 
-	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SELECT( l.search_query, 'tgrp.*,
-																				 p.code AS product_code,
-																				 p.name AS product_name' ) }">
+	<MvASSIGN NAME = "g.Filter_Fields" 		VALUE = "">
 
-	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_FROM( l.search_query, g.Store_Table_Prefix $ 'TGReviewsProducts', 'tgrp' ) }">
+	<MvASSIGN NAME = "l.null"				VALUE = "{ [ g.Module_Library_DB ].SQL_Query_SELECT( l.search_query, 'tgrp.*' ) }">
 
-	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_LEFT_OUTER_JOIN( l.search_query, 'tgrp', g.Store_Table_Prefix $ 'Products', 'p', 'tgrp.product_id = p.id', '' ) }">
+	<MvASSIGN NAME = "l.null"				VALUE = "{ [ g.Module_Library_DB ].SQL_Query_FROM( l.search_query, g.Store_Table_Prefix $ 'TGReviewsProducts', 'tgrp' ) }">
 
-	<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Filter( l.search_query, l.filter,
-		'id:tgrp.id,created:tgrp.created,product_id:tgrp.product_id,cust_id:tgrp.cust_id,order_id:tgrp.order_id,approved:tgrp.approved,rating:tgrp.rating,name:tgrp.name,email:tgrp.email,location:tgrp.location,notify:tgrp.notify,title:tgrp.title,summary:tgrp.summary,store_reply:tgrp.store_rply,notified:tgrp.notified,verified:tgrp.verified,product_name:p.name,product_code:p.code' ) }">
+	<MvASSIGN NAME = "l.filter_columns" 	VALUE = "{ JSON_BaseProductReviews_Filters() }">
+	<MvASSIGN NAME = "l.orderby_columns"	VALUE = "{ JSON_BaseProductReviews_OrderBy() }">
 
-	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_OrderBy_Fields( l.search_query, l.sort,
-		'id:tgrp.id,created:tgrp.created,product_id:tgrp.product_id,cust_id:tgrp.cust_id,order_id:tgrp.order_id,approved:tgrp.approved,rating:tgrp.rating,name:tgrp.name,email:tgrp.email,location:tgrp.location,notify:tgrp.notify,title:tgrp.title,summary:tgrp.summary,store_reply:tgrp.store_rply,notified:tgrp.notified,verified:tgrp.verified,product_name:p.name,product_code:p.code',
-		'tgrp.id' ) }">
-		
-	<MvASSIGN NAME = "l.search_sql" VALUE = "{ [ g.Module_Library_DB ].SQL_Query_Build( l.search_query, l.search_fields ) }">
+	<MvASSIGN NAME = "l.null"				VALUE = "{ JSON_ProductReviews_Filters_Query_Callback_With_Fields( l.module, l.search_query, l.filter, l.filter_columns ) }">
+	<MvASSIGN NAME = "l.null"				VALUE = "{ JSON_ProductReviews_OrderBy_Callback_With_Fields( l.search_query, l.sort, l.orderby_columns, 'tgrp.id', l.filter_columns ) }">
+
+	<MvASSIGN NAME = "l.search_sql"			VALUE = "{ [ g.Module_Library_DB ].SQL_Query_Build( l.search_query, l.search_fields ) }">
 
 	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].SQL_Query_Count( l.search_query, l.total_count ) }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( g.Error_Code, g.Error_Message ) }">
@@ -1551,7 +1548,6 @@
 	</MvIF>
 
 	<MvASSIGN NAME = "l.review_count"			VALUE = 0>
-	<MvASSIGN NAME = "l.additionalfields_count"	VALUE = "{ TGReviewsAdditionalField_Load_All_Cached( l.additionalfields ) }">
 
 	<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Response_Start() }">
 	{
@@ -1560,18 +1556,11 @@
 		"data":
 		[
 		<MvWHILE EXPR = "{ ( NOT TGReviewsProducts.d.EOF ) AND ( ( l.count EQ 0 ) OR ( l.review_count LT l.count ) ) }">
-			<MvASSIGN NAME = "l.additionalfield_count"	VALUE = 1>
 			<MvEVAL EXPR = "{ TGReviewsProduct_Read( l.review ) }">
 
 			<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_ArrayElement_Start( l.review_count ) }">
-				<MvEVAL EXPR = "{ JSON_TGReviewsProduct( l.review ) }">,
-				"AdditionalFields": {
-					<MvEVAL EXPR = "{ JSON_TGReviewsProductAdditionalFields( l.review:id, l.additionalfields ) }">
-				},
-				"Product": {
-					"code": "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( TGReviewsProducts.d.product_code ) }">",
-					"name": "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( TGReviewsProducts.d.product_name ) }">"
-				}
+				<MvEVAL EXPR = "{ JSON_TGReviewsProduct( l.review ) }">
+				<MvEVAL EXPR = "{ JSON_TGReviewsProduct_Fields_With_Query( l.search_query, TGReviewsProducts.d.id, 'TGReviewsProducts' ) }">
 			<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_ArrayElement_End() }">
 
 			<MvSKIP NAME = "Merchant" VIEW = "TGReviewsProducts" ROWS = 1>
@@ -1582,24 +1571,249 @@
 	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_End() }">
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "JSON_TGReviewsProductAdditionalFields" PARAMETERS = "review_id, additionalfields var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
-	<MvASSIGN NAME = "l.count" VALUE = 0>
+<MvFUNCTION NAME = "JSON_BaseProductReviews_Filters" PARAMETERS = "" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = "id:tgrp.id,created:tgrp.created,product_id:tgrp.product_id,cust_id:tgrp.cust_id,order_id:tgrp.order_id,
+							   approved:tgrp.approved,rating:tgrp.rating,name:tgrp.name,email:tgrp.email,
+							   location:tgrp.location,notify:tgrp.notify,title:tgrp.title,summary:tgrp.summary,
+							   store_reply:tgrp.store_rply,notified:tgrp.notified,verified:tgrp.verified">
+</MvFUNCTION>
 
-	<MvFOREACH ITERATOR = "l.additionalfield" ARRAY = "l.additionalfields">
-		<MvIF EXPR = "{ l.count GT 0 }">,</MvIF>
-		<MvASSIGN NAME = "l.additionalvalue:field_id"	VALUE = "{ l.additionalfield:id }">
-		<MvASSIGN NAME = "l.additionalvalue:review_id"	VALUE = "{ l.review_id }">
-		<MvASSIGN NAME = "l.additionalvalue:value"		VALUE = "">
+<MvFUNCTION NAME = "JSON_BaseProductReviews_OrderBy" PARAMETERS = "" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = "id:tgrp.id,created:tgrp.created,product_id:tgrp.product_id,cust_id:tgrp.cust_id,order_id:tgrp.order_id,
+							   approved:tgrp.approved,rating:tgrp.rating,name:tgrp.name,email:tgrp.email,
+							   location:tgrp.location,notify:tgrp.notify,title:tgrp.title,summary:tgrp.summary,
+							   store_reply:tgrp.store_rply,notified:tgrp.notified,verified:tgrp.verified">
+</MvFUNCTION>
 
-		<MvASSIGN NAME = "l.null" VALUE = "{ TGReviewsAdditionalValue_Load( l.additionalvalue ) }">
+<MvFUNCTION NAME = "JSON_ProductReviews_Filters_Query_Callback_With_Fields" PARAMETERS = "module var, query var, filterlist var, callback_query_fields" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ ISNULL l.callback_query_fields }">
+		<MvFUNCTIONRETURN>
+	</MvIF>
 
-		<MvEVAL EXPR = "{ JSON_TGReviewsProductAdditionalField( l.additionalfield:code, l.additionalvalue:value ) }">
-		<MvASSIGN NAME = "l.count" VALUE = "{ l.count + 1 }">
+	<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Filter_Structify( l.filterlist ) }">
+
+	<MvFOREACH ITERATOR = "l.filter" ARRAY = "l.filterlist">
+		<MvIF EXPR = "{ l.filter:name EQ 'ondemandcolumns' }">
+			<MvFOREACH ITERATOR = "l.field" ARRAY = "l.filter:value">
+				<MvIF EXPR = "{ ( 'AdditionalFields:' IN l.field ) EQ 1 }">
+					<MvASSIGN NAME = "l.null" VALUE = "{ JSON_Query_Callback_Handle_Field( l.query, l.callback_query_fields, gettoken( l.field, ':', 2 ) ) }">
+				<MvELSEIF EXPR = "{ 'Product' IN l.field }">
+					<MvASSIGN NAME = "l.null" VALUE = "{ JSON_Query_Callback_Handle_Product( l.query, l.callback_query_fields ) }">
+				</MvIF>
+			</MvFOREACH>
+		</MvIF>
+
+		<MvIF EXPR = "{ l.filter:name EQ 'search' }">			<MvASSIGN NAME = "l.field_count" VALUE = "{ [ g.Module_JSON ].JSON_Search_Filter_Clause_With_CustomFields( l.query, '',		'OR',	l.field_count, l.filter:value, l.correlationlist, g.Module_Root $ l.module:module, 'JSON_ProductReviews_Fields_Query_Filter', l.callback_search_customfields, l.callback_search_field_count, l.data ) }">
+		<MvELSEIF EXPR = "{ l.filter:name EQ 'search_AND' }">	<MvASSIGN NAME = "l.field_count" VALUE = "{ [ g.Module_JSON ].JSON_Search_Filter_Clause_With_CustomFields( l.query, 'AND',	'OR',	l.field_count, l.filter:value, l.correlationlist, g.Module_Root $ l.module:module, 'JSON_ProductReviews_Fields_Query_Filter', l.callback_search_customfields, l.callback_search_field_count, l.data ) }">
+		<MvELSEIF EXPR = "{ l.filter:name EQ 'search_OR' }">	<MvASSIGN NAME = "l.field_count" VALUE = "{ [ g.Module_JSON ].JSON_Search_Filter_Clause_With_CustomFields( l.query, 'OR',	'AND',	l.field_count, l.filter:value, l.correlationlist, g.Module_Root $ l.module:module, 'JSON_ProductReviews_Fields_Query_Filter', l.callback_search_customfields, l.callback_search_field_count, l.data ) }">
+		</MvIF>
 	</MvFOREACH>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "JSON_TGReviewsProductAdditionalField" PARAMETERS = "field_code, value" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
-	"<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( l.field_code ) }">": "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( l.value ) }">"
+<MvFUNCTION NAME = "JSON_ProductReviews_Fields_Query_Filter" PARAMETERS = "query var, field_count var, filter_name, filter_operator, filter_value, data var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ ( 'AdditionalFields:' IN l.filter_name ) EQ 1 }">
+		<MvASSIGN NAME = "l.field_code" VALUE = "{ gettoken( l.filter_name, ':', 2 ) }">
+
+		<MvIF EXPR = "{ NOT TGReviewsAdditionalField_Load_Code_Cached( l.field_code, l.additionalfield ) }">
+			<MvFUNCTIONRETURN>
+		</MvIF>
+	
+		<MvIF EXPR = "{ NOT JSON_Query_Callback_Handle_Field( l.query, '', l.field_code ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Library_DB ].SQL_Query_Search_Operator_Conversion( l.query, 'tgrav_' $ l.additionalfield:id $ '.value', l.filter_operator, l.filter_value, 'OR', 'OR' ) }">
+	
+		<MvFUNCTIONRETURN VALUE = 1>
+	<MvELSEIF EXPR = "{ ( 'Product:' IN l.filter_name ) EQ 1 }">
+		<MvASSIGN NAME = "l.field_code" VALUE = "{ gettoken( l.filter_name, ':', 2 ) }">
+
+		<MvIF EXPR = "{ l.field_code NE 'id'			AND
+						l.field_code NE 'code'			AND
+						l.field_code NE 'sku'			AND
+						l.field_code NE 'name'			AND
+						l.field_code NE 'thumbnail'		AND
+						l.field_code NE 'image'			AND
+						l.field_code NE 'price'			AND
+						l.field_code NE 'cost'			AND
+						l.field_code NE 'descrip'		AND
+						l.field_code NE 'catcount'		AND
+						l.field_code NE 'weight'		AND
+						l.field_code NE 'taxable'		AND
+						l.field_code NE 'active'		AND
+						l.field_code NE 'page_title'	AND
+						l.field_code NE 'dt_created'	AND
+						l.field_code NE 'dt_updated' }">
+			<MvFUNCTIONRETURN>
+		</MvIF>
+
+		<MvIF EXPR = "{ NOT JSON_Query_Callback_Handle_Product( l.query, l.callback_query_fields ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Library_DB ].SQL_Query_Search_Operator_Conversion( l.query, 'prod.' $ l.field_code, l.filter_operator, l.filter_value, 'OR', 'OR' ) }">
+
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_Query_Callback_Handle_Field" PARAMETERS = "query var, callback_query_customfields, field_code" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ l.field_code EQ '*' }">
+		<MvFOREACH ITERATOR = "l.additionalfield" ARRAY = "l.additionalfields" COUNT = "{ TGReviewsAdditionalField_Load_All_Cached( l.additionalfields ) }">
+			<MvEVAL EXPR = "{ JSON_Query_Callback_Handle_Field( l.query, l.callback_query_customfields, l.additionalfield:code ) }">
+		</MvFOREACH>
+
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT TGReviewsAdditionalField_Load_Code_Cached( l.field_code, l.additionalfield ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_Data_Reference( l.query, 'tgrav_' $ l.additionalfield:id, l.ref ) }">
+
+	<MvREFERENCE NAME = "l.queried" VARIABLE = "l.ref:data:queried">
+
+	<MvIF EXPR = "{ l.queried }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvASSIGN NAME = "l.queried" VALUE = 1>
+
+	<MvASSIGN NAME = "g.Filter_Fields:AdditionalFields" MEMBER = "{ l.additionalfield:code }" VALUE = 1>
+
+	<MvASSIGN NAME = "{ 'g.AdditionalField_' $ l.additionalfield:id $ '_id' }" VALUE = "{ l.additionalfield:id }">
+
+	<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Library_DB ].SQL_Query_SELECT( l.query, 'tgrav_' $ l.additionalfield:id $ '.value AS additionalfield_' $ l.additionalfield:code ) }">
+	<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Library_DB ].SQL_Query_LEFT_OUTER_JOIN( l.query, 'tgrp', g.Store_Table_Prefix $ 'TGReviewsAdditionalValues', 'tgrav_' $ l.additionalfield:id, 'tgrav_' $ l.additionalfield:id $ '.field_id = ? AND tgrav_' $ l.additionalfield:id $ '.review_id = tgrp.id', 'g.AdditionalField_' $ l.additionalfield:id $ '_id' ) }">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_Query_Callback_Handle_Product" PARAMETERS = "query var, callback_query_customfields" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Library_DB ].SQL_Query_Data_Reference( l.query, 'prod', l.ref ) }">
+
+	<MvREFERENCE NAME = "l.queried" VARIABLE = "l.ref:data:queried">
+
+	<MvIF EXPR = "{ l.queried }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvASSIGN NAME = "l.queried" VALUE = 1>
+
+	<MvASSIGN NAME = "g.Filter_Fields:Product" VALUE = 1>
+
+	<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Library_DB ].SQL_Query_SELECT( l.query,
+																'prod.id AS product_id,
+																 prod.code AS product_code,
+																 prod.sku AS product_sku,
+																 prod.name AS product_name,
+																 prod.thumbnail AS product_thumbnail,
+																 prod.image AS product_image,
+																 prod.price AS product_price,
+																 prod.cost AS product_cost,
+																 prod.descrip AS product_descrip,
+																 prod.catcount AS product_catcount,
+																 prod.weight AS product_weight,
+																 prod.taxable AS product_taxable,
+																 prod.active AS product_active,
+																 prod.page_title AS product_page_title,
+																 prod.dt_created AS product_dt_created,
+																 prod.dt_updated AS product_dt_updated' ) }">
+	<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Library_DB ].SQL_Query_LEFT_OUTER_JOIN( l.query, 'tgrp', g.Store_Table_Prefix $ 'Products', 'prod', 'tgrp.product_id = prod.id', '' ) }">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_ProductReviews_OrderBy_Callback_With_Fields" PARAMETERS = "query var, sort, list, default_sort, callback_query_fields" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.sort_field" VALUE = "{ [ g.Module_Library_DB ].SQL_Sort_Field( l.sort, l.sort_direction ) }">
+
+	<MvIF EXPR = "{ ( 'AdditionalFields:' IN l.sort_field ) EQ 1 }">
+		<MvASSIGN NAME = "l.null" VALUE = "{ JSON_ProductReviews_Fields_Query_OrderBy( l.query, l.callback_query_fields, l.sort_direction, gettoken( l.sort_field, ':', 2 ) ) }">
+	<MvELSEIF EXPR = "{ ( 'Product:' IN l.sort_field ) EQ 1 }">
+		<MvASSIGN NAME = "l.null" VALUE = "{ JSON_ProductReviews_Product_Query_OrderBy( l.query, l.callback_query_fields, l.sort_direction, gettoken( l.sort_field, ':', 2 ) ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].SQL_Query_OrderBy_Fields( l.query, l.sort, l.list, l.default_sort ) }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_ProductReviews_Fields_Query_OrderBy" PARAMETERS = "query var, callback_query_fields, direction, field_code" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT TGReviewsAdditionalField_Load_Code_Cached( l.field_code, l.additionalfield ) }">
+		<MvFUNCTIONRETURN>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT JSON_Query_Callback_Handle_Field( l.query, l.callback_query_fields, l.field_code ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Library_DB ].SQL_Query_ORDER_BY_Flag_With_Alias_And_Member( l.query, 'tgrav_' $ l.additionalfield:id $ '.value', 'additionalfield_' $ l.additionalfield:code, 'tgrav_' $ l.additionalfield:id $ ':value', l.direction, '' ) }">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+
+<MvFUNCTION NAME = "JSON_ProductReviews_Product_Query_OrderBy" PARAMETERS = "query var, callback_query_fields, direction, field_code" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ l.field_code NE 'id'			AND
+					l.field_code NE 'code'			AND
+					l.field_code NE 'sku'			AND
+					l.field_code NE 'name'			AND
+					l.field_code NE 'thumbnail'		AND
+					l.field_code NE 'image'			AND
+					l.field_code NE 'price'			AND
+					l.field_code NE 'cost'			AND
+					l.field_code NE 'descrip'		AND
+					l.field_code NE 'catcount'		AND
+					l.field_code NE 'weight'		AND
+					l.field_code NE 'taxable'		AND
+					l.field_code NE 'active'		AND
+					l.field_code NE 'page_title'	AND
+					l.field_code NE 'dt_created'	AND
+					l.field_code NE 'dt_updated' }">
+		<MvFUNCTIONRETURN>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT JSON_Query_Callback_Handle_Product( l.query, l.callback_query_fields ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Library_DB ].SQL_Query_ORDER_BY_Flag_With_Alias_And_Member( l.query, 'prod.' $ l.field_code, 'prod_' $ l.field_code, 'prod:' $ l.field_code, l.direction, '' ) }">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_TGReviewsProduct_Fields_With_Query" PARAMETERS = "query var, review_id, view" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvIF EXPR = "{ miva_struct_members( g.Filter_Fields:AdditionalFields, l.additionalfield_codes ) }">
+		<MvASSIGN NAME = "l.additionalfield_count" VALUE = 0>
+		,"AdditionalFields":
+		{
+			<MvFOREACH ITERATOR = "l.additionalfield_code" ARRAY = "l.additionalfield_codes">
+				<MvIF EXPR = "{ l.additionalfield_count GT 0 }">,</MvIF>
+				"<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( l.additionalfield_code ) }">": "<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( miva_variable_value( l.view $ '.d.additionalfield_' $ l.additionalfield_code ) ) }">"
+				<MvASSIGN NAME = "l.additionalfield_count" VALUE = "{ l.additionalfield_count + 1 }">
+			</MvFOREACH>
+		}
+	</MvIF>
+	<MvIF EXPR = "{ miva_member_exists( g.Filter_Fields, 'Product' ) }">
+		,"Product":
+		{ 
+			"id":			<MvEVAL EXPR = "{ int( miva_variable_value( l.view $ '.d.product_id' ) ) }">,
+			"code":			"<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( miva_variable_value( l.view $ '.d.product_code' ) ) }">",
+			"sku":			"<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( miva_variable_value( l.view $ '.d.product_sku' ) ) }">",
+			"name":			"<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( miva_variable_value( l.view $ '.d.product_name' ) ) }">",
+			"thumbnail":	"<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( miva_variable_value( l.view $ '.d.product_thumbnail' ) ) }">",
+			"image":		"<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( miva_variable_value( l.view $ '.d.product_image' ) ) }">",
+			"price":		<MvEVAL EXPR = "{ miva_variable_value( l.view $ '.d.product_price' ) ROUND 2 }">,
+			"cost":			<MvEVAL EXPR = "{ miva_variable_value( l.view $ '.d.product_cost' ) ROUND 2 }">,
+			"descrip":		"<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( miva_variable_value( l.view $ '.d.product_descrip' ) ) }">",
+			"catcount":		<MvEVAL EXPR = "{ int( miva_variable_value( l.view $ '.d.product_catcount' ) ) }">,
+			"weight":		<MvEVAL EXPR = "{ miva_variable_value( l.view $ '.d.product_weight' ) ROUND 2 }">,
+			"taxable":		<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Boolean( miva_variable_value( l.view $ '.d.product_taxable' ) ) }">,
+			"active":		<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Boolean( miva_variable_value( l.view $ '.d.product_active' ) ) }">,
+			"page_title":	"<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Encode( miva_variable_value( l.view $ '.d.product_page_title' ) ) }">",
+			"dt_created":	<MvEVAL EXPR = "{ int( miva_variable_value( l.view $ '.d.product_dt_created' ) ) }">,
+			"dt_updated":	<MvEVAL EXPR = "{ int( miva_variable_value( l.view $ '.d.product_dt_updated' ) ) }">
+		}
+	</MvIF>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "JSON_Product_Review_Insert" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
@@ -1641,10 +1855,10 @@
 	<MvIF EXPR = "{ l.general_settings:fld_title }">	<MvASSIGN NAME = "l.fld_title"	VALUE = "R"> </MvIF>
 
 	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Input_Boolean(	'o', 			'Approved',		l.review:approved )				OR
-					NOT [ g.Module_JSON ].JSON_Input_Number(	'R', 			'Created',		l.review:created,	-1, -1 )	OR
+					NOT [ g.Module_JSON ].JSON_Input_Number(	'o', 			'Created',		l.review:created,	-1, -1 )	OR
 					NOT [ g.Module_JSON ].JSON_Input_Number(	'o', 			'Order_ID',		l.review:order_id,	-1, -1 )	OR
 					NOT [ g.Module_JSON ].JSON_Input_Number(	'R', 			'Rating',		l.review:rating,	-1, -1 )	OR
-					NOT [ g.Module_JSON ].JSON_Input_Boolean(	'R', 			'Notify',		l.review:notify )				OR
+					NOT [ g.Module_JSON ].JSON_Input_Boolean(	'o', 			'Notify',		l.review:notify )				OR
 					NOT [ g.Module_JSON ].JSON_Input_Boolean(	'o', 			'Notified',		l.review:notified )				OR
 					NOT [ g.Module_JSON ].JSON_Input_Boolean(	'o', 			'Verified',		l.review:verified )				OR
 					NOT [ g.Module_JSON ].JSON_Input_Text(		'o', 			'Store_Reply',	l.review:store_rply )			OR
@@ -1785,9 +1999,9 @@
 	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }">				<MvFUNCTIONRETURN>																	</MvIF>
 	<MvIF EXPR = "{ NOT [ g.Module_Admin ].CanI( 'SYSM', 0, 1, 0, 0 ) }">	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Access_Denied() }">	</MvIF>
 
-	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Input_Number(	'R', 'ID',		l.additionalfield:id,	-1, -1 )	OR
-					NOT [ g.Module_JSON ].JSON_Input_Code( 		'R', 'Code',	l.additionalfield:code )			OR
-					NOT [ g.Module_JSON ].JSON_Input_Text(		'R', 'Name',	l.additionalfield:name ) }">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Input_Number(	'R', 'ID',		l.additionalfield_id,	-1, -1 )	OR
+					NOT [ g.Module_JSON ].JSON_Input_Code( 		'O', 'Code',	l.additionalfield:code )			OR
+					NOT [ g.Module_JSON ].JSON_Input_Text(		'O', 'Name',	l.additionalfield:name ) }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_InputErrors() }">
 	</MvIF>
 

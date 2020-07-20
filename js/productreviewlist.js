@@ -38,9 +38,9 @@ function ProductField_Column( field, code_field )
 	var column;
 
 	if ( code_field === 'code' ) {
-		column = new Reviews_ProductLookup_Column( 'Product ' + field.name, code_field, code_field )
+		column = new Reviews_ProductLookup_Column( 'Product ' + field.name, 'Product:' + field.code, code_field )
 	} else {
-		column = new MMBatchList_Column_Text( 'Product ' + field.name, code_field, code_field );
+		column = new MMBatchList_Column_Text( 'Product ' + field.name, 'Product:' + field.code, code_field );
 	}
 
 	column.SetOnRetrieveValue( function( record )
@@ -145,12 +145,8 @@ ProductReview_List.prototype.onCreateRootColumnList = function()
 				new ProductField_Column( {
 					name: 'Code',
 					code: 'code'
-				}, 'code', 'Product_Code'),
-
-				new ProductField_Column( {
-					name: 'Name',
-					code: 'name'
-				}, 'name', 'Product_Name')
+				}, 'code', 'Product:code')
+				.SetSortByField( 'Product:code' )
 			);
 		}
 
@@ -206,6 +202,7 @@ ProductReview_List.prototype.onCreateRootColumnList = function()
 					.SetUpdateOnModifiedOnly( true )
 					.SetSearchable( true )
 					.SetInvalidateDataOnVisible( true )
+					.SetSortByField( code_field )
 				);
 			}
 		}
@@ -251,7 +248,7 @@ ProductReview_List.prototype.Product_onSearch_GetFilter = function()
 }
 
 ProductReview_List.prototype.onSave = function( item, callback, delegator ) {
-	Product_Review_Update( item.record, this.additional_fields, callback, delegator );
+	Product_Review_Update( item.record, callback, delegator );
 }
 
 ProductReview_List.Update_Approved = function( item, checked, callback, delegator ) {
@@ -270,7 +267,7 @@ ProductReview_List.Update_Verified = function( item, checked, callback, delegato
 }
 
 ProductReview_List.prototype.onInsert = function( item, callback, delegator ) {
-	Product_Review_Insert( item.record, this.additional_fields, callback, delegator );
+	Product_Review_Insert( item.record, callback, delegator );
 }
 
 ProductReview_List.prototype.onDelete = function( item, callback, delegator ) {
