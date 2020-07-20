@@ -359,7 +359,7 @@
 	</MvIF>
 
 	<MvQUERY	NAME	= "Merchant"
-				QUERY	= "{ 'CREATE INDEX ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues_1 ON ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues ( field_id, review_id )' }">
+				QUERY	= "{ 'CREATE UNIQUE INDEX ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues_1 ON ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues ( field_id, review_id )' }">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
 	</MvIF>
@@ -711,7 +711,7 @@
 		</MvIF>
 
 		<MvQUERY	NAME	= "Merchant"
-					QUERY	= "{ 'CREATE INDEX ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues_1 ON ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues ( field_id, review_id )' }">
+					QUERY	= "{ 'CREATE UNIQUE INDEX ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues_1 ON ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues ( field_id, review_id )' }">
 		<MvIF EXPR = "{ g.MvQUERY_Error }">
 			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
 		</MvIF>
@@ -1475,6 +1475,7 @@
 <MvFUNCTION NAME = "Module_JSON" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ g.Module_Function EQ 'Product_Reviews_Load_Query' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Load_Query( l.module ) }">
 	<MvELSEIF EXPR = "{ g.Module_Function EQ 'Product_Review_Insert' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_Product_Review_Insert( l.module ) }">
+	<MvELSEIF EXPR = "{ g.Module_Function EQ 'Product_Review_Update' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_Product_Review_Update( l.module ) }">
 	<MvELSEIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Load_Query' }">	<MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalFields_Load_Query( l.module ) }">
 	<MvELSEIF EXPR = "{ g.Module_Function EQ 'AdditionalField_Insert' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalField_Insert( l.module ) }">
 	<MvELSEIF EXPR = "{ g.Module_Function EQ 'AdditionalField_Update' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalField_Update( l.module ) }">
@@ -1892,6 +1893,74 @@
 	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
 </MvFUNCTION>
 
+<MvFUNCTION NAME = "JSON_Product_Review_Update" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ g.Session_Type NE 'admin' }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Access_Denied() }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = "{ JSON_Product_Review_Update_LowLevel( l.module ) }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_Product_Review_Update_LowLevel" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }">				<MvFUNCTIONRETURN>																	</MvIF>
+	<MvIF EXPR = "{ NOT [ g.Module_Admin ].CanI( 'SYSM', 0, 0, 1, 0 ) }">	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Access_Denied() }">	</MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Input_Number( 'R', 'ID',	l.review:id, -1, -1 ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_InputErrors() }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT TGReviewsProduct_Load( l.review:id, l.review ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'ID', 'A Review with the id \'' $ l.additionalfield:id $ '\' not found' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ [ g.Module_JSON ].JSON_Product_Load( l.product ) }">
+		<MvASSIGN NAME = "l.review:product_id" VALUE = "{ l.product:id }">
+	</MvIF>
+
+	<MvIF EXPR = "{ [ g.Module_Feature_CUS_JSON ].JSON_Customer_Load( l.customer ) }">
+		<MvASSIGN NAME = "l.review:cust_id" VALUE = "{ l.customer:id }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Input_Boolean(	'o', 	'Approved',		l.review:approved )				OR
+					NOT [ g.Module_JSON ].JSON_Input_Number(	'o', 	'Created',		l.review:created,	-1, -1 )	OR
+					NOT [ g.Module_JSON ].JSON_Input_Number(	'o', 	'Order_ID',		l.review:order_id,	-1, -1 )	OR
+					NOT [ g.Module_JSON ].JSON_Input_Number(	'o', 	'Rating',		l.review:rating,	-1, -1 )	OR
+					NOT [ g.Module_JSON ].JSON_Input_Boolean(	'o', 	'Notify',		l.review:notify )				OR
+					NOT [ g.Module_JSON ].JSON_Input_Boolean(	'o', 	'Notified',		l.review:notified )				OR
+					NOT [ g.Module_JSON ].JSON_Input_Boolean(	'o', 	'Verified',		l.review:verified )				OR
+					NOT [ g.Module_JSON ].JSON_Input_Text(		'o', 	'Store_Reply',	l.review:store_rply )			OR
+					NOT [ g.Module_JSON ].JSON_Input_Text(		'o',	'Name',			l.review:name )					OR
+					NOT [ g.Module_JSON ].JSON_Input_Text(		'o',	'Email',		l.review:email )				OR
+					NOT [ g.Module_JSON ].JSON_Input_Text(		'o',	'Location',		l.review:location )				OR
+					NOT [ g.Module_JSON ].JSON_Input_Text(		'o',	'Summary',		l.review:summary )				OR
+					NOT [ g.Module_JSON ].JSON_Input_Text(		'o',	'Title',		l.review:title )
+				}">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_InputErrors() }">
+	</MvIF>
+
+	<MvIF EXPR = "{ [ g.Module_JSON ].JSON_Input_Retrieve( 'AdditionalFields', l.additionalfields ) }">
+		<MvASSIGN NAME = "l.null" VALUE = "{ miva_struct_merge( l.additionalfields, l.review:additionalfields ) }">
+	</MvIF>
+	
+	<MvIF EXPR = "{ l.review:rating EQ 0 OR l.review:rating GT 5 }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'Rating', 'Rating must be between 1-5.' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT ISNULL l.review:email }">
+		<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Email( l.review:email ) }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'Email', g.Validation_Message ) }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT TGReviewsProduct_Update( l.review ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( g.Error_Code, g.Error_Message ) }">
+	</MvIF>
+
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( '#Error#', 'Added review for \'' $ l.product:id $ '\'' ) }">
+
+	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
+</MvFUNCTION>
+
 <MvFUNCTION NAME = "JSON_AdditionalFields_Load_Query" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ g.Session_Type NE 'admin' }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Access_Denied() }">
@@ -1999,14 +2068,17 @@
 	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }">				<MvFUNCTIONRETURN>																	</MvIF>
 	<MvIF EXPR = "{ NOT [ g.Module_Admin ].CanI( 'SYSM', 0, 1, 0, 0 ) }">	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Access_Denied() }">	</MvIF>
 
-	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Input_Number(	'R', 'ID',		l.additionalfield_id,	-1, -1 )	OR
-					NOT [ g.Module_JSON ].JSON_Input_Code( 		'O', 'Code',	l.additionalfield:code )			OR
-					NOT [ g.Module_JSON ].JSON_Input_Text(		'O', 'Name',	l.additionalfield:name ) }">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Input_Number(	'R', 'ID',		l.additionalfield_id,	-1, -1 )}">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_InputErrors() }">
 	</MvIF>
 
 	<MvIF EXPR = "{ NOT TGReviewsAdditionalField_Load_ID( l.additionalfield:id, l.previous_additionalfield ) }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'ID', 'An Additional Field with the id \'' $ l.additionalfield:id $ '\' not found' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Input_Code( 		'O', 'Code',	l.additionalfield:code )			OR
+					NOT [ g.Module_JSON ].JSON_Input_Text(		'O', 'Name',	l.additionalfield:name ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_InputErrors() }">
 	</MvIF>
 
 	<MvIF EXPR = "{ toupper( l.additionalfield:code ) NE toupper( l.previous_additionalfield:code ) }">

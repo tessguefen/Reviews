@@ -80,13 +80,13 @@ function ProductReview_List( product, auto_approve )
 		if ( CanI( 'SYSM', 0, 0, 1, 0 ) )
 		{
 			self.approved_column =	new MMBatchList_Column_CheckboxSlider('Approved', 'approved', 'approved', function( item, checked, delegator ) {
-										self.Update_Approved( item, checked, function(){}, delegator );
+										ProductReview_List.Update_Approved( item, checked, function(){}, delegator );
 									} );
 			self.notify_column =	new MMBatchList_Column_CheckboxSlider('Notify', 'notify', 'Notify', function( item, checked, delegator ) {
-										self.Update_Notify( item, checked, function(){}, delegator );
+										ProductReview_List.Update_Notify( item, checked, function(){}, delegator );
 									} );
 			self.verified_column =	new MMBatchList_Column_CheckboxSlider('Verified Buyer', 'verified', 'Verified', function( item, checked, delegator ) {
-										self.Update_Verified( item, checked, function(){}, delegator );
+										ProductReview_List.Update_Verified( item, checked, function(){}, delegator );
 									} );
 		
 		} else {
