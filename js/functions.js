@@ -82,7 +82,6 @@ function Product_Review_Insert( data, callback, delegator )
 	}, delegator );
 }
 
-
 function Product_Review_Update( data, callback, delegator )
 {
 	return AJAX_Call_Module_JSON( callback, 'admin', 'tgreviews', 'Product_Review_Update', {
@@ -102,5 +101,12 @@ function Product_Review_Update( data, callback, delegator )
 		Title:				data.title,
 		Product_Code:		data.Product ? data.Product.code : '',
 		AdditionalFields:	data.AdditionalFields
+	}, delegator );
+}
+
+function Product_Review_Delete( id, callback, delegator )
+{
+	return AJAX_Call_Module_JSON( callback, 'admin', 'tgreviews', 'Product_Review_Delete', {
+		ID: id
 	}, delegator );
 }

@@ -1476,6 +1476,7 @@
 	<MvIF EXPR = "{ g.Module_Function EQ 'Product_Reviews_Load_Query' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_Product_Reviews_Load_Query( l.module ) }">
 	<MvELSEIF EXPR = "{ g.Module_Function EQ 'Product_Review_Insert' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_Product_Review_Insert( l.module ) }">
 	<MvELSEIF EXPR = "{ g.Module_Function EQ 'Product_Review_Update' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_Product_Review_Update( l.module ) }">
+	<MvELSEIF EXPR = "{ g.Module_Function EQ 'Product_Review_Delete' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_Product_Review_Delete( l.module ) }">
 	<MvELSEIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Load_Query' }">	<MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalFields_Load_Query( l.module ) }">
 	<MvELSEIF EXPR = "{ g.Module_Function EQ 'AdditionalField_Insert' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalField_Insert( l.module ) }">
 	<MvELSEIF EXPR = "{ g.Module_Function EQ 'AdditionalField_Update' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_AdditionalField_Update( l.module ) }">
@@ -1888,7 +1889,7 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( g.Error_Code, g.Error_Message ) }">
 	</MvIF>
 
-	<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( '#Error#', 'Added review for \'' $ l.product:id $ '\'' ) }">
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( '#Error#', 'Added review \'' $ l.review:id $ '\'' ) }">
 
 	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
 </MvFUNCTION>
@@ -1910,7 +1911,7 @@
 	</MvIF>
 
 	<MvIF EXPR = "{ NOT TGReviewsProduct_Load( l.review:id, l.review ) }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'ID', 'A Review with the id \'' $ l.additionalfield:id $ '\' not found' ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'ID', 'A review with the id \'' $ l.review:id $ '\' not found' ) }">
 	</MvIF>
 
 	<MvIF EXPR = "{ [ g.Module_JSON ].JSON_Product_Load( l.product ) }">
@@ -1956,7 +1957,36 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( g.Error_Code, g.Error_Message ) }">
 	</MvIF>
 
-	<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( '#Error#', 'Added review for \'' $ l.product:id $ '\'' ) }">
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( '#Error#', 'Updated review \'' $ l.review:id $ '\'' ) }">
+
+	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_Product_Review_Delete" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ g.Session_Type NE 'admin' }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Access_Denied() }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = "{ JSON_Product_Review_Delete_LowLevel( l.module ) }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "JSON_Product_Review_Delete_LowLevel" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }">				<MvFUNCTIONRETURN>																	</MvIF>
+	<MvIF EXPR = "{ NOT [ g.Module_Admin ].CanI( 'SYSM', 0, 0, 0, 1 ) }">	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Access_Denied() }">	</MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Input_Number( 'R', 'ID',	l.review_id, -1, -1 ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_InputErrors() }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT TGReviewsProduct_Load( l.review_id, l.review ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'ID', 'A review with the id \'' $ l.review_id $ '\' not found' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT TGReviewsProduct_Delete( l.review_id ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( g.Error_Code, g.Error_Message ) }">
+	</MvIF>
+
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( '#Error#', 'Deleted review \'' $ l.review:id $ '\'' ) }">
 
 	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
 </MvFUNCTION>
@@ -2816,11 +2846,11 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "TGReviewsProduct_Delete" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "TGReviewsProduct_Delete" PARAMETERS = "id" STANDARDOUTPUTLEVEL = "">
 	<MvTRANSACT NAME = "Merchant">
 	
-	<MvIF EXPR = "{ NOT TGReviewsProduct_Delete_LowLevel( l.review ) OR
-					NOT TGReviewsAdditionalValues_Delete_Review( l.review:id ) }">
+	<MvIF EXPR = "{ NOT TGReviewsProduct_Delete_LowLevel( l.id ) OR
+					NOT TGReviewsAdditionalValues_Delete_Review( l.id ) }">
 		<MvROLLBACK NAME = "Merchant">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
@@ -2829,10 +2859,10 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "TGReviewsProduct_Delete_LowLevel" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+<MvFUNCTION NAME = "TGReviewsProduct_Delete_LowLevel" PARAMETERS = "id" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvQUERY NAME	= "Merchant"
 			 QUERY	= "{ 'DELETE FROM ' $ g.Store_Table_Prefix $ 'TGReviewsProducts WHERE id = ?' }"
-			 FIELDS	= "l.review:id">
+			 FIELDS	= "l.id">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
 	</MvIF>
