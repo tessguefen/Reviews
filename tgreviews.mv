@@ -1246,7 +1246,7 @@
 						<td>This will trigger the email for any order you specify, to the email you specify. This is specifically made to test the email template. Please note: BCC and CC will not carry through. If you have left a review on a product in the order, it will skip that product.</td>
 					</tr>
 					<tr>
-						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Customer_Product_Reviews', ' g.Basket:cust_id, l.settings:customer:reviews ') }"></td>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Customer_Product_Reviews_Load_Offset', ' cust_id, offset, search, searchable_fields, max, sort, nextoffset var, reviews var ') }"></td>
 						<td>Load all reviews written by a customer (cust_id). This will load all approved, and non approved reviews.</td>
 					</tr>
 					<tr>
@@ -1256,9 +1256,7 @@
 				</tbody>
 			</table>
 		</div>
-		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
-	
-	
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">	
 	</MvIF>
 
 	<MvFUNCTIONRETURN VALUE = 1>
@@ -2293,9 +2291,284 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ComponentModule_Prerender" PARAMETERS = "module var, item, all_settings var, settings var, param" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT ISNULL g.Action }">
+		<MvASSIGN NAME = "l.pos"		VALUE = 1>
+		<MvASSIGN NAME = "l.current"	VALUE = "{ toupper( gettoken( g.Action, ',', l.pos ) ) }">
+
+		<MvWHILE EXPR = "{ len( l.current ) }">
+			<MvIF EXPR = "{ l.current EQ 'TGRADD' }">
+				<MvASSIGN NAME = "l.null" VALUE = "{ Product_Review_Insert() }">
+
+				<MvWHILESTOP>
+			</MvIF>
+
+			<MvASSIGN NAME = "l.pos"		VALUE = "{ l.pos + 1 }">
+			<MvASSIGN NAME = "l.current"	VALUE = "{ toupper( gettoken( g.Action, ',', l.pos ) ) }">
+		</MvWHILE>
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
 </MVFUNCTION>
 
 <MvFUNCTION NAME = "ComponentModule_Render_Start" PARAMETERS = "module var, item, settings var, item_settings var, param" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT Parse_Function_Parameters( l.param, l.function_name, l.parameters, l.parameter_count ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvCOMMENT>
+	|
+	|	Parameters & Function check
+	|
+	</MvCOMMENT>
+
+	<MvIF EXPR = "{ l.function_name EQ 'form_template' }">
+		<MvIF EXPR = "{ l.parameter_count NE 0 }">
+			<MvASSIGN NAME = "l.null" VALUE = "{ Parameter_Error( l.param, '\'' $ l.function_name $ '\' does not take any parameters' ) }">
+		</MvIF>
+
+		<MvASSIGN NAME = "l.new_param" VALUE = "{ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
+	<MvELSEIF EXPR = "{ l.function_name EQ 'reviews_template' }">
+		<MvIF EXPR = "{ l.parameter_count NE 1 }">
+			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, '\'' $ l.function_name $ '\' takes 1 parameter' ) }">
+		</MvIF>
+
+		<MvASSIGN NAME = "l.new_param" VALUE = "{ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
+	<MvELSEIF EXPR = "{ l.function_name EQ 'load_product_reviews' }">
+		<MvIF EXPR = "{ l.parameter_count NE 2 }">
+			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, '\'' $ l.function_name $ '\' takes 2 parameters' ) }">
+		</MvIF>
+
+		<MvIF EXPR = "{ NOT Is_Variable( l.parameters[ 2 ] ) }">
+			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, 'The second parameter must be a variable' ) }">
+		</MvIF>
+	
+		<MvASSIGN NAME = "l.new_param" VALUE = "{ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
+	<MvELSEIF EXPR = "{ l.function_name EQ 'date' }">
+		<MvIF EXPR = "{ l.parameter_count NE 3 }">
+			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, '\'' $ l.function_name $ '\' takes 3 parameters' ) }">
+		</MvIF>
+
+		<MvIF EXPR = "{ NOT Is_Variable( l.parameters[ 3 ] ) }">
+			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, 'The third parameter must be a variable' ) }">
+		</MvIF>
+	
+		<MvASSIGN NAME = "l.new_param" VALUE = "{ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
+	<MvELSEIF EXPR = "{ l.function_name EQ 'product_rating'				OR
+						l.function_name EQ 'product_review_breakdowns'	OR
+						l.function_name EQ 'product_review_count' }">
+		<MvIF EXPR = "{ l.parameter_count NE 2 }">
+			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, '\'' $ l.function_name $ '\' takes 2 parameters' ) }">
+		</MvIF>
+
+		<MvIF EXPR = "{ NOT Is_Variable( l.parameters[ 2 ] ) }">
+			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, 'The second parameter must be a variable' ) }">
+		</MvIF>
+	
+		<MvASSIGN NAME = "l.new_param" VALUE = "{ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
+	<MvELSEIF EXPR = "{ l.function_name EQ 'test_mailafter_email' }">
+		<MvIF EXPR = "{ l.parameter_count NE 2 }">
+			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, '\'' $ l.function_name $ '\' takes 2 parameters' ) }">
+		</MvIF>
+	
+		<MvASSIGN NAME = "l.new_param" VALUE = "{ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
+	<MvELSEIF EXPR = "{ l.function_name EQ 'customer_product_reviews_product' }">
+		<MvIF EXPR = "{ l.parameter_count NE 3 }">
+			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, '\'' $ l.function_name $ '\' takes 3 parameters' ) }">
+		</MvIF>
+
+		<MvIF EXPR = "{ NOT Is_Variable( l.parameters[ 3 ] ) }">
+			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, 'The third parameter must be a variable' ) }">
+		</MvIF>
+	
+		<MvASSIGN NAME = "l.new_param" VALUE = "{ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
+	<MvELSEIF EXPR = "{ l.function_name EQ 'customer_product_reviews_load_offset' }">
+		<MvIF EXPR = "{ l.parameter_count NE 8 }">
+			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, '\'' $ l.function_name $ '\' takes 7 parameters' ) }">
+		</MvIF>
+
+		<MvIF EXPR = "{ NOT Is_Variable( l.parameters[ 7 ] ) }">
+			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, 'The sixth parameter must be a variable' ) }">
+		</MvIF>
+
+		<MvIF EXPR = "{ NOT Is_Variable( l.parameters[ 8 ] ) }">
+			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, 'The eigth parameter must be a variable' ) }">
+		</MvIF>
+	
+		<MvASSIGN NAME = "l.new_param" VALUE = "{ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
+	<MvELSE>
+		<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, '\'' $ l.function_name $ '\' is not a valid function' ) }">
+	</MvIF>
+
+	<MvCOMMENT>
+	|
+	|	tagerror
+	|	22, 3 = display
+	|	22, 0 = no display
+	|
+	</MvCOMMENT>
+
+	<MvIF EXPR = "{ ISNULL l.new_param }">
+		<MvFUNCTIONRETURN VALUE = "">
+	</MvIF>
+
+	<MvASSEMBLY>
+		.string asm_0 "l.new_param"
+		.string asm_1 "g.Module_Root"
+		.string asm_2 "l.module"
+		.string asm_3 "module"
+		.string asm_4 "g.MvDO_Error"
+
+			pushc		asm_1
+			pushn
+			pushc		asm_2
+			pushn
+			pushc		asm_3
+			memb_ro
+			cat
+			pushc		asm_0
+			pushn
+			tagerror	22, 0
+			do_function
+			pop
+			tagerror	22, 3
+			pushc		asm_4
+			pushn
+			jmp_eq		L_asm_success
+			retn
+		L_asm_success:
+	</MvASSEMBLY>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Is_Variable" PARAMETERS = "variable var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.valid_chars" 		VALUE = "_.: ">
+	<MvASSIGN NAME = "l.square_bracket_pos" VALUE = 0>
+	<MvASSIGN NAME = "l.bracket_count" 		VALUE = 0>
+
+	<MvFOR INDEX = "l.pos" COUNT = "{ len_var( l.variable ) }">
+		<MvASSIGN NAME = "l.char" VALUE = "{ substring_var( l.variable, l.pos, 1 ) }">
+
+		<MvIF EXPR = "{ l.pos EQ 1 }">
+			<MvIF EXPR = "{ ( NOT isalpha( l.char ) ) AND
+							( l.char NE '_' ) }">
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+			
+			<MvFORCONTINUE>
+		</MvIF>
+		
+		<MvIF EXPR = "{ l.char EQ '[' }">
+			<MvASSIGN NAME = "l.bracket_count" 				VALUE = "{ l.bracket_count + 1 }">
+			<MvASSIGN NAME = "l.opening_square_bracket_pos" VALUE = "{ indexof( '[', l.variable, l.pos + 1 ) }">
+			<MvASSIGN NAME = "l.closing_square_bracket_pos" VALUE = "{ indexof( ']', l.variable, l.pos ) }">
+			
+			<MvIF EXPR = "{ ( l.opening_square_bracket_pos GT 0 ) AND
+							( l.opening_square_bracket_pos LT l.closing_square_bracket_pos ) }">
+				<MvASSIGN NAME = "l.pos" VALUE = "{ l.opening_square_bracket_pos - 1 }">
+			<MvELSEIF EXPR = "{ l.closing_square_bracket_pos GT 0 }">
+				<MvASSIGN NAME = "l.pos" VALUE = "{ l.closing_square_bracket_pos - 1 }">
+			</MvIF>
+		<MvELSEIF EXPR = "{ l.char EQ ']' }">
+			<MvASSIGN NAME = "l.bracket_count" 				VALUE = "{ l.bracket_count - 1 }">
+			<MvASSIGN NAME = "l.opening_square_bracket_pos" VALUE = "{ indexof( '[', l.variable, l.pos ) }">
+			<MvASSIGN NAME = "l.closing_square_bracket_pos" VALUE = "{ indexof( ']', l.variable, l.pos + 1 ) }">
+			
+			<MvIF EXPR = "{ ( l.opening_square_bracket_pos GT 0 ) AND
+							( l.opening_square_bracket_pos LT l.closing_square_bracket_pos ) }">
+				<MvASSIGN NAME = "l.pos" VALUE = "{ l.opening_square_bracket_pos - 1 }">
+			<MvELSEIF EXPR = "{ l.closing_square_bracket_pos GT 0 }">
+				<MvASSIGN NAME = "l.pos" VALUE = "{ l.closing_square_bracket_pos - 1 }">
+			</MvIF>
+		<MvELSE>
+			<MvIF EXPR = "{ ( NOT isdigit( l.char ) ) AND
+							( NOT isalpha( l.char ) ) AND
+							( NOT ( l.char IN l.valid_chars ) ) }">
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+		</MvIF>
+	</MvFOR>
+	
+	<MvIF EXPR = "{ l.bracket_count NE 0 }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+	
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Parse_Function_Parameters" PARAMETERS = "string, function_name var, parameters var, parameter_count var" STANDARDOUTPUTLEVEL = "">	
+	<MvASSIGN NAME = "l.parameter_count" 	VALUE = 0>
+	<MvASSIGN NAME = "l.loop_counter" 		VALUE = 0>
+	<MvASSIGN NAME = "l.string" 			VALUE = "{ trim( l.string ) }">
+	<MvASSIGN NAME = "l.starting_pos" 		VALUE = "{ indexof( '(', l.string, 1 ) + 1 }">
+	<MvASSIGN NAME = "l.function_name" 		VALUE = "{ tolower( substring_var( l.string, 1, l.starting_pos - 2 ) ) }">
+	
+	<MvIF EXPR = "{ l.starting_pos EQ 1 }">
+		<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.string, 'Expected \'(\' to start the function call' ) }">
+	</MvIF>
+	
+	<MvIF EXPR = "{ ISNULL l.function_name }">
+		<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.string, 'Missing function name' ) }">
+	</MvIF>
+	
+	<MvIF EXPR = "{ substring_var( l.string, len_var( l.string ), 1 ) NE ')' }">
+		<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.string, 'Expected \')\' to end the function call' ) }">
+	</MvIF>
+
+	<MvWHILE EXPR = "{ 1 }">
+		<MvASSIGN NAME = "l.quote_pos" 		VALUE = "{ indexof( '\'', l.string, l.starting_pos ) }">
+		<MvASSIGN NAME = "l.end_quote_pos" 	VALUE = "{ indexof( '\'', l.string, l.quote_pos + 1 ) }">
+		<MvASSIGN NAME = "l.comma_pos" 		VALUE = "{ indexof( ',', l.string, l.starting_pos ) }">
+
+		<MvIF EXPR = "{ l.quote_pos AND NOT l.end_quote_pos }">
+			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.string, 'Missing single quote' ) }">
+		</MvIF>
+		
+		<MvWHILE EXPR = "{ ( l.comma_pos LT l.end_quote_pos ) AND ( l.comma_pos GT l.quote_pos ) }"> <MvCOMMENT> comma in a quoted string </MvCOMMENT>
+			<MvASSIGN NAME = "l.comma_pos" VALUE = "{ indexof( ',', l.string, l.comma_pos + 1 ) }">
+		</MvWHILE>
+		
+		<MvIF EXPR = "{ l.comma_pos EQ 0 }"> <MvCOMMENT> on the last parameter or we only have 1 parameter </MvCOMMENT>
+			<MvASSIGN NAME = "l.start" 			VALUE = "{ l.starting_pos }">
+			<MvASSIGN NAME = "l.end" 			VALUE = "{ len_var( l.string ) - l.starting_pos }">
+			<MvASSIGN NAME = "l.starting_pos" 	VALUE = "{ len_var( l.string ) }">
+			<MvASSIGN NAME = "l.quote_pos" 		VALUE = 0>
+		<MvELSE> <MvCOMMENT> if there are more commas to come, grab from the start to the comma</MvCOMMENT>
+			<MvASSIGN NAME = "l.start" 			VALUE = "{ l.starting_pos }">
+			<MvASSIGN NAME = "l.end" 			VALUE = "{ l.comma_pos - l.starting_pos }">
+			<MvASSIGN NAME = "l.starting_pos" 	VALUE = "{ l.comma_pos + 1 }">
+		</MvIF>
+
+		<MvASSIGN NAME = "l.param" VALUE = "{ trim( substring_var( l.string, l.start, l.end ) ) }">
+		
+		<MvIF EXPR = "{ ISNULL l.param }">
+			<MvIF EXPR = "{ l.comma_pos EQ 0 AND l.parameter_count EQ 0 }">
+				<MvFUNCTIONRETURN VALUE = 1>
+			</MvIF>
+			
+			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.string, 'Parameter number ' $ ( ++l.parameter_count ) $ ' cannot be empty' ) }">
+		</MvIF>
+		
+		<MvASSIGN NAME = "l.parameters" INDEX = "{ ++l.parameter_count }" VALUE = "{ l.param }">
+		
+		<MvIF EXPR = "{ l.quote_pos EQ 0 AND l.comma_pos EQ 0 }">
+			<MvWHILESTOP>
+		</MvIF>
+
+		<MvIF EXPR = "{ l.loop_counter GT 1000 }">
+			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.string, 'Error parsing parameters' ) }">
+		</MvIF>
+		
+		<MvASSIGN NAME = "l.loop_counter" VALUE = "{ l.loop_counter + 1 }">
+	</MvWHILE>
+	
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Parameter_Error" PARAMETERS = "param, message" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.error_count" 																	VALUE = "{ miva_array_elements( g.Session:customfield_errors ) }">
+	<MvASSIGN NAME = "g.Session:customfield_errors" INDEX = "{ l.error_count + 1 }" MEMBER = "param" 	VALUE = "{ l.param }">
+	<MvASSIGN NAME = "g.Session:customfield_errors" INDEX = "{ l.error_count + 1 }" MEMBER = "message" 	VALUE = "{ l.message }">
+	
+	<MvFUNCTIONRETURN VALUE = 0>
 </MvFUNCTION>
 
 <MvCOMMENT>
@@ -4232,6 +4505,15 @@
 
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
+
+<MvCOMMENT>
+|
+|	Front-end User Submission
+|
+</MvCOMMENT>
+
+<MvFUNCTION NAME = "Product_Review_Insert" PARAMETERS = "" STANDARDOUTPUTLEVEL = "">
+</MVFUNCTION>
 
 <MvFUNCTION NAME = "Admin_Formatted_Item_Function" PARAMETERS = "function_name, parameters" STANDARDOUTPUTLEVEL = "html, text">
 <div style="background: #ffffff; overflow:auto;width:auto;padding:.2em 0;">
