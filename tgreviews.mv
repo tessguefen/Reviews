@@ -863,20 +863,22 @@
 		<div id="batchlist_additionalfields"></div>
 	</MvIF>
 
-	<MvIF EXPR = "{ l.tab EQ 'TGR_SETT' }">
-		<MvIF EXPR = "{ l.load_fields }">
-			<MvIF EXPR = "{ NOT TGReviewsGeneralSettings_Load( g.TGReviewsGeneralSettings ) }">
-				<MvFUNCTIONRETURN VALUE = 0>
-			</MvIF>
-	
-			<MvIF EXPR = "{ NOT TGReviewsNotificationSettings_Load( g.TGReviewsNotificationSettings ) }">
-				<MvFUNCTIONRETURN VALUE = 0>
-			</MvIF>
+	<MvIF EXPR = "{ l.load_fields }">
+		<MvIF EXPR = "{ NOT TGReviewsGeneralSettings_Load( g.TGReviewsGeneralSettings ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvIF EXPR = "{ NOT TGReviewsNotificationSettings_Load( g.TGReviewsNotificationSettings ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvIF EXPR = "{ NOT TGReviewsTemplates_Load_Cached( g.TGReviewsTemplates ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
 	</MvIF>
 	
 	<MvIF EXPR = "{ l.tab NE 'TGR_SETT' }">
-		<MvHIDE FIELDS = "g.TGReviewsGeneralSettings, g.TGReviewsNotificationSettings">
+		<MvHIDE FIELDS = "g.TGReviewsGeneralSettings, g.TGReviewsNotificationSettings, g.TGReviewsTemplates">
 		<MvFUNCTIONRETURN VALUE = 1>
 	</MvIF>
 
@@ -1163,10 +1165,6 @@
 		</div>
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
 
-		<MvIF EXPR = "{ NOT TGReviewsTemplates_Load_Cached( l.templates ) }">
-			<MvFUNCTIONRETURN VALUE = 0>
-		</MvIF>
-
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'TGR_SETT', 'PRERENDER_LOGIC_TEMPLATE' ) }">
 		<table border="0" cellpadding="2" cellspacing="0" width="100%">
 			<tr>
@@ -1177,7 +1175,7 @@
 					<br><br>
 				</td>
 			</tr>
-			<MvEVAL EXPR = "{ Admin_Template( 'Pre-Render Logic', 'TGReviewsTemplates:prlog_tmpl_', l.templates:prlog_tmpl, l.load_fields ) }">
+			<MvEVAL EXPR = "{ Admin_Template( 'Pre-Render Logic', 'TGReviewsTemplates:prlog_tmpl_', g.TGReviewsTemplates:prlog_tmpl, l.load_fields ) }">
 		</table>
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
 
@@ -1189,7 +1187,7 @@
 					<br><br>
 				</td>
 			</tr>
-			<MvEVAL EXPR = "{ Admin_Template( 'Form', 'TGReviewsTemplates:form_tmpl_', l.templates:form_tmpl , l.load_fields ) }">
+			<MvEVAL EXPR = "{ Admin_Template( 'Form', 'TGReviewsTemplates:form_tmpl_', g.TGReviewsTemplates:form_tmpl, l.load_fields ) }">
 		</table>
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
 		
@@ -1201,7 +1199,7 @@
 					<br><br>
 				</td>
 			</tr>
-			<MvEVAL EXPR = "{ Admin_Template( 'Reviews', 'TGReviewsTemplates:rvws_tmpl_', l.templates:rvws_tmpl , l.load_fields ) }">
+			<MvEVAL EXPR = "{ Admin_Template( 'Reviews', 'TGReviewsTemplates:rvws_tmpl_', g.TGReviewsTemplates:rvws_tmpl, l.load_fields ) }">
 		</table>
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
 
@@ -2963,18 +2961,87 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ImportModule_Capabilities" PARAMETERS = "module var, capabilities var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.capabilities:screen"				VALUE = 0>
+	<MvASSIGN NAME = "l.capabilities:persistent"			VALUE = 1>
+	<MvASSIGN NAME = "l.capabilities:format"				VALUE = "delimited">
+	<MvASSIGN NAME = "l.capabilities:persistent_provision"	VALUE = 0>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ImportModule_Delimited_Columns" PARAMETERS = "module var, import var, columns var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT TGReviewsGeneralSettings_Load_Cached( l.general_settings ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvCOMMENT>											field			name						header						required						default			validation		</MvCOMMENT>
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'created',				'Created',					'CREATED',				0,								'',			'time_t' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'product_code',			'Product Code',				'PRODUCT_CODE',			1,								'',			'code' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'order_id',				'Order ID',					'ORDER_ID',				0,								0,			'integer_nonneg' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'approved',				'Approved',					'APPROVED',				1,								0,			'bool' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'rating',				'Rating',					'RATING',				1,								'',			'integer_nonneg' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'name',					'Name',						'NAME',					l.general_settings:fld_name,	'',			'string' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'email',				'Email',					'EMAIL',				l.general_settings:fld_email,	'',			'email' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'location',				'Location',					'LOCATION',				l.general_settings:fld_loc,		'',			'string' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'notify',				'Notify',					'NOTIFY',				0,								0,			'bool' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'title',				'Title',					'TITLE',				l.general_settings:fld_title,	'',			'string' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'summary',				'Summary',					'SUMMARY',				l.general_settings:fld_summry,	'',			'string' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'store_reply',			'Store Reply',				'STORE_REPLY',			0,								'',			'string' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'notified',				'Notified',					'NOTIFIED',				0,								0,			'integer_nonneg' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'verified',				'Verified',					'VERIFIED',				0,								0,			'bool' ) }">
+	
+	<MvFOREACH ITERATOR = "l.additionalfield" ARRAY = "l.additionalfields" COUNT = "{ TGReviewsAdditionalField_Load_All_Cached( l.additionalfields ) }">
+		<MvEVAL EXPR = "{ Add_Standard_Column( l.columns, 'field_' $ l.additionalfield:code, 'Field: ' $ l.additionalfield:name, 'FIELD:'$ toupper( l.additionalfield:code ), 0, 0, 'string' ) }">
+	</MvFOREACH>
+
+	<MvFUNCTIONRETURN VALUE = "{ miva_array_max( l.columns ) }">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ImportModule_Persistent_StatusFields" PARAMETERS = "module var, import var, fields var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.fields"	VALUE = "">
+
+	<MvEVAL EXPR = "{ Add_Status_Field( l.fields, 'records_processed',	'Records Processed:',	0 ) }">
+	<MvEVAL EXPR = "{ Add_Status_Field( l.fields, 'records_skipped',	'Records Skipped:',		0 ) }">
+	<MvEVAL EXPR = "{ Add_Status_Field( l.fields, 'record_problems',	'Record Problems:',		0 ) }">
+
+	<MvFUNCTIONRETURN VALUE = "{ miva_array_max( l.fields ) }">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ImportModule_Delimited_Import_Begin" PARAMETERS = "module var, import var, session var, run_data var" STANDARDOUTPUTLEVEL = "">
+	<MvEVAL EXPR = "{ Create_Columns_Present( l.import, l.run_data:columns_present ) }">
+
+	<MvIF EXPR = "{ l.import:automap EQ 1 }">
+		<MvIF EXPR = "{ NOT Validate_Columns( l.import, l.run_data:columns_present ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+	</MvIF>
+
+	<MvASSIGN NAME = "l.list_pos"				VALUE = 0>
+	<MvFOREACH ITERATOR = "l.column" ARRAY = "l.run_data:columns_all" INDEX = "l.index" COUNT = "{ ImportModule_Delimited_Columns( l.module, l.import, l.run_data:columns_all ) }">
+		<MvIF EXPR = "{ miva_variable_value( 'l.run_data:columns_present:' $ l.column:field ) }">
+			<MvASSIGN NAME = "l.column:present"	VALUE = 1>
+
+			<MvREFERENCE NAME = "l.run_data:columns_list"		INDEX = "{ ++l.list_pos }"		VARIABLE = "{ 'l.run_data:columns_all[' $ l.index $ ']' }">
+			<MvREFERENCE NAME = "l.run_data:columns_present"	MEMBER = "{ l.column:field }"	VARIABLE = "{ 'l.run_data:columns_all[' $ l.index $ ']' }">
+		</MvIF>
+	</MvFOREACH>
+
+	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ImportModule_Delimited_Import_Record" PARAMETERS = "module var, import var, session var, record var, run_data var" STANDARDOUTPUTLEVEL = "">
+	<MvEVAL EXPR = "{ [ g.Module_Feature_IMP_UT ].Import_Session_StatusField_Increment( l.session, 'records_processed', 1 ) }">
+
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].Product_Load_Code_Cached( l.record:product_code, l.product ) }">
+		<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].Error_Is_EOF() }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT l.product:id }">
+		<MvEVAL EXPR = "{ Record_Skip( l.session, 'Product Code not found' ) }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = "{ Review_Import( l.import, l.session, l.record, l.product, l.run_data ) }">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ImportModule_Delimited_Import_End" PARAMETERS = "module var, import var, session var, run_data var" STANDARDOUTPUTLEVEL = "">
@@ -2998,6 +3065,14 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ImportModule_Persistent_Validate" PARAMETERS = "module var, import var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ l.import:automap EQ 0 }">
+		<MvEVAL EXPR = "{ Create_Columns_Present( l.import, l.columns_present ) }">
+
+		<MvIF EXPR = "{ NOT Validate_Columns( l.import, l.columns_present ) }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( '', '', g.Error_Message ) }">
+		</MvIF>
+	</MvIF>
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -3006,6 +3081,115 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ImportModule_Persistent_Provision" PARAMETERS = "module var, import var, provide_xml var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Review_Import" PARAMETERS = "import var, session var, record var, product var, run_data var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT Validate_Fields_Create( l.session, l.record, l.run_data ) }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvASSIGN NAME = "l.review:created"		VALUE = "{ l.record:created }">
+	<MvASSIGN NAME = "l.review:product_id"	VALUE = "{ l.product:id }">
+	<MvASSIGN NAME = "l.review:order_id"	VALUE = "{ l.record:order_id }">
+	<MvASSIGN NAME = "l.review:approved"	VALUE = "{ l.record:approved }">
+	<MvASSIGN NAME = "l.review:rating"		VALUE = "{ l.record:rating }">
+	<MvASSIGN NAME = "l.review:name"		VALUE = "{ l.record:name }">
+	<MvASSIGN NAME = "l.review:email"		VALUE = "{ l.record:email }">
+	<MvASSIGN NAME = "l.review:location"	VALUE = "{ l.record:location }">
+	<MvASSIGN NAME = "l.review:notify"		VALUE = "{ l.record:notify }">
+	<MvASSIGN NAME = "l.review:title"		VALUE = "{ l.record:title }">
+	<MvASSIGN NAME = "l.review:summary"		VALUE = "{ l.record:summary }">
+	<MvASSIGN NAME = "l.review:store_rply"	VALUE = "{ l.record:store_rply }">
+	<MvASSIGN NAME = "l.review:notified"	VALUE = "{ l.record:notified }">
+	<MvASSIGN NAME = "l.review:verified"	VALUE = "{ l.record:verified }">
+
+	<MvIF EXPR = "{ TGReviewsProducts_Load_Similar( l.review ) }">
+		<MvEVAL EXPR = "{ Record_Skip( l.session, 'Similar Review found (product code, title, summary & email match)' ) }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvIF EXPR = "{ l.review:rating EQ 0 OR l.review:rating GT 5 }">
+		<MvEVAL EXPR = "{ Record_Skip( l.session, 'Rating must be between 1-5.' ) }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT ISNULL l.review:email }">
+		<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Email( l.review:email ) }">
+			<MvEVAL EXPR = "{ Record_Skip( l.session, g.Validation_Message ) }">
+			<MvFUNCTIONRETURN VALUE = 1>
+		</MvIF>
+	</MvIF>
+
+	<MvFOREACH ITERATOR = "l.field" ARRAY = "l.members" COUNT = "{ miva_struct_members( l.record, l.members ) }">
+		<MvIF EXPR = "{ 'field_' CIN l.field NE 1 }">
+			<MvFOREACHCONTINUE>
+		</MvIF>
+
+		<MvASSIGN NAME = "l.review:additionalfields" MEMBER = "{ substring_var( l.field, 7, ( len_var( l.field ) - 6 ) ) }" VALUE = "{ miva_variable_value( 'l.record:' $ l.field ) }">
+	</MvFOREACH>
+
+	<MvIF EXPR = "{ NOT TGReviewsProduct_Insert( l.review ) }">
+		<MvEVAL EXPR = "{ Record_Skip( l.session, 'Review failed to create: ' $ g.Error_Message ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( '#Error#', 'Added review \'' $ l.review:id $ '\'' ) }">
+	
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Validate_Columns" PARAMETERS = "import var, columns_present var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT TGReviewsGeneralSettings_Load_Cached( l.general_settings ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT l.columns_present:product_code }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', 'The Product Code field must be assigned to an import file column' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT l.columns_present:approved }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', 'The Approved field must be assigned to an import file column' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT l.columns_present:rating }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', 'The Rating field must be assigned to an import file column' ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ l.general_settings:fld_name }">
+		<MvIF EXPR = "{ NOT l.columns_present:name }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', 'The Name field must be assigned to an import file column' ) }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ l.general_settings:fld_email }">
+		<MvIF EXPR = "{ NOT l.columns_present:email }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', 'The Email field must be assigned to an import file column' ) }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ l.general_settings:fld_loc }">
+		<MvIF EXPR = "{ NOT l.columns_present:location }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', 'The Location field must be assigned to an import file column' ) }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ l.general_settings:fld_title }">
+		<MvIF EXPR = "{ NOT l.columns_present:title }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', 'The Title field must be assigned to an import file column' ) }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ l.general_settings:fld_summry }">
+		<MvIF EXPR = "{ NOT l.columns_present:summary }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', 'The Summary field must be assigned to an import file column' ) }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT l.columns_present:rating }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', 'The Rating field must be assigned to an import file column' ) }">
+	</MvIF>
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -3515,6 +3699,26 @@
 	<MvASSIGN NAME = "l.product_rating:tgr_rating"			VALUE = "{ TGReviewsProducts.d.tgr_rating ROUND 2 }">
 	<MvASSIGN NAME = "l.product_rating:tgr_review_count"	VALUE = "{ TGReviewsProducts.d.tgr_review_count}">
 
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsProducts_Load_Similar" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvOPENVIEW NAME	= "Merchant"
+				VIEW	= "TGReviewsProducts"
+				QUERY	= "{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'TGReviewsProducts WHERE product_id = ? AND title = ? AND summary = ? AND email = ?' }"
+				FIELDS	= "l.review:product_id, l.review:title, l.review:summary, l.review:email">
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ TGReviewsProducts.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error#' ) }">
+	</MvIF>
+
+	<MvEVAL EXPR = "{ TGReviewsProduct_Read( l.review ) }">
 	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
 
 	<MvFUNCTIONRETURN VALUE = 1>
@@ -4050,3 +4254,5 @@
 	
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
+
+<MvINCLUDE FILE = "import_include.mv">
