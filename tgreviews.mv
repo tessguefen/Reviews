@@ -2564,9 +2564,9 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Parameter_Error" PARAMETERS = "param, message" STANDARDOUTPUTLEVEL = "">
-	<MvASSIGN NAME = "l.error_count" 																	VALUE = "{ miva_array_elements( g.Session:customfield_errors ) }">
-	<MvASSIGN NAME = "g.Session:customfield_errors" INDEX = "{ l.error_count + 1 }" MEMBER = "param" 	VALUE = "{ l.param }">
-	<MvASSIGN NAME = "g.Session:customfield_errors" INDEX = "{ l.error_count + 1 }" MEMBER = "message" 	VALUE = "{ l.message }">
+	<MvASSIGN NAME = "l.error_count" 																	VALUE = "{ miva_array_elements( g.Session:tgreviews_errors ) }">
+	<MvASSIGN NAME = "g.Session:tgreviews_errors" INDEX = "{ l.error_count + 1 }" MEMBER = "param"		VALUE = "{ l.param }">
+	<MvASSIGN NAME = "g.Session:tgreviews_errors" INDEX = "{ l.error_count + 1 }" MEMBER = "message"	VALUE = "{ l.message }">
 	
 	<MvFUNCTIONRETURN VALUE = 0>
 </MvFUNCTION>
