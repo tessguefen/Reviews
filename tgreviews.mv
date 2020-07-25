@@ -1183,7 +1183,7 @@
 		<table border="0" cellpadding="2" cellspacing="0" width="100%">
 			<tr>
 				<td align="left" nowrap valign="top" colspan="2">
-					<MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Form', '' ) }">
+					<MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Form_Template', '' ) }">
 					<br><br>
 				</td>
 			</tr>
@@ -2310,6 +2310,9 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MVFUNCTION>
 
+<MvFUNCTION NAME = "ComponentModule_Render_Head" PARAMETERS = "module var, item, all_settings var, settings" STANDARDOUTPUTLEVEL = "">
+</MVFUNCTION>
+
 <MvFUNCTION NAME = "ComponentModule_Render_Start" PARAMETERS = "module var, item, settings var, item_settings var, param" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ NOT Parse_Function_Parameters( l.param, l.function_name, l.parameters, l.parameter_count ) }">
 		<MvFUNCTIONRETURN VALUE = 0>
@@ -2444,7 +2447,7 @@
 		<MvFUNCTIONRETURN>
 	</MvIF>
 
-	<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplate_Load_ID( l.template:form_tmpl, l.form_template ) }">
+	<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplate_Load_ID( l.templates:form_tmpl, l.form_template ) }">
 		<MvFUNCTIONRETURN>
 	</MvIF>
 
@@ -2468,16 +2471,168 @@
 	<MvDO FILE = "{ g.Store_Template_Path $ l.form_template:filename }" NAME = "l.null" VALUE = "{ Template_Render( l.null, l.all_settings ) }">
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Component_Reviews_Template" PARAMETERS = "module var, param, all_settings var" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Component_Reviews_Template" PARAMETERS = "module var, param, all_settings var, product_id" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ NOT TGReviewsTemplates_Load_Cached( l.templates ) }">
 		<MvFUNCTIONRETURN>
 	</MvIF>
 
-	<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplate_Load_ID( l.template:rvws_tmpl, l.review_template ) }">
+	<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplate_Load_ID( l.templates:rvws_tmpl, l.review_template ) }">
 		<MvFUNCTIONRETURN>
 	</MvIF>
 
+	<MvASSIGN NAME = "l.null" VALUE = "{ Reviews_Load_Query( l.product_id, l.all_settings:tgr ) }">
+
 	<MvDO FILE = "{ g.Store_Template_Path $ l.review_template:filename }" NAME = "l.null" VALUE = "{ Template_Render( l.null, l.all_settings ) }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Reviews_Load_Query" PARAMETERS = "product_id, output var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.sort"				VALUE = "{ trim( g.TGR_Sort ) }">
+	<MvASSIGN NAME = "l.count"			VALUE = "{ int( g.TGR_Count ) }">
+	<MvASSIGN NAME = "l.offset"				VALUE = "{ int( g.TGR_Offset ) }">
+	<MvASSIGN NAME = "l.rating_filter"		VALUE = "{ int( g.TGR_Show_Rating ) }">
+	<MvASSIGN NAME = "l.product_id"			VALUE = "{ int( l.product_id ) }">
+
+	<MvASSIGN NAME = "l.search_query"						VALUE = "">
+	<MvASSIGN NAME = "l.output:pagination"					VALUE = "">
+	<MvASSIGN NAME = "l.output:full_pagination"				VALUE = "">
+	<MvASSIGN NAME = "l.output:reviews"						VALUE = "">
+	<MvASSIGN NAME = "l.output:total_reviews_filtered"		VALUE = "">
+	<MvASSIGN NAME = "l.output:start_offset"				VALUE = "">
+
+	<MvIF EXPR = "{ NOT TGReviewsGeneralSettings_Load_Cached( l.general_settings ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ l.count LE 0 AND l.general_settings:per_page GT 0 }">
+		<MvASSIGN NAME = "l.count" VALUE = "{ l.general_settings:per_page }">
+	<MvELSE>
+		<MvASSIGN NAME = "l.count" VALUE = 5>
+	</MvIF>
+
+	<MvIF EXPR = "{	l.sort NE '-id'			AND
+					l.sort NE '-created'	AND
+					l.sort NE 'created'		AND
+					l.sort NE '-rating'		AND
+					l.sort NE 'rating'
+				}">
+		<MvASSIGN NAME = "l.sort" VALUE = "{ l.general_settings:sort }">
+	</MvIF>
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SELECT( l.search_query,'s.*' ) }">
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_FROM( l.search_query, g.Store_Table_Prefix $ 'TGReviewsProducts', 's' ) }">
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'approved = 1', '' ) }">
+
+	<MvIF EXPR = "{ l.product_id GT 0 }">
+		<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'product_id = ? ', [ g.Module_Library_DB ].SQL_Query_Field( l.product_id ) ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ l.rating_filter GT 0 }">
+		<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.search_query, 'rating = ? ', [ g.Module_Library_DB ].SQL_Query_Field( l.rating_filter ) ) }">
+	</MvIF>
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_OrderBy_Fields(l.search_query, l.sort, 'id:s.id,created:s.created,product_id:s.product_id,cust_id:s.cust_id,order_id:s.order_id,approved:s.approved,rating:s.rating,name:s.name,email:s.email,location:s.location,notify:s.notify,title:s.title,summary:s.summary', 's.id' ) }">
+
+	<MvASSIGN NAME = "l.search_sql" VALUE = "{ [ g.Module_Library_DB].SQL_Query_Build( l.search_query, l.search_fields ) }">
+
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].SQL_Query_Count( l.search_query, l.total_count ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error#' ) }">
+	<MvELSEIF EXPR = "{ NOT [ g.Module_Library_Native_DBAPI ].DB_OPENVIEW_Range('Merchant', 'TGReviewsProducts', l.search_sql, l.search_fields, l.offset, l.count) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.review_count"			VALUE = 0>
+	<MvASSIGN NAME = "l.additionalfields_count"	VALUE = "{ TGReviewsAdditionalField_Load_All_Cached( l.additionalfields ) }">
+
+	<MvWHILE EXPR = "{ ( NOT TGReviewsProducts.d.EOF ) AND ( ( l.count EQ 0 ) OR ( l.review_count LT l.count ) ) }">
+
+		<MvEVAL EXPR = "{ TGReviewsProduct_Read( l.output:reviews[ ++l.review_count ] ) }">
+
+		<MvASSIGN NAME = "l.addl_count"		VALUE = 0>
+		<MvASSIGN NAME = "l.addl_fields"	VALUE = "">
+
+		<MvFOREACH ITERATOR = "l.additionalfield" ARRAY = "l.additionalfields" COUNT = "{ l.additionalfields_count }">
+			<MvASSIGN NAME = "l.additionfield_value:field_id"	VALUE = "{ l.additionalfield:id }">
+			<MvASSIGN NAME = "l.additionfield_value:review_id"	VALUE = "{ l.review:id }">
+			<MvASSIGN NAME = "l.additionfield_value:value"		VALUE = "">
+			<MvASSIGN NAME = "l.null"							VALUE = "{ TGReviewsAdditionalValue_Load( l.additionfield_value ) }">
+
+			<MvIF EXPR = "{ ISNULL l.additionfield_value:value }">
+				<MvFOREACHCONTINUE>
+			</MvIF>
+
+			<MvASSIGN NAME = "l.addl_count"		VALUE = "{ l.addl_count + 1 }">
+			<MvASSIGN NAME = "l.addl_fields"	INDEX = "{ l.addl_count }" MEMBER = "code"	VALUE = "{ l.additionalfield:code }">
+			<MvASSIGN NAME = "l.addl_fields"	INDEX = "{ l.addl_count }" MEMBER = "name"	VALUE = "{ l.additionalfield:name }">
+			<MvASSIGN NAME = "l.addl_fields"	INDEX = "{ l.addl_count }" MEMBER = "value"	VALUE = "{ l.additionalfield:value }">
+		</MvFOREACH>
+
+		<MvASSIGN NAME = "l.output:reviews" INDEX = "{ l.review_count }" MEMBER = "additional_fields" VALUE = "{ l.addl_fields }">
+
+		<MvSKIP NAME = "Merchant" VIEW = "TGReviewsProducts" ROWS = 1>
+	</MvWHILE>
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
+	
+	<MvASSIGN NAME = "l.output:total_reviews_filtered"	VALUE = "{ int( l.total_count ) }">
+	<MvASSIGN NAME = "l.output:start_offset"			VALUE = "{ int( l.offset ) }">
+
+	<MvASSIGN NAME = "l.null" 								VALUE = "{ TGReviewsProduct_Load_Product_Average_Count( l.product_id, l.product_rating ) }">
+	<MvASSIGN NAME = "l.output:avg_rating"					VALUE = "{ l.product_rating:tgr_rating }">
+	<MvASSIGN NAME = "l.output:review_count"				VALUE = "{ l.product_rating:tgr_review_count }">
+	<MvASSIGN NAME = "l.output:product_rating:avg_rating"	VALUE = "{ l.output:avg_rating }">
+	<MvASSIGN NAME = "l.output:product_rating:review_count"	VALUE = "{ l.output:review_count }">
+
+	<MvCOMMENT>
+	|
+	|	Pagination
+	|
+	</MvCOMMENT>
+
+	<MvIF EXPR = "{ l.output:total_reviews_filtered EQ 0 }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvASSIGN NAME = "l.output:pagination:total"	VALUE = "{ ceil( l.output:total_reviews_filtered / l.count ) }">
+	<MvASSIGN NAME = "l.prev_offset"				VALUE = "{ l.offset - l.count }">
+
+	<MvIF EXPR = "{ l.prev_offset GE l.count }">
+		<MvASSIGN NAME = "l.output:pagination:previous_params" VALUE = "{ 'TGR_Sort=' $ encodeattribute( l.sort ) $ '&TGR_Count=' $ encodeattribute( l.count ) $ '&TGR_Show_Rating=' $ encodeattribute( l.rating_filter ) $ '&TGR_Offset=' $ l.prev_offset }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.next_offset" VALUE = "{ l.offset + l.count }">
+
+	<MvIF EXPR = "{ l.next_offset LT l.output:total_reviews_filtered }">
+		<MvASSIGN NAME = "l.output:pagination:next_params" VALUE = "{ 'TGR_Sort=' $ encodeattribute( l.sort ) $ '&TGR_Count=' $ encodeattribute( l.count ) $ '&TGR_Show_Rating=' $ encodeattribute( l.rating_filter ) $ '&TGR_Offset=' $ l.next_offset }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.output:pagination:current_page" VALUE = "{ ( l.offset + l.count ) / l.count }">
+
+	<MvIF EXPR = "{ l.output:pagination:total LE 5 }">
+		<MvASSIGN NAME = "l.begin" VALUE = "1">
+	<MvELSE>
+		<MvIF EXPR = "{ l.output:pagination:current_page LE 3 }">
+			<MvASSIGN NAME = "l.begin" VALUE = "1">
+		<MvELSEIF EXPR = "{ ( l.output:pagination:current_page + 2 ) GE l.output:pagination:total }">
+			<MvASSIGN NAME = "l.begin" VALUE = "{ l.output:pagination:total - 4 }">
+		<MvELSE>
+			<MvASSIGN NAME = "l.begin" VALUE = "{ l.output:pagination:current_page - 2 }">
+		</MvIF>
+	</MvIF>
+
+	<MvFOR INDEX = "l.page_count" COUNT = "{ l.output:pagination:total }">
+		<MvASSIGN NAME = "l.curr_offset" VALUE = "{ ( l.count * l.page_count ) - l.count }">
+	
+		<MvIF EXPR = "{ l.curr_offset EQ g.TGR_Offset }">
+			<MvASSIGN NAME = "l.output:full_pagination:pages" INDEX = "{ l.page_count }" MEMBER = "current" VALUE = "1">
+		</MvIF>
+
+		<MvASSIGN NAME = "l.output:full_pagination:pages" INDEX = "{ l.page_count }" MEMBER = "page_number" VALUE = "{ l.page_count }">
+		<MvASSIGN NAME = "l.output:full_pagination:pages" INDEX = "{ l.page_count }" MEMBER = "params" VALUE = "{ 'TGR_Sort=' $ encodeattribute( l.sort ) $ '&TGR_Count=' $ encodeattribute( l.count ) $ '&TGR_Show_Rating=' $ encodeattribute( l.rating_filter ) $ '&TGR_Offset=' $ l.curr_offset }">
+	</MvFOR>
+
+	<MvASSIGN NAME = "l.void" VALUE = "{ miva_array_copy( l.output:full_pagination:pages, l.begin, 5, l.output:pagination:pages, 0) }">
+
+	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Component_Product_Review_Breakdowns" PARAMETERS = "module var, param, all_settings var, product_id, breakdowns var" STANDARDOUTPUTLEVEL = "">
@@ -2525,7 +2680,161 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Product_Review_Breakdowns_Load" PARAMETERS = "product_id, breakdowns var"  STANDARDOUTPUTLEVEL = "">
-	//select count(rating) as rating_count, rating FROM sNN_TGReviewsProducts WHERE product_id = ? AND approved = 1 GROUP BY rating
+	<MvASSIGN NAME = "l.breakdowns" VALUE = "">
+
+	<MvOPENVIEW NAME	= "Merchant"
+				VIEW	= "TGReviewsProducts"
+				QUERY	= "{ 'SELECT COUNT(rating) as rating_count, rating FROM ' $ g.Store_Table_Prefix $ 'TGReviewsProducts WHERE product_id = ? AND approved = 1 GROUP BY rating' }"
+				FIELDS	= "l.product_id">
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvWHILE EXPR = "{ NOT TGReviewsProducts.d.EOF }">
+		<MvASSIGN NAME = "l.breakdowns" INDEX = "{ TGReviewsProducts.d.rating }" MEMBER = "rating"	VALUE = "{ TGReviewsProducts.d.rating }">
+		<MvASSIGN NAME = "l.breakdowns" INDEX = "{ TGReviewsProducts.d.rating }" MEMBER = "count"	VALUE = "{ TGReviewsProducts.d.rating_count }">
+
+		<MvSKIP NAME = "Merchant" VIEW = "TGReviewsProducts" ROWS = 1>
+	</MvWHILE>
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
+
+	<MvASSIGN NAME = "l.count" VALUE = 1>
+
+	<MvWHILE EXPR = "{ l.count LT 5 }">
+		<MvASSIGN NAME = "l.count" VALUE = "{ l.count + 1 }">
+
+		<MvIF EXPR = "{ l.breakdowns[ l.count ] }">
+			<MvWHILECONTINUE>
+		</MvIF>
+
+		<MvASSIGN NAME = "l.breakdowns" INDEX = "{ l.count }" MEMBER = "rating"	VALUE = "{ l.count }">
+		<MvASSIGN NAME = "l.breakdowns" INDEX = "{ l.count }" MEMBER = "count"	VALUE = 0>
+	</MvWHILE>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Component_Date" PARAMETERS = "module var, param, all_settings var, format, timestamp, return var" STANDARDOUTPUTLEVEL = "">
+	<MvCOMMENT>
+	|
+	|	Date( format, timestamp, return var )
+	|
+	</MvCOMMENT>
+
+	<MvASSIGN NAME = "l.time_zone"		VALUE = "{ g.Merchant_Local_Timezone }">
+	<MvASSIGN NAME = "l.return"			VALUE = "">
+	<MvASSIGN NAME = "l.months_long"	VALUE = "{ miva_array_deserialize( 'January,February,March,April,May,June,July,August,September,October,November,December' ) }">
+	<MvASSIGN NAME = "l.months_short"	VALUE = "{ miva_array_deserialize( 'Jan,Feb,Mar,Apr,May,Jun,Jul,Aug,Sept,Oct,Nov,Dec' ) }">
+	<MvASSIGN NAME = "l.days_long"		VALUE = "{ miva_array_deserialize( 'Sunday,Monday,Tuesday,Wednesday,Thursday,Friday,Saturday' ) }">
+	<MvASSIGN NAME = "l.days_short"		VALUE = "{ miva_array_deserialize( 'Sun,Mon,Tues,Wed,Thurs,Fri,Sat' ) }">
+
+	<MvFOR INDEX = "l.pos" COUNT = "{ len_var( l.format ) }">
+		<MvASSIGN NAME = "l.char" VALUE = "{ substring_var( l.format, l.pos, 1 ) }">
+
+		<MvIF EXPR = "{ NOT ( l.char CIN 'djNSzlDmnFMYyLaAgGhHisc' ) }">
+			<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ l.char }">
+			<MvFORCONTINUE>
+		</MvIF>
+
+		<MvIF EXPR = "{ l.char EQ 'd' }">
+			<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ padl( time_t_dayofmonth( l.timestamp, l.time_zone ), 2, 0 ) }">
+		<MvELSEIF EXPR = "{ l.char EQ 'j' }">
+			<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ time_t_dayofmonth( l.timestamp, l.time_zone ) }">
+		<MvELSEIF EXPR = "{ l.char EQ 'N' }">
+			<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ time_t_dayofweek( l.timestamp, l.time_zone ) }">
+		<MvELSEIF EXPR = "{ l.char EQ 'S' }">
+			<MvASSIGN NAME = "l.dow" VALUE = "{ time_t_dayofmonth( l.timestamp, l.time_zone ) }">
+			<MvASSIGN NAME = "l.dow_a" VALUE = "{ l.dow MOD 10 }">
+			<MvASSIGN NAME = "l.dow_b" VALUE = "{ l.dow MOD 100 }">
+
+			<MvIF EXPR = "{ ( l.dow_a EQ 1 ) AND ( l.dow_b NE 11) }">
+				<MvASSIGN NAME = "l.S" VALUE = "st">
+			<MvELSEIF EXPR = "{ ( l.dow_a EQ 2) AND ( l.dow_b NE 12 ) }">
+				<MvASSIGN NAME = "l.S" VALUE = "nd">
+			<MvELSEIF EXPR = "{ ( l.dow_a EQ 3 ) AND ( l.dow_b NE 13 ) }">
+				<MvASSIGN NAME = "l.S" VALUE = "rd">
+			<MvELSE>
+				<MvASSIGN NAME = "l.S" VALUE = "th">
+			</MvIF>
+			<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ l.S }">
+		<MvELSEIF EXPR = "{ l.char EQ 'z' }">
+			<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ time_t_dayofyear( l.timestamp, l.time_zone ) }">
+		<MvELSEIF EXPR = "{ l.char EQ 'D' }">
+			<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ miva_variable_value( 'l.days_short[ ' $ time_t_dayofweek( l.timestamp, l.time_zone ) $ ' ]') }">
+		<MvELSEIF EXPR = "{ l.char EQ 'l' }">
+			<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ miva_variable_value( 'l.days_long[ ' $ time_t_dayofweek( l.timestamp, l.time_zone ) $ ' ]') }">
+		<MvELSEIF EXPR = "{ l.char EQ 'm' }">
+			<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ padl( time_t_month( l.timestamp, l.time_zone ), 2, 0 ) }">
+		<MvELSEIF EXPR = "{ l.char EQ 'n' }">
+			<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ time_t_month( l.timestamp, l.time_zone ) }">
+		<MvELSEIF EXPR = "{ l.char EQ 'F' }">
+			<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ miva_variable_value( 'l.months_long[ ' $ time_t_month( l.timestamp, l.time_zone ) $ ' ]') }">
+		<MvELSEIF EXPR = "{ l.char EQ 'M' }">
+			<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ miva_variable_value( 'l.months_short[ ' $ time_t_month( l.timestamp, l.time_zone ) $ ' ]') }">
+		<MvELSEIF EXPR = "{ l.char EQ 'Y' }">
+			<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ time_t_year( l.timestamp, l.time_zone ) }">
+		<MvELSEIF EXPR = "{ l.char EQ 'y' }">
+			<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ substring_var( time_t_year( l.timestamp, l.time_zone ), 3, 2) }">
+		<MvELSEIF EXPR = "{ l.char EQ 'L' }">
+			<MvASSIGN NAME = "l.year" VALUE = "{ time_t_year( l.timestamp, l.time_zone ) }">
+			<MvIF EXPR = "{ ( ( ( l.year MOD 400 ) EQ 0 ) OR ( ( l.year MOD 100 ) NE 0 ) ) AND ( ( l.year MOD 4 ) EQ 0 ) }">
+				<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ '1' }">
+			<MvELSE>
+				<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ '0' }">
+			</MvIF>
+		<MvELSEIF EXPR = "{ l.char EQ 'a' }">
+			<MvASSIGN NAME = "l.hour" VALUE = "{ time_t_hour( l.timestamp, l.time_zone ) }">
+			<MvIF EXPR = "{ l.hour GT 11 }">
+				<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ 'pm' }">
+			<MvELSE>
+				<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ 'am' }">
+			</MvIF>
+		<MvELSEIF EXPR = "{ l.char EQ 'A' }">
+			<MvASSIGN NAME = "l.hour" VALUE = "{ time_t_hour( l.timestamp, l.time_zone ) }">
+			<MvIF EXPR = "{ l.hour GT 11 }">
+				<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ 'PM' }">
+			<MvELSE>
+				<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ 'AM' }">
+			</MvIF>
+		<MvELSEIF EXPR = "{ l.char EQ 'g' }">
+			<MvASSIGN NAME = "l.hour" VALUE = "{ time_t_hour( l.timestamp, l.time_zone ) }">
+			<MvIF EXPR = "{ l.hour GT 12 }">
+				<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ ( l.hour - 12 ) }">
+			<MvELSE>
+				<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ l.hour }">
+			</MvIF>
+		<MvELSEIF EXPR = "{ l.char EQ 'G' }">
+			<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ time_t_hour( l.timestamp, l.time_zone ) }">
+		<MvELSEIF EXPR = "{ l.char EQ 'h' }">
+			<MvASSIGN NAME = "l.hour" VALUE = "{ time_t_hour( l.timestamp, l.time_zone ) }">
+			<MvIF EXPR = "{ l.hour GT 12 }">
+				<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ padl( ( l.hour - 12 ), 2, 0 ) }">
+			<MvELSE>
+				<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ padl( l.hour, 2, 0 ) }">
+			</MvIF>
+		<MvELSEIF EXPR = "{ l.char EQ 'H' }">
+			<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ padl( time_t_hour( l.timestamp, l.time_zone ), 2, 0 ) }">
+		<MvELSEIF EXPR = "{ l.char EQ 'i' }">
+			<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ padl( time_t_min( l.timestamp, l.time_zone ), 2, 0 ) }">
+		<MvELSEIF EXPR = "{ l.char EQ 's' }">
+			<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ padl( time_t_sec( l.timestamp, l.time_zone ), 2, 0 ) }">
+		<MvELSEIF EXPR = "{ l.char EQ 'c' }">
+			<MvASSIGN NAME = "l.return" VALUE = "{ l.return $
+								padl( time_t_year( l.timestamp, l.time_zone ), 4, '0' )			$
+								 padl( time_t_month( l.timestamp, l.time_zone ), 2, '0' ) 		$
+								 padl( time_t_dayofmonth( l.timestamp, l.time_zone ), 2, '0' )	$
+								 'T' 															$
+								 padl( time_t_hour( l.timestamp, l.time_zone ), 2, '0' )		$
+								 padl( time_t_min( l.timestamp, l.time_zone ), 2, '0' )			$
+								 padl( time_t_sec( l.timestamp, l.time_zone ), 2, '0' )			$
+								 'Z' }">
+		<MvELSE>
+			<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ l.char }">
+		</MvIF>
+	</MvFOR>
+
+	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Is_Variable" PARAMETERS = "variable var" STANDARDOUTPUTLEVEL = "">
@@ -4623,12 +4932,13 @@
 	<MvASSIGN NAME = "g.TGR_Review_ID"						VALUE = "">
 	<MvASSIGN NAME = "g.TGR_Review_Success"					VALUE = "">
 	<MvASSIGN NAME = "l.all_settings:tgreviews_prelogic"	VALUE = "">
+	<MvASSIGN NAME = "l.all_settings:approve"				VALUE = "">
 
 	<MvCAPTURE VARIABLE = "l.null">
 		<MvEVAL EXPR = "{ [ g.Store_Template_Path $ l.prelogic_template:filename ].Template_Render( l.null, l.all_settings ) }">
 	</MvCAPTURE>
 
-	<MvIF EXPR = "{ l.all_settings:tgreviews_prelogic:allow_submission EQ 0 }">
+	<MvIF EXPR = "{ NOT ISNULL l.all_settings:tgreviews_prelogic:allow_submission AND l.all_settings:tgreviews_prelogic:allow_submission EQ 0 }">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 
@@ -4692,7 +5002,7 @@
 		</MvIF>
 	</MvIF>
 
-	<MvIF EXPR = "{ NOT NOT [ g.Module_Library_DB ].Runtime_Product_Load_Code_Cached( g.TGR_Product_Code, l.product ) }">
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].Runtime_Product_Load_Code_Cached( g.TGR_Product_Code, l.product ) }">
 		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Invalid Product">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
@@ -4722,10 +5032,12 @@
 		<MvASSIGN NAME = "l.review:approved" VALUE = 1>
 	</MvIF>
 
-	<MvIF EXPR = "{ l.all_settings:tgreviews_prelogic:approve EQ 1 }">
-		<MvASSIGN NAME = "l.review:approved" VALUE = 1>
-	<MvELSEIF EXPR = "{ l.all_settings:tgreviews_prelogic:approve EQ 0 }">
-		<MvASSIGN NAME = "l.review:approved" VALUE = 0>
+	<MvIF EXPR = "{ NOT ISNULL l.all_settings:tgreviews_prelogic:approve }">
+		<MvIF EXPR = "{ l.all_settings:tgreviews_prelogic:approve EQ 1 }">
+			<MvASSIGN NAME = "l.review:approved" VALUE = 1>
+		<MvELSEIF EXPR = "{ l.all_settings:tgreviews_prelogic:approve EQ 0 }">
+			<MvASSIGN NAME = "l.review:approved" VALUE = 0>
+		</MvIF>
 	</MvIF>
 
 	<MvIF EXPR = "{ TGReviewsProducts_Load_Similar( l.review ) }">
