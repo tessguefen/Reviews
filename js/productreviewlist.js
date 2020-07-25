@@ -228,9 +228,10 @@ ProductReview_List.prototype.onCreate = function()
 	record.title = '';
 	record.summary = '';
 	record.order_id = 0;
+	record.Product = {};
+	record.Product.code = self.product ? self.product.code : '';
+	record.Product.id = self.product ? self.product.id : 0;
 	record.product_id = self.product ? self.product.id : 0;
-	record.product_code = self.product ? self.product.code : '';
-	record.product_name = self.product ? self.product.name : '';
 	record.store_rply = '';
 	record.notified = 0;
 
