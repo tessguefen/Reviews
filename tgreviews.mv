@@ -1414,7 +1414,7 @@
 	</MvIF>
 
 	<MvIF EXPR = "{ ( g.TGReviewsNotificationSettings:ma_after NE 'order' ) AND
-					( g.TGReviewsNotificationSettings:ma_after NE 'ship' )}">
+					( g.TGReviewsNotificationSettings:ma_after NE 'ship' ) }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', 'TGReviewsNotificationSettings:ma_after', 'Please select a value for after' ) }">
 	</MvIF>
 
@@ -2173,7 +2173,7 @@
 	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }">				<MvFUNCTIONRETURN>																	</MvIF>
 	<MvIF EXPR = "{ NOT [ g.Module_Admin ].CanI( 'SYSM', 0, 1, 0, 0 ) }">	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Access_Denied() }">	</MvIF>
 
-	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Input_Number(	'R', 'ID',		l.additionalfield_id,	-1, -1 )}">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Input_Number(	'R', 'ID',		l.additionalfield_id,	-1, -1 ) }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_InputErrors() }">
 	</MvIF>
 
@@ -2221,7 +2221,7 @@
 	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }">				<MvFUNCTIONRETURN>																	</MvIF>
 	<MvIF EXPR = "{ NOT [ g.Module_Admin ].CanI( 'SYSM', 0, 1, 0, 0 ) }">	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Access_Denied() }">	</MvIF>
 
-	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Input_Number(	'R', 'ID',		l.additionalfield_id,	-1, -1 )}">
+	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Input_Number(	'R', 'ID',		l.additionalfield_id,	-1, -1 ) }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_InputErrors() }">
 	</MvIF>
 
@@ -2407,7 +2407,7 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', 'Unsupported field code' ) }">
 	</MvIF>
 
-	<MvIF EXPR = "{ NOT TGReviewsProduct_Load_Product_Average_Count( l.product_id, l.loaded_record:tgrp )}">
+	<MvIF EXPR = "{ NOT TGReviewsProduct_Load_Product_Average_Count( l.product_id, l.loaded_record:tgrp ) }">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 
@@ -2602,6 +2602,7 @@
 <MvFUNCTION NAME = "Module_Product_Validate" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
+
 <MvCOMMENT>
 |
 | Product Configuration Change Notification Feature (not_prod)
@@ -2627,16 +2628,329 @@
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "ExportModule_Export" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.directory"							VALUE = "{ g.MerchantPath $ 's' $ padl( g.Store:id, 2, '0' ) $ '/export/' }">
+	<MvASSIGN NAME = "l.output_file"						VALUE = "{ l.directory $ g.ReviewExport_File }">
+	<MvASSIGN NAME = "g.ReviewExport_Export_Time_Start" 	VALUE = "{ s.time_t }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Draw_ExportProgressBar_Start( 'Review Export Progress', 'EXPT' ) }">
+	<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Draw_ExportProgressBar_Show() }">
+
+	<MvIF EXPR = "{ NOT ReviewExport_Initialize_Export( l.directory, l.output_file ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	<MvELSEIF EXPR = "{ ReviewExport_Finalize_Export( l.directory, l.output_file ) }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT ReviewExport_Export( l.output_file ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ g.ReviewExport_Export_ExportedCount GE g.ReviewExport_Export_ExportedTotalCount }">
+		<MvASSIGN NAME = "g.ReviewExport_Export_NeedRefresh" VALUE = 1>
+	</MvIF>
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ExportModule_Validate" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "g.ReviewExport_File" 		VALUE = "{ trim( g.ReviewExport_File ) }">
+	<MvASSIGN NAME = "g.ReviewExport_Email"		VALUE = "{ trim( g.ReviewExport_Email ) }">
+	<MvASSIGN NAME = "g.ReviewExport_SendEmail"	VALUE = "{ [ g.Module_Admin ].Trim_Boolean( g.ReviewExport_SendEmail ) }">
+	<MvASSIGN NAME = "g.ReviewExport_Append"	VALUE = "{ [ g.Module_Admin ].Trim_Boolean( g.ReviewExport_Append ) }">
+
+	<MvIF EXPR = "{ ISNULL g.ReviewExport_File }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( '', 'ReviewExport_File', 'Please specify a file' ) }">
+	<MvELSE>
+		<MvIF EXPR = "{ '/' IN g.ReviewExport_File }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( '', 'ReviewExport_File', 'Please do not include a path in the file name' ) }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ g.ReviewExport_SendEmail AND len( g.ReviewExport_Email ) EQ 0 }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( '', 'ReviewExport_Email', 'Please specify a valid email address' ) }">
+	<MvELSE>
+		<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Email( g.ReviewExport_Email ) }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( '', 'ReviewExport_Email', 'Please specify a valid email address' ) }">
+		</MvIF>
+	</MvIF>
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ExportModule_Screen" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvIF EXPR = "{ g.ReviewExport_Export_NeedRefresh }">
+		<MvASSIGN NAME = "g.ReviewExport_Working_Append" VALUE = 1>
+
+		<MvHIDE FIELDS = "g.Module_Code, g.ReviewExport_Export_Initialized, g.Reset, g.ReviewExport_Working_Append,
+						  g.ReviewExport_File, g.ReviewExport_Append, g.ReviewExport_Email, g.ReviewExport_SendEmail,
+						  g.ReviewExport_Export_ExportedCount, g.ReviewExport_Export_ExportedTotalCount, g.ReviewExport_Delimiter,
+						  g.ReviewExport_LastReview">
+		<script type="text/javascript">
+			function exp_continue()
+			{
+				document.forms[ Screen ].submit();
+			}
+			window.onload = exp_continue;
+		</script>
+
+		<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Draw_ExportProgressBar_End() }">
+
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvIF EXPR = "{ g.Load_Fields }">
+		<MvIF EXPR = "{ g.Reset NE 'No' }">
+			<MvASSIGN NAME = "g.ReviewExport_File"			VALUE = "">
+			<MvASSIGN NAME = "g.ReviewExport_Append"		VALUE = "">
+			<MvASSIGN NAME = "g.ReviewExport_SendEmail"		VALUE = 0>
+		</MvIF>
+
+		<MvIF EXPR = "{ ISNULL g.ReviewExport_File }">		<MvASSIGN NAME = "g.ReviewExport_File"		VALUE = "reviews.csv">	</MvIF>
+		<MvIF EXPR = "{ ISNULL g.ReviewExport_Append }">	<MvASSIGN NAME = "g.ReviewExport_Append"	VALUE = 0>				</MvIF>
+	</MvIF>
+
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].BeginScreen_Start( 'Export Reviews to CSV File', 'EXPT', '' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Element_ExportProgressBar_JavaScript( 'Exporting Reviews to CSV File', 'EXPT', 'EXPT' ) }">
+	<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Element_ExportProgressBar_CSS() }">
+
+	<script language="JavaScript">
+		HaveCustomReset = 1;
+
+		function CustomReset()
+		{
+			document.EXPT.Reset.value = 'Yes';
+		}
+	</script>
+
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].BeginScreen_End( 'Export Reviews to CSV File', 'EXPT', '' ) }">
+	<input type="hidden" name="Reset" value="No">
+	<MvHIDE FIELDS = "g.Module_Code">
+
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].BeginContent() }">
+	<table width="100%">
+		<tr>
+			<td nowrap>
+				<MvEVAL EXPR = "{ [ g.Module_Admin ].Draw_FieldSet_Open( 'Destination', 110 ) }">
+				<tr>
+					<td nowrap>
+						<font face="Arial, Helvetica" size=-1><b>Export Reviews to File:</font></b>
+					</td>
+					<td width="100%">
+						<input type="text" name="ReviewExport_File" size="40" value="{ encodeentities( g.ReviewExport_File ) }">
+					</td>
+				</tr>
+
+				<tr>
+					<td valign="top" nowrap>
+						<b>If File Exists:</b>
+					</td>
+					<td width="100%">
+						<MvIF EXPR = "{ g.ReviewExport_Append }">
+							<label><input type="radio" name="ReviewExport_Append" value="Yes" checked>Append To File<br></label>
+							<label><input type="radio" name="ReviewExport_Append" value="">Replace File</label>
+						<MvELSE>
+							<label><input type="radio" name="ReviewExport_Append" value="Yes">Append To File</label>
+
+							<br>
+
+							<label><input type="radio" name="ReviewExport_Append" value="" checked>Replace File</label>
+						</MvIF>
+					</td>
+				</tr>
+
+				<tr>
+					<td valign="top" nowrap>
+						Email File To:
+					</td>
+					<td width="100%" nowrap>
+						<MvIF EXPR = "{ NOT g.ReviewExport_SendEmail }">
+							<label><input type="radio" name="ReviewExport_SendEmail" value="0" checked>Do Not Email<br></label>
+							<input type="radio" name="ReviewExport_SendEmail" value=1>
+						<MvELSE>
+							<label><input type="radio" name="ReviewExport_SendEmail" value="0">Do Not Email<br></label>
+							<input type="radio" name="ReviewExport_SendEmail" value="1" checked>
+						</MvIF>
+
+						<input type="text" size="40" name="ReviewExport_Email" value="{ encodeentities( g.Store:email ) }">
+					</td>
+				</tr>
+				<MvEVAL EXPR = "{ [ g.Module_Admin ].Draw_FieldSet_Close() }">
+			</td>
+		</tr>
+	</table>
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Element_ExportProgressBar_HTML() }">
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].EndContent() }">
+	<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Draw_ExportProgressBar_Buttons( 'Export', 'EXPT' ) }">
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].EndScreen() }">
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
+
+<MvFUNCTION NAME = "ReviewExport_Initialize_Export"  PARAMETERS = "directory, output_file" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ g.ReviewExport_Export_Initialized }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvASSIGN NAME = "g.ReviewExport_Export_ExportedCount"		VALUE = 0>
+	<MvASSIGN NAME = "g.ReviewExport_Export_ExportedTotalCount"	VALUE = 0>
+	<MvASSIGN NAME = "g.ReviewExport_LastReview"				VALUE = 0>
+	<MvASSIGN NAME = "g.ReviewExport_Delimiter"					VALUE = "{ asciichar( 44 ) }">
+	<MvASSIGN NAME = "g.ReviewExport_AdditionalFields_Count"	VALUE = "{ TGReviewsAdditionalField_Load_All_Cached( g.ReviewExport_AdditionalFields ) }">
+
+	<MvIF EXPR = "{ NOT [ g.Module_Library_Utilities ].EnsurePathExists( 'data', l.directory ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ fexists( l.output_file ) }">
+		<MvIF EXPR = "{ NOT g.ReviewExport_Append }">
+			<MvASSIGN NAME = "l.null" VALUE = "{ fdelete( l.output_file ) }">
+			<MvEVAL EXPR = "{ ReviewExport_Export_Header( l.output_file ) }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT ReviewExport_Export_Count( g.ReviewExport_Export_ExportedTotalCount ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvASSIGN NAME = "g.ReviewExport_Export_Initialized" VALUE = 1>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ReviewExport_Finalize_Export" PARAMETERS = "directory, output_file" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ g.ReviewExport_Export_ExportedCount GE g.ReviewExport_Export_ExportedTotalCount }">
+		<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Draw_ExportProgressBar_ProgressComplete( g.ReviewExport_Export_ExportedCount $ [ g.Module_Library_Utilities ].Plural( g.ReviewExport_Export_ExportedCount, ' Review', ' Reviews' ) $ ' exported to \'' $ l.output_file $ '\'' ) }">
+
+		<MvIF EXPR = "{ g.ReviewExport_SendEmail }">
+			<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Library_Utilities ].Send_Email_Attachment( g.ReviewExport_Email, g.ReviewExport_Email, '', 'Miva Merchant Reviews Export', g.ReviewExport_File, l.directory, 'data' ) }">
+			<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( '#Error#', 'ReviewsExport Email Sent' ) }">
+		</MvIF>
+
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 0>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ReviewExport_Export_Header" PARAMETERS = "output_file" STANDARDOUTPUTLEVEL = "">
+	<MvFOREACH ITERATOR = "l.additionalfield" ARRAY = "g.ReviewExport_AdditionalFields">
+		<MvASSIGN NAME = "l.additionalfield_headers" VALUE = "{ l.additionalfield_headers $ g.ReviewExport_Delimiter $ miva_csv_encode( 'FIELD:' $ toupper( l.additionalfield:code ), g.ReviewExport_Delimiter ) }">
+	</MvFOREACH>
+
+	<MvEVAL EXPR = "{ ReviewExport_Export_Line( l.output_file, 
+		miva_csv_encode( 'CREATED',			g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+		miva_csv_encode( 'PRODUCT_CODE',	g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+		miva_csv_encode( 'ORDER_ID',		g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+		miva_csv_encode( 'APPROVED',		g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+		miva_csv_encode( 'RATING',			g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+		miva_csv_encode( 'NAME',			g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+		miva_csv_encode( 'EMAIL',			g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+		miva_csv_encode( 'LOCATION',		g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+		miva_csv_encode( 'NOTIFY',			g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+		miva_csv_encode( 'TITLE',			g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+		miva_csv_encode( 'SUMMARY',			g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+		miva_csv_encode( 'STORE_REPLY',		g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+		miva_csv_encode( 'NOTIFIED',		g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+		miva_csv_encode( 'VERIFIED',		g.ReviewExport_Delimiter ) $ l.additionalfield_headers ) }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ReviewExport_Export" PARAMETERS = "output_file" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvIF EXPR = "{ g.ReviewExport_Export_ExportedCount GE g.ReviewExport_Export_ExportedTotalCount }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvOPENVIEW NAME	= "Merchant"
+				VIEW	= "TGReviewsProducts"
+				QUERY	= "{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'TGReviewsProducts WHERE id > ? ORDER BY id' }"
+				FIELDS	= "g.ReviewExport_LastReview">
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvWHILE EXPR = "{ NOT TGReviewsProducts.d.EOF AND NOT g.ReviewExport_Export_NeedRefresh }">
+		<MvASSIGN NAME = "g.ReviewExport_Export_ExportedCount"	VALUE = "{ g.ReviewExport_Export_ExportedCount + 1 }">
+		<MvASSIGN NAME = "l.review" 							VALUE = "">
+		<MvASSIGN NAME = "l.additionalfields_output"			VALUE = "">
+
+		<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].Draw_ExportProgressBar_Update( g.ReviewExport_Export_ExportedCount, g.ReviewExport_Export_ExportedTotalCount ) }">
+
+		<MvEVAL EXPR = "{ TGReviewsProduct_Read( l.review ) }">
+
+		<MvIF EXPR = "{ [ g.Module_Library_DB ].Product_Load_ID_Cached( l.review:product_id, l.review:product ) }">
+			<MvFOREACH ITERATOR = "l.additionalfield" ARRAY = "g.ReviewExport_AdditionalFields">
+				<MvASSIGN NAME = "l.additionfield_value:field_id"	VALUE = "{ l.additionalfield:id }">
+				<MvASSIGN NAME = "l.additionfield_value:review_id"	VALUE = "{ l.review:id }">
+				<MvASSIGN NAME = "l.additionfield_value:value"		VALUE = "">
+				<MvASSIGN NAME = "l.null"							VALUE = "{ TGReviewsAdditionalValue_Load( l.additionfield_value ) }">
+
+				<MvASSIGN NAME = "l.additionalfields_output" VALUE = "{ l.additionalfields_output $ g.ReviewExport_Delimiter $ miva_csv_encode( l.additionfield_value:value, g.ReviewExport_Delimiter ) }">
+			</MvFOREACH>
+
+			<MvASSIGN NAME = "l.review:formatted_date" VALUE = "{ [ g.Module_Library_Utilities ].Format_Date( l.review:created, s.miva_language ) }">
+			<MvASSIGN NAME = "l.review:formatted_time" VALUE = "{ [ g.Module_Library_Utilities ].Format_Time( l.review:created, s.miva_language ) }">
+
+			<MvEVAL EXPR = "{ ReviewExport_Export_Line( l.output_file, 
+				miva_csv_encode( l.review:formatted_date $ ' ' $ l.review:formatted_time,	g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:product:code,										g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:order_id,											g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:approved,											g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:rating,											g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:name,												g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:email,											g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:location,											g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:notify,											g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:title,											g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:summary,											g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:store_rply,										g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:notified,											g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:verified,											g.ReviewExport_Delimiter ) $ l.additionalfields_output ) }">
+
+			<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( '#Error#', 'Review \'' $ TGReviewsProducts.d.id $ '\' exported' ) }">
+		</MvIF>
+
+		<MvIF EXPR = "{ ( s.globaltimeout EQ 0 ) OR ( s.globaltimeout GT 20 ) }">
+			<MvASSIGN NAME = "l.end_time" VALUE = "20">
+		<MvELSE>
+			<MvASSIGN NAME = "l.end_time" VALUE = "{ s.globaltimeout / 3 }">
+		</MvIF>
+
+		<MvIF EXPR = "{ ( s.dyn_time_t - g.ReviewExport_Export_Time_Start ) GT l.end_time }">
+			<MvASSIGN NAME = "g.ReviewExport_LastReview"			VALUE = "{ TGReviewsProducts.d.id }">
+			<MvASSIGN NAME = "g.ReviewExport_Export_NeedRefresh"	VALUE = 1>
+		</MvIF>
+
+		<MvSKIP NAME = "Merchant" VIEW = "TGReviewsProducts" ROWS = 1>
+	</MvWHILE>
+
+	<MvIF EXPR = "{ g.ReviewExport_Export_NeedRefresh AND TGReviewsProducts.d.EOF }">
+		<MvASSIGN NAME = "g.ReviewExport_Export_NeedRefresh" VALUE = 0>
+	</MvIF>
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ReviewExport_Export_Count" PARAMETERS = "total_count var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvOPENVIEW NAME	= "Merchant"
+				VIEW	= "TGReviewsProducts"
+				QUERY	= "{ 'SELECT COUNT( * ) AS total_count FROM ' $ g.Store_Table_Prefix $ 'TGReviewsProducts' }">
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.total_count" VALUE = "{ TGReviewsProducts.d.total_count }">
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ReviewExport_Export_Line" PARAMETERS = "output_file, line" STANDARDOUTPUTLEVEL = "">
+	<MvEXPORT FILE = "{ l.output_file }" DELIMITER = "" FIELDS = "l.line">
+</MvFUNCTION>
+
 
 <MvCOMMENT>
 |
