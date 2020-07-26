@@ -410,7 +410,7 @@
 		</MvCOMMENT>
 
 		<MvQUERY NAME	= "Merchant"
-				 QUERY	= "{ 'ALTER TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Products CHANGE store_reply store_rply ' $ [ g.Module_Library_Native_DBAPI ].DB_Type_MEMO() }">
+				 QUERY	= "{ 'ALTER TABLE ' $ g.Store_Table_Prefix $ ' CHANGE store_reply store_rply ' $ [ g.Module_Library_Native_DBAPI ].DB_Type_MEMO() }">
 		<MvIF EXPR = "{ g.MvQUERY_Error }">
 			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', 'Could not Rename store_reply to store_rply' ) }">
 		</MvIF>
@@ -638,18 +638,18 @@
 
 		<MvCOMMENT>
 		|
-		| Rename sNN_TGReviews_Products to sNN_TGReviewsProducts
+		| Rename sNN_ to sNN_TGReviewsProducts
 		| Update Indexes
 		|
 		</MvCOMMENT>
 
 		<MvQUERY	NAME = "Merchant"
-					QUERY = "{ 'RENAME TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Products TO ' $ g.Store_Table_Prefix $ 'TGReviewsProducts' }">
+					QUERY = "{ 'RENAME TABLE ' $ g.Store_Table_Prefix $ ' TO ' $ g.Store_Table_Prefix $ 'TGReviewsProducts' }">
 		<MvIF EXPR = "{ g.MvQUERY_Error }">
 			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
 		</MvIF>
 
-		<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Library_Native_DBAPI ].DB_Drop_Index( g.Store_Table_Prefix $ 'TGReviewsProducts', g.Store_Table_Prefix $ 'TGReviews_Products' ) }">
+		<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Library_Native_DBAPI ].DB_Drop_Index( g.Store_Table_Prefix $ 'TGReviewsProducts', g.Store_Table_Prefix $ '' ) }">
 
 		<MvQUERY	NAME	= "Merchant"
 					QUERY	= "{ 'CREATE UNIQUE INDEX ' $ g.Store_Table_Prefix $ 'TGReviewsProducts_1 ON ' $ g.Store_Table_Prefix $ 'TGReviewsProducts ( id )' }">
@@ -1170,7 +1170,10 @@
 			<tr>
 				<td align="left" nowrap valign="top" colspan="2">
 					On form submission (front-end submissions only), you can add extra validation before the review is submitted.<br>
-					You can set <code>l.settings:review_submission</code> to 0, and it will prevent the review from being submitted.<br>
+					The following are able to be set to <code>0</code>, or <code>1</code>. If empty, it defaults the review module settings.<br>
+					<code>l.settings:tgreviews_prelogic:allow_same_reviewer</code>: If this is set to 1, it will bypass the check if that user's email has already submitted a review (approved or not)<br>
+					<code>l.settings:tgreviews_prelogic:allow_submission</code>: If you need to do your own checks (i.e. other spam filters/checks), you can set this to 0 to hault the review from processing. If set to empty, or 1, will default to the reviews module settings.
+					<code>l.settings:tgreviews_prelogic:approve</code>: If you want to allow the review to go through and be approved (i.e. rating is over 4, approve it), you can set this to 1. If you set this to 0, and you have auto approval on, it will overwrite this setting and not approve the review.<br>
 					You will need to handle the error messaging, and highlighting of fields via the Template Code.
 					<br><br>
 				</td>
@@ -1245,6 +1248,7 @@
 						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Test_MailAfter_Email', ' 12345, \'hello@email.com\' ') }"></td>
 						<td>This will trigger the email for any order you specify, to the email you specify. This is specifically made to test the email template. Please note: BCC and CC will not carry through. If you have left a review on a product in the order, it will skip that product.</td>
 					</tr>
+					<MvCOMMENT>
 					<tr>
 						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Customer_Product_Reviews_Load_Offset', ' cust_id, offset, search, searchable_fields, max, sort, nextoffset var, reviews var ') }"></td>
 						<td>Load all reviews written by a customer (cust_id). This will load all approved, and non approved reviews.</td>
@@ -1253,6 +1257,7 @@
 						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Customer_Product_Reviews_Product', ' g.Basket:cust_id, l.settings:product:id, l.settings:customer:reviews ') }"></td>
 						<td>Load all reviews written by a customer (cust_id) for a specific product (product_id). This will load all approved, and non approved reviews.</td>
 					</tr>
+					</MvCOMMENT>
 				</tbody>
 			</table>
 		</div>
@@ -2291,6 +2296,10 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ComponentModule_Prerender" PARAMETERS = "module var, item, all_settings var, settings var, param" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "g.TGR_Error"							VALUE = "">
+	<MvASSIGN NAME = "g.TGR_Review_ID"						VALUE = "">
+	<MvASSIGN NAME = "g.TGR_Review_Success"					VALUE = 0>
+
 	<MvIF EXPR = "{ NOT ISNULL g.Action }">
 		<MvASSIGN NAME = "l.pos"		VALUE = 1>
 		<MvASSIGN NAME = "l.current"	VALUE = "{ toupper( gettoken( g.Action, ',', l.pos ) ) }">
@@ -2374,6 +2383,7 @@
 		</MvIF>
 	
 		<MvASSIGN NAME = "l.new_param" VALUE = "{ 'Component_' $ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
+	<MvCOMMENT>
 	<MvELSEIF EXPR = "{ l.function_name EQ 'customer_product_reviews_product' }">
 		<MvIF EXPR = "{ l.parameter_count NE 3 }">
 			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, '\'' $ l.function_name $ '\' takes 3 parameters' ) }">
@@ -2398,6 +2408,7 @@
 		</MvIF>
 	
 		<MvASSIGN NAME = "l.new_param" VALUE = "{ 'Component_' $ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
+	</MvCOMMENT>
 	<MvELSE>
 		<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, '\'' $ l.function_name $ '\' is not a valid function' ) }">
 	</MvIF>
@@ -2480,17 +2491,21 @@
 		<MvFUNCTIONRETURN>
 	</MvIF>
 
-	<MvASSIGN NAME = "l.null" VALUE = "{ Reviews_Load_Query( l.product_id, l.all_settings:tgr ) }">
+	<MvASSIGN NAME = "l.null" VALUE = "{ Reviews_Load_Query_Cached( l.product_id, l.all_settings:tgr ) }">
 
 	<MvDO FILE = "{ g.Store_Template_Path $ l.review_template:filename }" NAME = "l.null" VALUE = "{ Template_Render( l.null, l.all_settings ) }">
 </MvFUNCTION>
 
+<MvFUNCTION NAME = "Component_Load_Product_Reviews" PARAMETERS = "module var, param, all_settings var, product_id, output var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = "{ Reviews_Load_Query_Cached( l.product_id, l.output ) }">
+</MvFUNCTION>
+
 <MvFUNCTION NAME = "Reviews_Load_Query" PARAMETERS = "product_id, output var" STANDARDOUTPUTLEVEL = "">
-	<MvASSIGN NAME = "l.sort"				VALUE = "{ trim( g.TGR_Sort ) }">
+	<MvASSIGN NAME = "l.sort"			VALUE = "{ trim( g.TGR_Sort ) }">
 	<MvASSIGN NAME = "l.count"			VALUE = "{ int( g.TGR_Count ) }">
-	<MvASSIGN NAME = "l.offset"				VALUE = "{ int( g.TGR_Offset ) }">
-	<MvASSIGN NAME = "l.rating_filter"		VALUE = "{ int( g.TGR_Show_Rating ) }">
-	<MvASSIGN NAME = "l.product_id"			VALUE = "{ int( l.product_id ) }">
+	<MvASSIGN NAME = "l.offset"			VALUE = "{ int( g.TGR_Offset ) }">
+	<MvASSIGN NAME = "l.rating_filter"	VALUE = "{ int( g.TGR_Show_Rating ) }">
+	<MvASSIGN NAME = "l.product_id"		VALUE = "{ int( l.product_id ) }">
 
 	<MvASSIGN NAME = "l.search_query"						VALUE = "">
 	<MvASSIGN NAME = "l.output:pagination"					VALUE = "">
@@ -2546,27 +2561,8 @@
 	<MvWHILE EXPR = "{ ( NOT TGReviewsProducts.d.EOF ) AND ( ( l.count EQ 0 ) OR ( l.review_count LT l.count ) ) }">
 
 		<MvEVAL EXPR = "{ TGReviewsProduct_Read( l.output:reviews[ ++l.review_count ] ) }">
-
-		<MvASSIGN NAME = "l.addl_count"		VALUE = 0>
-		<MvASSIGN NAME = "l.addl_fields"	VALUE = "">
-
-		<MvFOREACH ITERATOR = "l.additionalfield" ARRAY = "l.additionalfields" COUNT = "{ l.additionalfields_count }">
-			<MvASSIGN NAME = "l.additionfield_value:field_id"	VALUE = "{ l.additionalfield:id }">
-			<MvASSIGN NAME = "l.additionfield_value:review_id"	VALUE = "{ l.review:id }">
-			<MvASSIGN NAME = "l.additionfield_value:value"		VALUE = "">
-			<MvASSIGN NAME = "l.null"							VALUE = "{ TGReviewsAdditionalValue_Load( l.additionfield_value ) }">
-
-			<MvIF EXPR = "{ ISNULL l.additionfield_value:value }">
-				<MvFOREACHCONTINUE>
-			</MvIF>
-
-			<MvASSIGN NAME = "l.addl_count"		VALUE = "{ l.addl_count + 1 }">
-			<MvASSIGN NAME = "l.addl_fields"	INDEX = "{ l.addl_count }" MEMBER = "code"	VALUE = "{ l.additionalfield:code }">
-			<MvASSIGN NAME = "l.addl_fields"	INDEX = "{ l.addl_count }" MEMBER = "name"	VALUE = "{ l.additionalfield:name }">
-			<MvASSIGN NAME = "l.addl_fields"	INDEX = "{ l.addl_count }" MEMBER = "value"	VALUE = "{ l.additionalfield:value }">
-		</MvFOREACH>
-
-		<MvASSIGN NAME = "l.output:reviews" INDEX = "{ l.review_count }" MEMBER = "additional_fields" VALUE = "{ l.addl_fields }">
+		<MvASSIGN NAME = "l.addl_count" VALUE = "{ TGReviewsAdditionalValue_Load_All_Review_Cached( l.output:reviews[ l.review_count ]:id, l.additionfieldsvalues ) }">
+		<MvASSIGN NAME = "l.output:reviews" INDEX = "{ l.review_count }" MEMBER = "additional_fields" VALUE = "{ l.additionfieldsvalues }">
 
 		<MvSKIP NAME = "Merchant" VIEW = "TGReviewsProducts" ROWS = 1>
 	</MvWHILE>
@@ -2576,7 +2572,7 @@
 	<MvASSIGN NAME = "l.output:total_reviews_filtered"	VALUE = "{ int( l.total_count ) }">
 	<MvASSIGN NAME = "l.output:start_offset"			VALUE = "{ int( l.offset ) }">
 
-	<MvASSIGN NAME = "l.null" 								VALUE = "{ TGReviewsProduct_Load_Product_Average_Count( l.product_id, l.product_rating ) }">
+	<MvASSIGN NAME = "l.null" 								VALUE = "{ TGReviewsProduct_Load_Product_Average_Count_Cached( l.product_id, l.product_rating ) }">
 	<MvASSIGN NAME = "l.output:avg_rating"					VALUE = "{ l.product_rating:tgr_rating }">
 	<MvASSIGN NAME = "l.output:review_count"				VALUE = "{ l.product_rating:tgr_review_count }">
 	<MvASSIGN NAME = "l.output:product_rating:avg_rating"	VALUE = "{ l.output:avg_rating }">
@@ -2635,30 +2631,22 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Component_Product_Review_Breakdowns" PARAMETERS = "module var, param, all_settings var, product_id, breakdowns var" STANDARDOUTPUTLEVEL = "">
-	<MvIF EXPR = "{ NOT Product_Review_Breakdowns_Load_Cached( l.product_id, l.breakdowns ) }">
-		<MvFUNCTIONRETURN>
-	</MvIF>
-
-	<MvFUNCTIONRETURN VALUE = 1>
-</MvFUNCTION>
-
-<MvFUNCTION NAME = "Product_Review_Breakdowns_Load_Cached" PARAMETERS = "product_id, breakdowns var"  STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Reviews_Load_Query_Cached" PARAMETERS = "product_id, output var"  STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.id"								VALUE = "{ int( l.product_id ) }">
 
 	<MvIF EXPR = "{ l.id LE 0 }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error#' ) }">
 	</MvIF>
 
-	<MvREFERENCEARRAY NAME = "l.cache" 					VARIABLE = "g.Session:cache:product_review_breakdowns_load_cache">
+	<MvREFERENCEARRAY NAME = "l.cache" 					VARIABLE = "g.Session:cache:reviews_load_query_cache">
 		<MvDIMENSION INDEX = "{ l.id }">
 	</MvREFERENCEARRAY>
 
 	<MvIF EXPR = "{ ISNULL l.cache:result }">
-		<MvASSIGN NAME = "l.cache:result"				VALUE = "{ Product_Review_Breakdowns_Load( l.id, l.cache:breakdowns ) }">
+		<MvASSIGN NAME = "l.cache:result"				VALUE = "{ Reviews_Load_Query( l.id, l.cache:output ) }">
 
 		<MvIF EXPR = "{ l.cache:result }">
-			<MvREFERENCE NAME = "g.Session:cache:product_review_breakdowns_load_cache" INDEX = "{ l.id }" VARIABLE = "l.cache">
+			<MvREFERENCE NAME = "g.Session:cache:reviews_load_query_cache" INDEX = "{ l.id }" VARIABLE = "l.cache">
 		<MvELSE>
 			<MvASSIGN NAME = "l.cache:error_code"		VALUE = "{ g.Error_Code }">
 			<MvASSIGN NAME = "l.cache:error_message"	VALUE = "{ g.Error_Message }">
@@ -2674,9 +2662,17 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( l.cache:error_code, l.cache:error_message ) }">
 	</MvIF>
 
-	<MvASSIGN NAME = "l.breakdowns"						VALUE = "{ l.cache:breakdowns }">
+	<MvASSIGN NAME = "l.output"						VALUE = "{ l.cache:output }">
 
 	<MvFUNCTIONRETURN VALUE = "{ l.cache:result }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Component_Product_Review_Breakdowns" PARAMETERS = "module var, param, all_settings var, product_id, breakdowns var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT Product_Review_Breakdowns_Load_Cached( l.product_id, l.breakdowns ) }">
+		<MvFUNCTIONRETURN>
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Product_Review_Breakdowns_Load" PARAMETERS = "product_id, breakdowns var"  STANDARDOUTPUTLEVEL = "">
@@ -2713,6 +2709,43 @@
 	</MvWHILE>
 
 	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+
+<MvFUNCTION NAME = "Product_Review_Breakdowns_Load_Cached" PARAMETERS = "product_id, breakdowns var"  STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.id"								VALUE = "{ int( l.product_id ) }">
+
+	<MvIF EXPR = "{ l.id LE 0 }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error#' ) }">
+	</MvIF>
+
+	<MvREFERENCEARRAY NAME = "l.cache" 					VARIABLE = "g.Session:cache:product_review_breakdowns_load_cache">
+		<MvDIMENSION INDEX = "{ l.id }">
+	</MvREFERENCEARRAY>
+
+	<MvIF EXPR = "{ ISNULL l.cache:result }">
+		<MvASSIGN NAME = "l.cache:result"				VALUE = "{ Product_Review_Breakdowns_Load( l.id, l.cache:breakdowns ) }">
+
+		<MvIF EXPR = "{ l.cache:result }">
+			<MvREFERENCE NAME = "g.Session:cache:product_review_breakdowns_load_cache" INDEX = "{ l.id }" VARIABLE = "l.cache">
+		<MvELSE>
+			<MvASSIGN NAME = "l.cache:error_code"		VALUE = "{ g.Error_Code }">
+			<MvASSIGN NAME = "l.cache:error_message"	VALUE = "{ g.Error_Message }">
+			<MvASSIGN NAME = "l.cache:error_db_eof"		VALUE = "{ g.Error_DB_EOF }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT l.cache:result }">
+		<MvIF EXPR = "{ l.cache:error_db_eof }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( l.cache:error_code ) }">
+		</MvIF>
+
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( l.cache:error_code, l.cache:error_message ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.breakdowns"						VALUE = "{ l.cache:breakdowns }">
+
+	<MvFUNCTIONRETURN VALUE = "{ l.cache:result }">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Component_Date" PARAMETERS = "module var, param, all_settings var, format, timestamp, return var" STANDARDOUTPUTLEVEL = "">
@@ -2833,6 +2866,44 @@
 			<MvASSIGN NAME = "l.return" VALUE = "{ l.return $ l.char }">
 		</MvIF>
 	</MvFOR>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Component_Product_Rating" PARAMETERS = "module var, param, all_settings var, product_id, return var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.return" VALUE = 0>
+
+	<MvIF EXPR = "{ TGReviewsProduct_Load_Product_Average_Count_Cached( l.product_id, l.product_rating ) }">
+		<MvASSIGN NAME = "l.return" VALUE = "{ l.product_rating:tgr_rating }">
+	</MvIF>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Component_Product_Review_Count" PARAMETERS = "module var, param, all_settings var, product_id, return var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.return" VALUE = 0>
+
+	<MvIF EXPR = "{ TGReviewsProduct_Load_Product_Average_Count_Cached( l.product_id, l.product_rating ) }">
+		<MvASSIGN NAME = "l.return" VALUE = "{ l.product_rating:tgr_review_count }">
+	</MvIF>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Component_Test_MailAfter_Email" PARAMETERS = "module var, param, all_settings var, order_id, email" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].Order_Load_ID( l.order_id, l.order ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT TGReviewsNotificationSettings_Load_Cached( l.notification_settings ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvASSIGN NAME = "l.email:to" 		VALUE = "{ l.email }">
+	<MvASSIGN NAME = "l.email:from"		VALUE = "{ l.notification_settings:ma_from }">
+	<MvASSIGN NAME = "l.email:cc"		VALUE = "">
+	<MvASSIGN NAME = "l.email:bcc"		VALUE = "">
+	<MvASSIGN NAME = "l.email:subject"	VALUE = "{ l.notification_settings:ma_subject }">
+
+	<MvIF EXPR = "{ MailAfter_Email_Trigger_LowLevel( l.order, l.email ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
 
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
@@ -3004,7 +3075,7 @@
 	<MvASSIGN NAME = "l.product_rating:tgr_rating"			VALUE = 0>
 	<MvASSIGN NAME = "l.product_rating:tgr_review_count"	VALUE = 0>
 
-	<MvASSIGN NAME = "l.null" VALUE = "{ TGReviewsProduct_Load_Product_Average_Count( l.product_id, l.product_rating ) }">
+	<MvASSIGN NAME = "l.null" VALUE = "{ TGReviewsProduct_Load_Product_Average_Count_Cached( l.product_id, l.product_rating ) }">
 
 	<MvIF EXPR = "{ l.code EQ 'tgr_rating' }">				<MvFUNCTIONRETURN VALUE = "{ l.product_rating:tgr_rating }">
 	<MvELSEIF EXPR = "{ l.code EQ 'tgr_review_count' }">	<MvFUNCTIONRETURN VALUE = "{ l.product_rating:tgr_review_count }">
@@ -3076,7 +3147,7 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', 'Unsupported field code' ) }">
 	</MvIF>
 
-	<MvIF EXPR = "{ NOT TGReviewsProduct_Load_Product_Average_Count( l.product_id, l.loaded_record:tgrp ) }">
+	<MvIF EXPR = "{ NOT TGReviewsProduct_Load_Product_Average_Count_Cached( l.product_id, l.loaded_record:tgrp ) }">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 
@@ -3132,7 +3203,7 @@
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 
-	<MvIF EXPR = "{ l.notification_settings:ma_enable }">
+	<MvIF EXPR = "{ NOT l.notification_settings:ma_enable }">
 		<MvFUNCTIONRETURN VALUE = 1>
 	</MvIF>
 
@@ -3191,6 +3262,10 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ScheduledTaskModule_Execute" PARAMETERS = "module var, task var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ l.task:operation EQ 'tgr_order_emails' }">
+		<MvFUNCTIONRETURN VALUE = "{ MailAfter_Email_Trigger_All( l.task ) }">
+	</MvIF>
+
 	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', 'Unsupported operation' ) }">
 </MvFUNCTION>
 
@@ -4378,6 +4453,39 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
+<MvFUNCTION NAME = "TGReviewsProduct_Load_Product_Average_Count_Cached" PARAMETERS = "product_id, product_rating var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.id"								VALUE = "{ int( l.product_id ) }">
+
+	<MvIF EXPR = "{ l.id LE 0 }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error#' ) }">
+	</MvIF>
+
+	<MvREFERENCEARRAY NAME = "l.cache"					VARIABLE = "g.Session:cache:tgreviewsproduct_load_product_average_count_cached">
+		<MvDIMENSION INDEX = "{ l.id }">
+	</MvREFERENCEARRAY>
+
+	<MvIF EXPR = "{ ISNULL l.cache:result }">
+		<MvASSIGN NAME = "l.cache:result" 				VALUE = "{ TGReviewsProduct_Load_Product_Average_Count( l.id, l.cache:product_rating ) }">
+		<MvIF EXPR = "{ NOT l.cache:result }">
+			<MvASSIGN NAME = "l.cache:error_code"		VALUE = "{ g.Error_Code }">
+			<MvASSIGN NAME = "l.cache:error_message"	VALUE = "{ g.Error_Message }">
+			<MvASSIGN NAME = "l.cache:error_db_eof"		VALUE = "{ g.Error_DB_EOF }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT l.cache:result }">
+		<MvIF EXPR = "{ l.cache:error_db_eof }">
+			<MvFUNCTIONRETURN VALUE =  "{ [ g.Module_Library_DB ].Error_Load_EOF( l.cache:error_code ) }">
+		</MvIF>
+
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( l.cache:error_code, l.cache:error_message ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.product_rating"					VALUE = "{ l.cache:product_rating }">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
 <MvFUNCTION NAME = "TGReviewsProducts_Load_Similar" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvOPENVIEW NAME	= "Merchant"
 				VIEW	= "TGReviewsProducts"
@@ -4656,6 +4764,62 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
+<MvFUNCTION NAME = "TGReviewsAdditionalValue_Load_All_Review" PARAMETERS = "review_id, additionfieldsvalues var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.additionfieldsvalues"		VALUE = "">
+	<MvASSIGN NAME = "l.additionfieldsvalues_count"	VALUE = 0>
+	<MvASSIGN NAME = "l.additionalfields_count"		VALUE = "{ TGReviewsAdditionalField_Load_All_Cached( l.additionalfields ) }">
+
+	<MvFOREACH ITERATOR = "l.additionalfield" ARRAY = "l.additionalfields" COUNT = "{ l.additionalfields_count }">
+		<MvASSIGN NAME = "l.additionfield_value:field_id"	VALUE = "{ l.additionalfield:id }">
+		<MvASSIGN NAME = "l.additionfield_value:review_id"	VALUE = "{ l.review_id }">
+		<MvASSIGN NAME = "l.additionfield_value:value"		VALUE = "">
+		<MvASSIGN NAME = "l.null"							VALUE = "{ TGReviewsAdditionalValue_Load( l.additionfield_value ) }">
+		<MvASSIGN NAME = "l.additionfieldsvalues_count"		VALUE = "{ l.additionfieldsvalues_count + 1 }">
+
+		<MvASSIGN NAME = "l.additionfieldsvalues" INDEX = "{ l.additionfieldsvalues_count }" MEMBER = "code"	VALUE = "{ l.additionalfield:code }">
+		<MvASSIGN NAME = "l.additionfieldsvalues" INDEX = "{ l.additionfieldsvalues_count }" MEMBER = "name"	VALUE = "{ l.additionalfield:name }">
+		<MvASSIGN NAME = "l.additionfieldsvalues" INDEX = "{ l.additionfieldsvalues_count }" MEMBER = "value"	VALUE = "{ l.additionfield_value:value }">
+	</MvFOREACH>
+
+	<MvFUNCTIONRETURN VALUE = "{ l.additionfieldsvalues_count }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsAdditionalValue_Load_All_Review_Cached" PARAMETERS = "review_id, additionfieldsvalues var"  STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.id"								VALUE = "{ int( l.review_id ) }">
+
+	<MvIF EXPR = "{ l.id LE 0 }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error#' ) }">
+	</MvIF>
+
+	<MvREFERENCEARRAY NAME = "l.cache" 					VARIABLE = "g.Session:cache:tgreviewsadditionalvalue_load_all_review_cached">
+		<MvDIMENSION INDEX = "{ l.id }">
+	</MvREFERENCEARRAY>
+
+	<MvIF EXPR = "{ ISNULL l.cache:result }">
+		<MvASSIGN NAME = "l.cache:result"				VALUE = "{ TGReviewsAdditionalValue_Load_All_Review( l.id, l.cache:additionfieldsvalues ) }">
+
+		<MvIF EXPR = "{ l.cache:result }">
+			<MvREFERENCE NAME = "g.Session:cache:tgreviewsadditionalvalue_load_all_review_cached" INDEX = "{ l.id }" VARIABLE = "l.cache">
+		<MvELSE>
+			<MvASSIGN NAME = "l.cache:error_code"		VALUE = "{ g.Error_Code }">
+			<MvASSIGN NAME = "l.cache:error_message"	VALUE = "{ g.Error_Message }">
+			<MvASSIGN NAME = "l.cache:error_db_eof"		VALUE = "{ g.Error_DB_EOF }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT l.cache:result }">
+		<MvIF EXPR = "{ l.cache:error_db_eof }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( l.cache:error_code ) }">
+		</MvIF>
+
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( l.cache:error_code, l.cache:error_message ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.additionfieldsvalues"				VALUE = "{ l.cache:additionfieldsvalues }">
+
+	<MvFUNCTIONRETURN VALUE = "{ l.cache:result }">
+</MvFUNCTION>
+
 <MvFUNCTION NAME = "TGReviewsAdditionalValue_Insert" PARAMETERS = "additionalvalue var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvQUERY NAME	= "Merchant"
 			 QUERY	= "{ 'INSERT INTO ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues
@@ -4771,6 +4935,34 @@
 	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsOrders">
 
 	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsOrder_Load_All" PARAMETERS = "order_ids var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.order_ids" VALUE = "">
+
+	<MvOPENVIEW NAME	= "Merchant"
+				VIEW	= "TGReviewsOrders"
+				QUERY	= "{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'TGReviewsOrders' }">
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ TGReviewsOrders.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsOrders">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error#' ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.count" VALUE = 0>
+
+	<MvWHILE EXPR = "{ NOT TGReviewsOrders.d.EOF }">
+		<MvEVAL EXPR = "{ TGReviewsOrder_Read( l.order_ids[ ++l.count ] ) }">
+
+		<MvSKIP NAME = "Merchant" VIEW = "TGReviewsOrders" ROWS = 1>
+	</MvWHILE>
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsOrders">
+
+	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].ListLoad_EOF_Return( '#Error#', l.count ) }">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "TGReviewsOrder_Insert" PARAMETERS = "order_id" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
@@ -4924,9 +5116,8 @@
 
 	<MvASSIGN NAME = "g.TGR_Error"							VALUE = "">
 	<MvASSIGN NAME = "g.TGR_Review_ID"						VALUE = "">
-	<MvASSIGN NAME = "g.TGR_Review_Success"					VALUE = "">
+	<MvASSIGN NAME = "g.TGR_Review_Success"					VALUE = 0>
 	<MvASSIGN NAME = "l.all_settings:tgreviews_prelogic"	VALUE = "">
-	<MvASSIGN NAME = "l.all_settings:approve"				VALUE = "">
 
 	<MvCAPTURE VARIABLE = "l.null">
 		<MvEVAL EXPR = "{ [ g.Store_Template_Path $ l.prelogic_template:filename ].Template_Render( l.null, l.all_settings ) }">
@@ -4999,6 +5190,13 @@
 	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].Runtime_Product_Load_Code_Cached( g.TGR_Product_Code, l.product ) }">
 		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Invalid Product">
 		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ ISNULL l.all_settings:tgreviews_prelogic:allow_same_reviewer OR l.all_settings:tgreviews_prelogic:allow_same_reviewer EQ 0 }">
+		<MvIF EXPR = "{ Review_Check_EmailXProduct( g.TGR_Email, l.product:id ) }">
+			<MvASSIGN NAME = "g.TGR_Error" VALUE = "You have reviewed this product already.">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
 	</MvIF>
 
 	<MvIF EXPR = "{ l.general_settings:rc_enabled }">
@@ -5085,20 +5283,19 @@
 <MvFUNCTION NAME = "Product_Review_Check_Verified" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = ""  ERROROUTPUTLEVEL = "">
 	<MvOPENVIEW	NAME	= "Merchant"
 				VIEW	= "Product_Review_Check_Verified"
-				QUERY	= "{	'SELECT
-									o.id
-								FROM ' 
-									$ g.Store_Table_Prefix $ 'Orders o
-								LEFT JOIN ' 
-									$ g.Store_Table_Prefix $ 'OrderItems oi
-								ON
-									oi.order_id = o.id
-								WHERE
-									( o.bill_email = ? OR o.ship_email = ? ) AND
-									oi.product_id = ?
-								LIMIT 1' }"
+				QUERY	= "{'SELECT
+								o.id
+							 FROM '
+								$ g.Store_Table_Prefix $ 'Orders o
+							 LEFT JOIN '
+								$ g.Store_Table_Prefix $ 'OrderItems oi
+							 ON
+								oi.order_id = o.id
+							 WHERE
+								( o.bill_email = ? OR o.ship_email = ? ) AND
+								oi.product_id = ?
+							 LIMIT 1' }"
 				FIELDS	= "l.review:email, l.review:email, l.review:product_id">
-
 	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
 	</MvIF>
@@ -5109,6 +5306,25 @@
 	</MvIF>
 
 	<MvCLOSEVIEW NAME = "Merchant" VIEW = "Product_Review_Check_Verified">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Review_Check_EmailXProduct" PARAMETERS = "email, product_id" STANDARDOUTPUTLEVEL = ""  ERROROUTPUTLEVEL = "">
+	<MvOPENVIEW	NAME	= "Merchant"
+				VIEW	= "TGReviewsProducts"
+				QUERY	= "{'SELECT id FROM ' $ g.Store_Table_Prefix $ 'TGReviewsProducts WHERE email = ? AND product_id = ? LIMIT 1' }"
+				FIELDS	= "l.email, l.product_id">
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ TGReviewsProducts.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error#' ) }">
+	</MvIF>
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
 
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
@@ -5155,6 +5371,20 @@
 	<MvASSIGN NAME = "l.email:cc"		VALUE = "{ l.notification_settings:mn_cc }">
 	<MvASSIGN NAME = "l.email:bcc"		VALUE = "{ l.notification_settings:mn_bcc }">
 	<MvASSIGN NAME = "l.email:subject"	VALUE = "{ l.notification_settings:mn_subject }">
+	
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].Product_Load_ID_Cached( l.review:product_id, l.review:product ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvASSIGN NAME = "l.review:additionalfields_count" VALUE = "{ TGReviewsAdditionalValue_Load_All_Review_Cached( l.review:id, l.review:additionalfields ) }">
+
+	<MvCOMMENT>
+	|
+	|	Backwards Compatibility
+	|
+	</MvCOMMENT>
+
+	<MvASSIGN NAME = "l.review:additional_fields" VALUE = "{ l.review:additionalfields }">
 
 	<MvFUNCTIONRETURN VALUE = "{ Trigger_Email( l.review, l.null, 'TGR_Merchant_Email', l.email ) }">
 </MVFUNCTION>
@@ -5177,6 +5407,10 @@
 	<MvASSIGN NAME = "l.email:bcc"		VALUE = "{ l.notification_settings:cn_bcc }">
 	<MvASSIGN NAME = "l.email:subject"	VALUE = "{ l.notification_settings:cn_subject }">
 
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].Product_Load_ID_Cached( l.review:product_id, l.review:product ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
 	<MvIF EXPR = "{ NOT Trigger_Email( l.review, l.null, 'TGR_Customer_Email', l.email ) }">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
@@ -5189,6 +5423,53 @@
 
 	<MvFUNCTIONRETURN VALUE = 1>
 </MVFUNCTION>
+
+<MvFUNCTION NAME = "MailAfter_Email_Trigger" PARAMETERS = "order var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].Order_Load_ID( l.order:id, l.order ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT TGReviewsNotificationSettings_Load_Cached( l.notification_settings ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvASSIGN NAME = "l.email:to" 		VALUE = "{ l.order:bill_email }">
+	<MvASSIGN NAME = "l.email:from"		VALUE = "{ l.notification_settings:ma_from }">
+	<MvASSIGN NAME = "l.email:cc"		VALUE = "{ l.notification_settings:ma_cc }">
+	<MvASSIGN NAME = "l.email:bcc"		VALUE = "{ l.notification_settings:bcc }">
+	<MvASSIGN NAME = "l.email:subject"	VALUE = "{ l.notification_settings:ma_subject }">
+
+	<MvIF EXPR = "{ NOT MailAfter_Email_Trigger_LowLevel( l.order, l.email ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = "{ TGReviewsOrder_Delete( l.order:id ) }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "MailAfter_Email_Trigger_LowLevel" PARAMETERS = "order var, email var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].OrderItemList_Load_Order( l.order:id, l.order_items ) }">
+		<MvASSIGN NAME = "l.null" VALUE = "{ TGReviewsOrder_Delete( l.order:id ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', 'Reviews: Mail After - Skipped Order ID: \''$ l.order:id $ '\' (no items in order).' ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.order:item_count" VALUE = 0>
+
+	<MvFOREACH ITERATOR = "l.item" ARRAY = "l.order_items">
+		<MvIF EXPR = "{ Review_Check_EmailXProduct( l.order:bill_email, l.item:product_id ) }">
+			<MvFOREACHCONTINUE>
+		</MvIF>
+
+		<MvASSIGN NAME = "l.item:options_count"	VALUE = "{ [ g.Module_Library_DB ].OrderOptionList_Load_Line( l.item:line_id, l.item:options ) }">
+		<MvASSIGN NAME = "l.order:item_count"	VALUE = "{ miva_array_insert_var( l.order:items, l.item, -1 ) }">
+	</MvFOREACH>
+
+	<MvIF EXPR = "{ l.order:item_count EQ 0 }">
+		<MvASSIGN NAME = "l.null" VALUE = "{ TGReviewsOrder_Delete( l.order:id ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', 'Reviews: Mail After - Skipped Order ID: \'' $ l.order:id $ '\' (no products to review).' ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = "{ Trigger_Email( l.null, l.order, 'TGR_MailAfter_Email', l.email ) }">
+</MvFUNCTION>
 
 <MvFUNCTION NAME = "Trigger_Email" PARAMETERS = "review var, order var, page_code, email var" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ ISNULL l.email:from }">			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', 'Empty From address' ) }">
@@ -5233,6 +5514,11 @@
 	<MvCAPTURE VARIABLE = "l.message"><MvASSIGN NAME = "l.result" VALUE = "{ [ g.Store_Template_Path $ l.email_template:filename ].Template_Render( l.page, l.all_settings ) }"></MvCAPTURE>
 
 	<MvIF EXPR = "{ ISNULL l.message }">
+		<MvIF EXPR = "{ l.order:id }">
+			<MvASSIGN NAME = "l.null" VALUE = "{ TGReviewsOrder_Delete( l.order:id ) }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', 'Reviews: Mail After - Skipped Order ID: \'' $ l.order:id $ '\' (no email message).' ) }">
+		</MvIF>
+
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 
@@ -5247,5 +5533,69 @@
 
 	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].v9_SendMimeEmail( l.mime_email, l.email ) }">
 </MVFUNCTION>
+
+<MvFUNCTION NAME = "MailAfter_Email_Trigger_All" PARAMETERS = "task var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT TGReviewsNotificationSettings_Load_Cached( l.notification_settings ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT l.notification_settings:ma_enable }">
+		<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Feature_SCH_DB ].ScheduledTaskLog_Insert( l.task:id, 'I', 'Reviews: Mail After not enabled' ) }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT TGReviewsOrder_Load_All( l.order_ids ) }">
+		<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].Error_Is_EOF() }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Feature_SCH_DB ].ScheduledTaskLog_Insert( l.task:id, 'I', 'No Orders in Review: Mail After Queue' ) }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = "{ MailAfter_Email_Trigger_All_LowLevel( l.task, l.order_ids, l.notification_settings ) }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "MailAfter_Email_Trigger_All_LowLevel" PARAMETERS = "task var, order_ids var, notification_settings var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.timestamp_check" VALUE = "{ s.dyn_time_t - ( 86400 * l.notification_settings:ma_days ) }">
+
+	<MvFOREACH ITERATOR = "l.order_id" ARRAY = "l.order_ids">
+		<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].Order_Load_ID( l.order_id, l.order ) }">
+			<MvIF EXPR = "{ NOT TGReviewsOrder_Delete( l.order_id ) }">
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+
+			<MvFOREACHCONTINUE>
+		</MvIF>
+
+		<MvIF EXPR = "{ ( l.order:status EQ 600 ) OR ( l.order:status EQ 300 ) }">
+			<MvIF EXPR = "{ NOT TGReviewsOrder_Delete( l.order:id ) }">
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+
+			<MvFOREACHCONTINUE>
+		</MvIF>
+
+		<MvIF EXPR = "{ l.notification_settings:ma_after EQ 'order' }">
+			<MvIF EXPR = "{ l.order:orderdate LE l.timestamp_check }">
+				<MvIF EXPR = "{ MailAfter_Email_Trigger( l.order ) }">
+					<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Feature_SCH_DB ].ScheduledTaskLog_Insert( l.task:id, 'I', 'Reviews: Mail After email triggered for Order ID: \'' $ l.order:id $ '\'' ) }">
+				<MvELSE>
+					<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Feature_SCH_DB ].ScheduledTaskLog_Insert( l.task:id, 'E', g.Error_Code $ ': ' $ g.Error_Message ) }">
+				</MvIF>
+			</MvIF>
+		<MvELSEIF EXPR = "{ [ g.Module_Library_DB ].OrderShipmentList_Load_Order( l.order:id, l.order:shipments ) }">
+			<MvIF EXPR = "{ l.order:shipments[ 1 ]:ship_date LE l.timestamp_check }">
+				<MvIF EXPR = "{ MailAfter_Email_Trigger( l.order ) }">
+					<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Feature_SCH_DB ].ScheduledTaskLog_Insert( l.task:id, 'I', 'Reviews: Mail After email triggered for Order ID: \'' $ l.order:id $ '\'' ) }">
+				<MvELSE>
+					<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Feature_SCH_DB ].ScheduledTaskLog_Insert( l.task:id, 'E', g.Error_Code $ ': ' $ g.Error_Message ) }">
+				</MvIF>
+			</MvIF>
+		</MvIF>
+	</MvFOREACH>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
 
 <MvINCLUDE FILE = "import_include.mv">
