@@ -4350,9 +4350,8 @@
 <MvFUNCTION NAME = "TGReviewsProduct_Insert" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
 	<MvTRANSACT NAME = "Merchant">
 	
-	<MvIF EXPR = "{ NOT TGReviewsProduct_Insert_LowLevel( l.review )		OR
-					NOT TGReviewsAdditionalValues_InsertUpdate( l.review )	OR
-					NOT TGReviewsProductsAverages_Update_Product( l.review:product_id ) }">
+	<MvIF EXPR = "{ NOT TGReviewsProduct_Insert_LowLevel( l.review ) OR
+					NOT TGReviewsAdditionalValues_InsertUpdate( l.review ) }">
 		<MvROLLBACK NAME = "Merchant">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
@@ -4386,15 +4385,18 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00079', g.MvQUERY_Error ) }">
 	</MvIF>
 
+	<MvIF EXPR = "{ NOT TGReviewsProductsAverages_Update_Product( l.review:product_id ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "TGReviewsProduct_Update" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
 	<MvTRANSACT NAME = "Merchant">
 	
-	<MvIF EXPR = "{ NOT TGReviewsProduct_Update_LowLevel( l.review )		OR
-					NOT TGReviewsAdditionalValues_InsertUpdate( l.review )	OR
-					NOT TGReviewsProductsAverages_Update_Product( l.review:product_id ) }">
+	<MvIF EXPR = "{ NOT TGReviewsProduct_Update_LowLevel( l.review ) OR
+					NOT TGReviewsAdditionalValues_InsertUpdate( l.review ) }">
 		<MvROLLBACK NAME = "Merchant">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
@@ -4432,6 +4434,10 @@
 					   l.review:summary, l.review:store_rply, l.review:notified, l.review:verified, l.review:id">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00080', g.MvQUERY_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT TGReviewsProductsAverages_Update_Product( l.review:product_id ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 
 	<MvFUNCTIONRETURN VALUE = 1>
@@ -4677,8 +4683,8 @@
 
 <MvFUNCTION NAME = "TGReviewsProductsAverages_Update_Product" PARAMETERS = "product_id" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvOPENVIEW NAME	= "Merchant"
-				VIEW	= "TGReviewsProducts"
-				QUERY	= "{ 'SELECT product_id, AVG( rating ) as tgr_rating, COUNT( id ) AS tgr_review_count FROM ' $ g.Store_Table_Prefix $ 'TGReviewsProducts WHERE approved = 1 AND product_id = ?' }"
+				VIEW	= "TGReviewsProductsAverages"
+				QUERY	= "{ 'SELECT AVG( rating ) as tgr_rating, COUNT( id ) AS tgr_review_count FROM ' $ g.Store_Table_Prefix $ 'TGReviewsProducts WHERE approved = 1 AND product_id = ?' }"
 				FIELDS	= "l.product_id">
 	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00095', g.MvOPENVIEW_Error ) }">
@@ -4694,16 +4700,15 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( 'MOD-SYS-TGR-00096' ) }">
 	</MvIF>
 
-	<MvASSIGN NAME = "l.review_averages:product_id"	VALUE = "{ TGReviewsProducts.d.product_id }">
-	<MvASSIGN NAME = "l.review_averages:rating"		VALUE = "{ TGReviewsProducts.d.tgr_rating ROUND 2 }">
-	<MvASSIGN NAME = "l.review_averages:rtng_count"	VALUE = "{ TGReviewsProducts.d.tgr_review_count }">
+	<MvASSIGN NAME = "l.review_averages:product_id"	VALUE = "{ l.product_id }">
+	<MvASSIGN NAME = "l.review_averages:rating"		VALUE = "{ TGReviewsProductsAverages.d.tgr_rating ROUND 2 }">
+	<MvASSIGN NAME = "l.review_averages:rtng_count"	VALUE = "{ TGReviewsProductsAverages.d.tgr_review_count }">
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProductsAverages">
 
 	<MvIF EXPR = "{ NOT TGReviewsProductsAverage_InsertUpdate( l.review_averages ) }">
-		<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
-	
-	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProductsAverages">
 
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
