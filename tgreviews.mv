@@ -2626,8 +2626,8 @@
 	<MvASSIGN NAME = "l.output:start_offset"			VALUE = "{ int( l.offset ) }">
 
 	<MvASSIGN NAME = "l.null" 								VALUE = "{ TGReviewsProductsAverage_Load_Cached( l.product_id, l.product_rating ) }">
-	<MvASSIGN NAME = "l.output:avg_rating"					VALUE = "{ l.product_rating:tgr_rating }">
-	<MvASSIGN NAME = "l.output:review_count"				VALUE = "{ l.product_rating:tgr_review_count }">
+	<MvASSIGN NAME = "l.output:avg_rating"					VALUE = "{ l.product_rating:rating }">
+	<MvASSIGN NAME = "l.output:review_count"				VALUE = "{ l.product_rating:rtng_count }">
 	<MvASSIGN NAME = "l.output:product_rating:avg_rating"	VALUE = "{ l.output:avg_rating }">
 	<MvASSIGN NAME = "l.output:product_rating:review_count"	VALUE = "{ l.output:review_count }">
 
@@ -2927,7 +2927,7 @@
 	<MvASSIGN NAME = "l.return" VALUE = 0>
 
 	<MvIF EXPR = "{ TGReviewsProductsAverage_Load_Cached( l.product_id, l.product_rating ) }">
-		<MvASSIGN NAME = "l.return" VALUE = "{ l.product_rating:tgr_rating }">
+		<MvASSIGN NAME = "l.return" VALUE = "{ l.product_rating:rating }">
 	</MvIF>
 </MvFUNCTION>
 
@@ -3130,8 +3130,8 @@
 
 	<MvASSIGN NAME = "l.null" VALUE = "{ TGReviewsProductsAverage_Load_Cached( l.product_id, l.product_rating ) }">
 
-	<MvIF EXPR = "{ l.code EQ 'tgr_rating' }">				<MvFUNCTIONRETURN VALUE = "{ l.product_rating:tgr_rating }">
-	<MvELSEIF EXPR = "{ l.code EQ 'tgr_review_count' }">	<MvFUNCTIONRETURN VALUE = "{ l.product_rating:tgr_review_count }">
+	<MvIF EXPR = "{ l.code EQ 'tgr_rating' }">				<MvFUNCTIONRETURN VALUE = "{ l.product_rating:rating }">
+	<MvELSEIF EXPR = "{ l.code EQ 'tgr_review_count' }">	<MvFUNCTIONRETURN VALUE = "{ l.product_rating:rtng_count }">
 	</MvIF>
 </MvFUNCTION>
 
