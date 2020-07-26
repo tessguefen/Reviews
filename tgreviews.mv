@@ -181,7 +181,7 @@
 		<MvINCLUDE FILE = "templates/TGR_Merchant_Email.mvt" INTERPRET = "OFF">
 	</MvCAPTURE>
 
-	<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_Page_LowLevel( l.mn_template, l.mn_template ) }">
+	<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_Page_LowLevel( l.mn_template, l.mn_template_data ) }">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 
@@ -204,7 +204,7 @@
 		<MvINCLUDE FILE = "templates/TGR_Customer_Email.mvt" INTERPRET = "OFF">
 	</MvCAPTURE>
 
-	<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_Page_LowLevel( l.cn_template, l.cn_template ) }">
+	<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_Page_LowLevel( l.cn_template, l.cn_template_data ) }">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 
@@ -4267,13 +4267,7 @@
 
 	<MvCOMMIT NAME = "Merchant">
 
-	<MvIF EXPR = "{ l.review:approved AND l.review:notify AND NOT l.review:notified	AND l.review:email }">
-		<MvASSIGN NAME = "l.review:notified" VALUE = "{ Customer_Notification_Email_Trigger( l.review ) }">
-
-		<MvIF EXPR = "{ NOT TGReviewsProduct_Update_LowLevel( l.review ) }">
-			<MvFUNCTIONRETURN VALUE = 0>
-		</MvIF>
-	</MvIF>
+	<MvASSIGN NAME = "l.null" VALUE = "{ Customer_Notification_Email_Trigger( l.review ) }">
 
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
@@ -5052,13 +5046,7 @@
 
 	<MvASSIGN NAME = "l.null" VALUE = "{ Merchant_Notification_Email_Trigger( l.review ) }">
 
-	<MvIF EXPR = "{ l.review:approved AND l.review:notify AND NOT l.review:notified	AND l.review:email }">
-		<MvASSIGN NAME = "l.review:notified" VALUE = "{ Customer_Notification_Email_Trigger( l.review ) }">
-
-		<MvIF EXPR = "{ NOT TGReviewsProduct_Update_LowLevel( l.review ) }">
-			<MvFUNCTIONRETURN VALUE = 0>
-		</MvIF>
-	</MvIF>
+	<MvASSIGN NAME = "l.null" VALUE = "{ Customer_Notification_Email_Trigger( l.review ) }">
 
 	<MvASSIGN NAME = "g.TGR_Product_Code"		VALUE = "">
 	<MvASSIGN NAME = "g.TGR_Order_ID"			VALUE = "">
@@ -5172,6 +5160,13 @@
 </MVFUNCTION>
 
 <MvFUNCTION NAME = "Customer_Notification_Email_Trigger" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT l.review:approved	OR
+					NOT l.review:notify		OR
+					l.review:notified		OR
+					ISNULL l.review:email }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
 	<MvIF EXPR = "{ NOT TGReviewsNotificationSettings_Load_Cached( l.notification_settings ) }">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
@@ -5182,7 +5177,17 @@
 	<MvASSIGN NAME = "l.email:bcc"		VALUE = "{ l.notification_settings:cn_bcc }">
 	<MvASSIGN NAME = "l.email:subject"	VALUE = "{ l.notification_settings:cn_subject }">
 
-	<MvFUNCTIONRETURN VALUE = "{ Trigger_Email( l.review, l.null, 'TGR_Customer_Email', l.email ) }">
+	<MvIF EXPR = "{ NOT Trigger_Email( l.review, l.null, 'TGR_Customer_Email', l.email ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvASSIGN NAME = "l.review:notified" VALUE = "{ s.dyn_time_t }">
+
+	<MvIF EXPR = "{ NOT TGReviewsProduct_Update_LowLevel( l.review ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
 </MVFUNCTION>
 
 <MvFUNCTION NAME = "Trigger_Email" PARAMETERS = "review var, order var, page_code, email var" STANDARDOUTPUTLEVEL = "">
@@ -5225,13 +5230,9 @@
 	<MvASSIGN NAME = "l.all_settings:review"	VALUE = "{ l.review }">
 	<MvASSIGN NAME = "l.all_settings:order"		VALUE = "{ l.order }">
 
-	<MvCAPTURE VARIABLE = "l.message">
-		<MvASSIGN NAME = "l.result" VALUE = "{ [ g.Store_Template_Path $ l.email_template:filename ].Template_Render( l.null, l.all_settings ) }">
-	</MvCAPTURE>
+	<MvCAPTURE VARIABLE = "l.message"><MvASSIGN NAME = "l.result" VALUE = "{ [ g.Store_Template_Path $ l.email_template:filename ].Template_Render( l.page, l.all_settings ) }"></MvCAPTURE>
 
-	<MvIF EXPR = "{ NOT l.result }">
-		<MvFUNCTIONRETURN VALUE = 0>
-	<MvELSEIF EXPR = "{ ISNULL l.message }">
+	<MvIF EXPR = "{ ISNULL l.message }">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 
