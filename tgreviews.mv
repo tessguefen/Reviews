@@ -741,7 +741,7 @@
 		<MvIF EXPR = "{ g.MvQUERY_Error }">
 			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00029', g.MvQUERY_Error ) }">
 		</MvIF>
-		
+
 		<MvCOMMENT>
 		|
 		| Rename sNN_TGReviews_AdditionalValues to sNN_TGReviewsAdditionalValues
@@ -774,7 +774,7 @@
 		| Update Indexes
 		|
 		</MvCOMMENT>
-		
+
 		<MvQUERY NAME = "Merchant"
 				 QUERY = "{ 'RENAME TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Orders  TO ' $ g.Store_Table_Prefix $ 'TGReviewsOrders' }">
 		<MvIF EXPR = "{ g.MvQUERY_Error }">
@@ -789,7 +789,7 @@
 			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00034', g.MvQUERY_Error ) }">
 		</MvIF>
 	</MvIF>
-	
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -929,7 +929,7 @@
 			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
 	</MvIF>
-	
+
 	<MvIF EXPR = "{ l.tab NE 'TGR_SETT' }">
 		<MvHIDE FIELDS = "g.TGReviewsGeneralSettings, g.TGReviewsNotificationSettings, g.TGReviewsTemplates">
 		<MvFUNCTIONRETURN VALUE = 1>
@@ -1006,7 +1006,7 @@
 			</table>
 		</div>
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
-	
+
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'TGR_SETT', 'REVIEW' ) }">
 		<table border="0" cellpadding="2" cellspacing="0" width="100%">
 			<tbody>
@@ -1036,7 +1036,7 @@
 			</tbody>
 		</table>
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
-	
+
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'TGR_SETT', 'RECAPTCHA' ) }">
 		<table border="0" cellpadding="2" cellspacing="0" width="100%">
 			<tbody>
@@ -1246,7 +1246,7 @@
 			<MvEVAL EXPR = "{ Admin_Template( 'Form', 'TGReviewsTemplates:form_tmpl_', g.TGReviewsTemplates:form_tmpl, l.load_fields ) }">
 		</table>
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
-		
+
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'TGR_SETT', 'REVIEWS_TEMPLATE' ) }">
 		<table border="0" cellpadding="2" cellspacing="0" width="100%">
 			<tr>
@@ -1700,13 +1700,13 @@
 		<MvIF EXPR = "{ NOT TGReviewsAdditionalField_Load_Code_Cached( l.field_code, l.additionalfield ) }">
 			<MvFUNCTIONRETURN>
 		</MvIF>
-	
+
 		<MvIF EXPR = "{ NOT JSON_Query_Callback_Handle_Field( l.query, '', l.field_code ) }">
 			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
 
 		<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Library_DB ].SQL_Query_Search_Operator_Conversion( l.query, 'tgrav_' $ l.additionalfield:id $ '.value', l.filter_operator, l.filter_value, 'OR', 'OR' ) }">
-	
+
 		<MvFUNCTIONRETURN VALUE = 1>
 	<MvELSEIF EXPR = "{ ( 'Product:' IN l.filter_name ) EQ 1 }">
 		<MvASSIGN NAME = "l.field_code" VALUE = "{ gettoken( l.filter_name, ':', 2 ) }">
@@ -1963,7 +1963,7 @@
 	</MvIF>
 
 	<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_JSON ].JSON_Input_Retrieve( 'AdditionalFields', l.review:additionalfields ) }">
-	
+
 	<MvIF EXPR = "{ l.review:rating EQ 0 OR l.review:rating GT 5 }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'Rating', 'Rating must be between 1-5.' ) }">
 	</MvIF>
@@ -2039,7 +2039,7 @@
 	<MvIF EXPR = "{ [ g.Module_JSON ].JSON_Input_Retrieve( 'AdditionalFields', l.additionalfields ) }">
 		<MvASSIGN NAME = "l.null" VALUE = "{ miva_struct_merge( l.additionalfields, l.review:additionalfields ) }">
 	</MvIF>
-	
+
 	<MvIF EXPR = "{ l.review:rating EQ 0 OR l.review:rating GT 5 }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'Rating', 'Rating must be between 1-5.' ) }">
 	</MvIF>
@@ -2115,7 +2115,7 @@
 <MvFUNCTION NAME = "JSON_AdditionalFields_Load_Query_LowLevel" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
 	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Store_Open() }">				<MvFUNCTIONRETURN>																	</MvIF>
 	<MvIF EXPR = "{ NOT [ g.Module_Admin ].CanI( 'SYSM', 1, 0, 0, 0 ) }">	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Access_Denied() }">	</MvIF>
-	
+
 	<MvASSIGN NAME = "l.filter"			VALUE = "">
 	<MvASSIGN NAME = "l.sort"			VALUE = "">
 	<MvASSIGN NAME = "l.offset"			VALUE = 0>
@@ -2135,7 +2135,7 @@
 	<MvEVAL EXPR = "{ [ g.Module_JSON ].JSON_Filter( l.search_query, l.filter, 'id:s.id,code:s.code,name:s.name' ) }">
 
 	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_OrderBy_Fields( l.search_query, l.sort, 'id:s.id,code:s.code,name:s.name', 's.id' ) }">
-		
+
 	<MvASSIGN NAME = "l.search_sql" VALUE = "{ [ g.Module_Library_DB ].SQL_Query_Build( l.search_query, l.search_fields ) }">
 
 	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].SQL_Query_Count( l.search_query, l.total_count ) }">
@@ -2406,7 +2406,7 @@
 		<MvIF EXPR = "{ NOT Is_Variable( l.parameters[ 2 ] ) }">
 			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, 'The second parameter must be a variable' ) }">
 		</MvIF>
-	
+
 		<MvASSIGN NAME = "l.new_param" VALUE = "{ 'Component_' $ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
 	<MvELSEIF EXPR = "{ l.function_name EQ 'date' }">
 		<MvIF EXPR = "{ l.parameter_count NE 3 }">
@@ -2416,7 +2416,7 @@
 		<MvIF EXPR = "{ NOT Is_Variable( l.parameters[ 3 ] ) }">
 			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, 'The third parameter must be a variable' ) }">
 		</MvIF>
-	
+
 		<MvASSIGN NAME = "l.new_param" VALUE = "{ 'Component_' $ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
 	<MvELSEIF EXPR = "{ l.function_name EQ 'product_rating'				OR
 						l.function_name EQ 'product_review_breakdowns'	OR
@@ -2428,13 +2428,13 @@
 		<MvIF EXPR = "{ NOT Is_Variable( l.parameters[ 2 ] ) }">
 			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, 'The second parameter must be a variable' ) }">
 		</MvIF>
-	
+
 		<MvASSIGN NAME = "l.new_param" VALUE = "{ 'Component_' $ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
 	<MvELSEIF EXPR = "{ l.function_name EQ 'test_mailafter_email' }">
 		<MvIF EXPR = "{ l.parameter_count NE 2 }">
 			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, '\'' $ l.function_name $ '\' takes 2 parameters' ) }">
 		</MvIF>
-	
+
 		<MvASSIGN NAME = "l.new_param" VALUE = "{ 'Component_' $ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
 	<MvCOMMENT>
 	<MvELSEIF EXPR = "{ l.function_name EQ 'customer_product_reviews_product' }">
@@ -2445,7 +2445,7 @@
 		<MvIF EXPR = "{ NOT Is_Variable( l.parameters[ 3 ] ) }">
 			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, 'The third parameter must be a variable' ) }">
 		</MvIF>
-	
+
 		<MvASSIGN NAME = "l.new_param" VALUE = "{ 'Component_' $ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
 	<MvELSEIF EXPR = "{ l.function_name EQ 'customer_product_reviews_load_offset' }">
 		<MvIF EXPR = "{ l.parameter_count NE 8 }">
@@ -2459,7 +2459,7 @@
 		<MvIF EXPR = "{ NOT Is_Variable( l.parameters[ 8 ] ) }">
 			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, 'The eigth parameter must be a variable' ) }">
 		</MvIF>
-	
+
 		<MvASSIGN NAME = "l.new_param" VALUE = "{ 'Component_' $ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
 	</MvCOMMENT>
 	<MvELSE>
@@ -2621,7 +2621,7 @@
 	</MvWHILE>
 
 	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
-	
+
 	<MvASSIGN NAME = "l.output:total_reviews_filtered"	VALUE = "{ int( l.total_count ) }">
 	<MvASSIGN NAME = "l.output:start_offset"			VALUE = "{ int( l.offset ) }">
 
@@ -2670,7 +2670,7 @@
 
 	<MvFOR INDEX = "l.page_count" COUNT = "{ l.output:pagination:total }">
 		<MvASSIGN NAME = "l.curr_offset" VALUE = "{ ( l.count * l.page_count ) - l.count }">
-	
+
 		<MvIF EXPR = "{ l.curr_offset EQ g.TGR_Offset }">
 			<MvASSIGN NAME = "l.output:full_pagination:pages" INDEX = "{ l.page_count }" MEMBER = "current" VALUE = "1">
 		</MvIF>
@@ -2974,15 +2974,15 @@
 							( l.char NE '_' ) }">
 				<MvFUNCTIONRETURN VALUE = 0>
 			</MvIF>
-			
+
 			<MvFORCONTINUE>
 		</MvIF>
-		
+
 		<MvIF EXPR = "{ l.char EQ '[' }">
 			<MvASSIGN NAME = "l.bracket_count" 				VALUE = "{ l.bracket_count + 1 }">
 			<MvASSIGN NAME = "l.opening_square_bracket_pos" VALUE = "{ indexof( '[', l.variable, l.pos + 1 ) }">
 			<MvASSIGN NAME = "l.closing_square_bracket_pos" VALUE = "{ indexof( ']', l.variable, l.pos ) }">
-			
+
 			<MvIF EXPR = "{ ( l.opening_square_bracket_pos GT 0 ) AND
 							( l.opening_square_bracket_pos LT l.closing_square_bracket_pos ) }">
 				<MvASSIGN NAME = "l.pos" VALUE = "{ l.opening_square_bracket_pos - 1 }">
@@ -2993,7 +2993,7 @@
 			<MvASSIGN NAME = "l.bracket_count" 				VALUE = "{ l.bracket_count - 1 }">
 			<MvASSIGN NAME = "l.opening_square_bracket_pos" VALUE = "{ indexof( '[', l.variable, l.pos ) }">
 			<MvASSIGN NAME = "l.closing_square_bracket_pos" VALUE = "{ indexof( ']', l.variable, l.pos + 1 ) }">
-			
+
 			<MvIF EXPR = "{ ( l.opening_square_bracket_pos GT 0 ) AND
 							( l.opening_square_bracket_pos LT l.closing_square_bracket_pos ) }">
 				<MvASSIGN NAME = "l.pos" VALUE = "{ l.opening_square_bracket_pos - 1 }">
@@ -3008,11 +3008,11 @@
 			</MvIF>
 		</MvIF>
 	</MvFOR>
-	
+
 	<MvIF EXPR = "{ l.bracket_count NE 0 }">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
-	
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -3022,15 +3022,15 @@
 	<MvASSIGN NAME = "l.string" 			VALUE = "{ trim( l.string ) }">
 	<MvASSIGN NAME = "l.starting_pos" 		VALUE = "{ indexof( '(', l.string, 1 ) + 1 }">
 	<MvASSIGN NAME = "l.function_name" 		VALUE = "{ tolower( substring_var( l.string, 1, l.starting_pos - 2 ) ) }">
-	
+
 	<MvIF EXPR = "{ l.starting_pos EQ 1 }">
 		<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.string, 'Expected \'(\' to start the function call' ) }">
 	</MvIF>
-	
+
 	<MvIF EXPR = "{ ISNULL l.function_name }">
 		<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.string, 'Missing function name' ) }">
 	</MvIF>
-	
+
 	<MvIF EXPR = "{ substring_var( l.string, len_var( l.string ), 1 ) NE ')' }">
 		<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.string, 'Expected \')\' to end the function call' ) }">
 	</MvIF>
@@ -3043,11 +3043,11 @@
 		<MvIF EXPR = "{ l.quote_pos AND NOT l.end_quote_pos }">
 			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.string, 'Missing single quote' ) }">
 		</MvIF>
-		
+
 		<MvWHILE EXPR = "{ ( l.comma_pos LT l.end_quote_pos ) AND ( l.comma_pos GT l.quote_pos ) }"> <MvCOMMENT> comma in a quoted string </MvCOMMENT>
 			<MvASSIGN NAME = "l.comma_pos" VALUE = "{ indexof( ',', l.string, l.comma_pos + 1 ) }">
 		</MvWHILE>
-		
+
 		<MvIF EXPR = "{ l.comma_pos EQ 0 }"> <MvCOMMENT> on the last parameter or we only have 1 parameter </MvCOMMENT>
 			<MvASSIGN NAME = "l.start" 			VALUE = "{ l.starting_pos }">
 			<MvASSIGN NAME = "l.end" 			VALUE = "{ len_var( l.string ) - l.starting_pos }">
@@ -3060,17 +3060,17 @@
 		</MvIF>
 
 		<MvASSIGN NAME = "l.param" VALUE = "{ trim( substring_var( l.string, l.start, l.end ) ) }">
-		
+
 		<MvIF EXPR = "{ ISNULL l.param }">
 			<MvIF EXPR = "{ l.comma_pos EQ 0 AND l.parameter_count EQ 0 }">
 				<MvFUNCTIONRETURN VALUE = 1>
 			</MvIF>
-			
+
 			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.string, 'Parameter number ' $ ( ++l.parameter_count ) $ ' cannot be empty' ) }">
 		</MvIF>
-		
+
 		<MvASSIGN NAME = "l.parameters" INDEX = "{ ++l.parameter_count }" VALUE = "{ l.param }">
-		
+
 		<MvIF EXPR = "{ l.quote_pos EQ 0 AND l.comma_pos EQ 0 }">
 			<MvWHILESTOP>
 		</MvIF>
@@ -3078,10 +3078,10 @@
 		<MvIF EXPR = "{ l.loop_counter GT 1000 }">
 			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.string, 'Error parsing parameters' ) }">
 		</MvIF>
-		
+
 		<MvASSIGN NAME = "l.loop_counter" VALUE = "{ l.loop_counter + 1 }">
 	</MvWHILE>
-	
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -3089,7 +3089,7 @@
 	<MvASSIGN NAME = "l.error_count" 																	VALUE = "{ miva_array_elements( g.Session:tgreviews_errors ) }">
 	<MvASSIGN NAME = "g.Session:tgreviews_errors" INDEX = "{ l.error_count + 1 }" MEMBER = "param"		VALUE = "{ l.param }">
 	<MvASSIGN NAME = "g.Session:tgreviews_errors" INDEX = "{ l.error_count + 1 }" MEMBER = "message"	VALUE = "{ l.message }">
-	
+
 	<MvFUNCTIONRETURN VALUE = 0>
 </MvFUNCTION>
 
@@ -3695,24 +3695,32 @@
 				<MvASSIGN NAME = "l.additionalfields_output" VALUE = "{ l.additionalfields_output $ g.ReviewExport_Delimiter $ miva_csv_encode( l.additionfield_value:value, g.ReviewExport_Delimiter ) }">
 			</MvFOREACH>
 
-			<MvASSIGN NAME = "l.review:formatted_date" VALUE = "{ [ g.Module_Library_Utilities ].Format_Date( l.review:created, s.miva_language ) }">
-			<MvASSIGN NAME = "l.review:formatted_time" VALUE = "{ [ g.Module_Library_Utilities ].Format_Time( l.review:created, s.miva_language ) }">
+			<MvASSIGN NAME = "l.review:formatted_created_date"		VALUE = "{ [ g.Module_Library_Utilities ].Format_Date( l.review:created, s.miva_language ) }">
+			<MvASSIGN NAME = "l.review:formatted_created_time"		VALUE = "{ [ g.Module_Library_Utilities ].Format_Time( l.review:created, s.miva_language ) }">
+			<MvASSIGN NAME = "l.review:created_formatted"			VALUE = "{ l.review:formatted_created_date $ ' ' $ l.review:formatted_created_time }">
+
+			<MvASSIGN NAME = "l.review:notified_formatted"			VALUE = "">
+			<MvIF EXPR = "{ l.review:notified GT 0 }">
+				<MvASSIGN NAME = "l.review:formatted_notified_date" VALUE = "{ [ g.Module_Library_Utilities ].Format_Date( l.review:created, s.miva_language ) }">
+				<MvASSIGN NAME = "l.review:formatted_notified_time" VALUE = "{ [ g.Module_Library_Utilities ].Format_Time( l.review:created, s.miva_language ) }">
+				<MvASSIGN NAME = "l.review:notified_formatted"		VALUE = "{ l.review:formatted_notified_date $ ' ' $ l.review:formatted_notified_time }">
+			</MvIF>
 
 			<MvEVAL EXPR = "{ ReviewExport_Export_Line( l.output_file, 
-				miva_csv_encode( l.review:formatted_date $ ' ' $ l.review:formatted_time,	g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
-				miva_csv_encode( l.review:product:code,										g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
-				miva_csv_encode( l.review:order_id,											g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
-				miva_csv_encode( l.review:approved,											g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
-				miva_csv_encode( l.review:rating,											g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
-				miva_csv_encode( l.review:name,												g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
-				miva_csv_encode( l.review:email,											g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
-				miva_csv_encode( l.review:location,											g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
-				miva_csv_encode( l.review:notify,											g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
-				miva_csv_encode( l.review:title,											g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
-				miva_csv_encode( l.review:summary,											g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
-				miva_csv_encode( l.review:store_rply,										g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
-				miva_csv_encode( l.review:notified,											g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
-				miva_csv_encode( l.review:verified,											g.ReviewExport_Delimiter ) $ l.additionalfields_output ) }">
+				miva_csv_encode( l.review:created_formatted,	g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:product:code,			g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:order_id,				g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:approved,				g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:rating,				g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:name,					g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:email,				g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:location,				g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:notify,				g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:title,				g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:summary,				g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:store_rply,			g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:notified_formatted,	g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:verified,				g.ReviewExport_Delimiter ) $ l.additionalfields_output ) }">
 
 			<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( 'MOD-SYS-TGR-00056', 'Review \'' $ TGReviewsProducts.d.id $ '\' exported' ) }">
 		</MvIF>
@@ -3794,9 +3802,9 @@
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'title',				'Title',					'TITLE',				l.general_settings:fld_title,	'',			'string' ) }">
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'summary',				'Summary',					'SUMMARY',				l.general_settings:fld_summry,	'',			'string' ) }">
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'store_reply',			'Store Reply',				'STORE_REPLY',			0,								'',			'string' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'notified',				'Notified',					'NOTIFIED',				0,								0,			'integer_nonneg' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'notified',				'Notified',					'NOTIFIED',				0,								0,			'time_t' ) }">
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'verified',				'Verified',					'VERIFIED',				0,								0,			'bool' ) }">
-	
+
 	<MvFOREACH ITERATOR = "l.additionalfield" ARRAY = "l.additionalfields" COUNT = "{ TGReviewsAdditionalField_Load_All_Cached( l.additionalfields ) }">
 		<MvEVAL EXPR = "{ Add_Standard_Column( l.columns, 'field_' $ l.additionalfield:code, 'Field: ' $ l.additionalfield:name, 'FIELD:'$ toupper( l.additionalfield:code ), 0, 0, 'string' ) }">
 	</MvFOREACH>
@@ -3944,7 +3952,7 @@
 	</MvIF>
 
 	<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( 'MOD-SYS-TGR-00058', 'Added review \'' $ l.review:id $ '\'' ) }">
-	
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -4355,7 +4363,7 @@
 
 <MvFUNCTION NAME = "TGReviewsProduct_Insert" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
 	<MvTRANSACT NAME = "Merchant">
-	
+
 	<MvIF EXPR = "{ NOT TGReviewsProduct_Insert_LowLevel( l.review ) OR
 					NOT TGReviewsAdditionalValues_InsertUpdate( l.review ) }">
 		<MvROLLBACK NAME = "Merchant">
@@ -4400,7 +4408,7 @@
 
 <MvFUNCTION NAME = "TGReviewsProduct_Update" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
 	<MvTRANSACT NAME = "Merchant">
-	
+
 	<MvIF EXPR = "{ NOT TGReviewsProduct_Update_LowLevel( l.review ) OR
 					NOT TGReviewsAdditionalValues_InsertUpdate( l.review ) }">
 		<MvROLLBACK NAME = "Merchant">
@@ -4455,7 +4463,7 @@
 	</MvIF>
 
 	<MvTRANSACT NAME = "Merchant">
-	
+
 	<MvIF EXPR = "{ NOT TGReviewsProduct_Delete_LowLevel( l.id )		OR
 					NOT TGReviewsAdditionalValues_Delete_Review( l.id )	OR
 					NOT TGReviewsProductsAverages_Update_Product( l.review:product_id ) }">
@@ -5211,28 +5219,28 @@
 		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplate_Delete_History( l.template_id ) }">
 			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
-	
+
 		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_Template_Current( l.template_id, l.template ) }">
 			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
-	
+
 		<MvASSIGN NAME = "{ l.field_prefix $ 'template_version' }"				VALUE = "{ l.template:id }">
 		<MvASSIGN NAME = "{ l.field_prefix $ 'template_version_selected' }"		VALUE = "{ l.template:id }">
 	<MvELSEIF EXPR = "{ miva_variable_value( 'g.' $ l.field_prefix $ 'template_recall' ) }">
 		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_ID(  miva_variable_value( 'g.' $ l.field_prefix $ 'template_version_selected' ), l.template ) }">
 			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
-	
+
 		<MvASSIGN NAME = "l.template_id"										VALUE = "{ l.template_id }">
 		<MvASSIGN NAME = "l.template_id"										VALUE = "{ l.template_id }">
-	
+
 		<MvASSIGN NAME = "l.load_fields"										VALUE = 1>
 	<MvELSE>
 		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_Template_Current( l.template_id, l.template ) }">
 			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
 	</MvIF>
-	
+
 	<MvASSIGN NAME = "{ 'g.' $ l.field_prefix $ 'notes' }"						VALUE = "">
 
 	<MvIF EXPR = "{ g.Data_Entry_Error AND NOT ISNULL miva_variable_value( 'g.' $ l.field_prefix $ 'template_code' ) }">
@@ -5240,10 +5248,10 @@
 	<MvELSE>
 		<MvASSIGN NAME = "{ 'g.' $ l.field_prefix $ 'template_code' }"			VALUE = "{ l.template:source }">
 	</MvIF>
-	
+
 	<MvASSIGN NAME = "{ 'g.' $ l.field_prefix $ 'template_version' }"			VALUE = "{ l.template:id }">
 	<MvASSIGN NAME = "{ 'g.' $ l.field_prefix $ 'template_version_selected' }"	VALUE = "{ l.template:id }">
-	
+
 	<tr>
 		<td colspan="2" width="100%">
 			<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawTemplateTextArea( l.field_prefix $ 'template_code', miva_variable_value( 'g.' $  l.field_prefix $ 'template_code' ), 20, 100 ) }">
@@ -5557,7 +5565,7 @@
 	<MvELSE>
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
-	
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -5581,7 +5589,7 @@
 	<MvASSIGN NAME = "l.email:cc"		VALUE = "{ l.notification_settings:mn_cc }">
 	<MvASSIGN NAME = "l.email:bcc"		VALUE = "{ l.notification_settings:mn_bcc }">
 	<MvASSIGN NAME = "l.email:subject"	VALUE = "{ l.notification_settings:mn_subject }">
-	
+
 	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].Product_Load_ID_Cached( l.review:product_id, l.review:product ) }">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
