@@ -3411,7 +3411,13 @@
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "Module_Notify_Product_Delete" PARAMETERS = "module var, product var" STANDARDOUTPUTLEVEL = "">
-	<MvFUNCTIONRETURN VALUE = "{ TGReviewsProducts_Delete_Product( l.product:id ) }">
+	<MvIF EXPR = "{ NOT TGReviewsProducts_Delete_Product( l.product:id ) }">
+		<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].Error_Is_EOF() }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Notify_Product_Insert" PARAMETERS = "module var, product var" STANDARDOUTPUTLEVEL = "">
@@ -4463,29 +4469,27 @@
 
 <MvFUNCTION NAME = "TGReviewsProducts_Delete_Product" PARAMETERS = "product_id" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
 	<MvOPENVIEW NAME	= "Merchant"
-				VIEW	= "TGReviewsProducts"
-				QUERY	= "{ 'SELECT * FROM ' $ g.Store_Table_Prefix $ 'TGReviewsProducts WHERE product_id = ?' }"
+				VIEW	= "TGReviewsProductsDelete"
+				QUERY	= "{ 'SELECT id FROM ' $ g.Store_Table_Prefix $ 'TGReviewsProducts WHERE product_id = ?' }"
 				FIELDS	= "l.product_id">
 	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00081', g.MvOPENVIEW_Error ) }">
 	</MvIF>
 
-	<MvIF EXPR = "{ TGReviewsProducts.d.EOF }">
-		<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
+	<MvIF EXPR = "{ TGReviewsProductsDelete.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProductsDelete">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( 'MOD-SYS-TGR-00082' ) }">
 	</MvIF>
 
-	<MvWHILE EXPR = "{ NOT TGReviewsProducts.d.EOF }">
-		<MvEVAL EXPR = "{ TGReviewsProduct_Read( l.review ) }">
-
-		<MvIF EXPR = "{ NOT TGReviewsProduct_Delete( l.review:id ) }">
+	<MvWHILE EXPR = "{ NOT TGReviewsProductsDelete.d.EOF }">
+		<MvIF EXPR = "{ NOT TGReviewsProduct_Delete( TGReviewsProductsDelete.d.id ) }">
 			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
 
-		<MvSKIP NAME = "Merchant" VIEW = "TGReviewsProducts" ROWS = 1>
+		<MvSKIP NAME = "Merchant" VIEW = "TGReviewsProductsDelete" ROWS = 1>
 	</MvWHILE>
 
-	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProductsDelete">
 
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
@@ -4661,7 +4665,11 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "TGReviewsProductsAverage_InsertUpdate" PARAMETERS = "review_averages var" STANDARDOUTPUTLEVEL = "">
-	<MvIF EXPR = "{ NOT TGReviewsProductsAverage_Insert( l.review_averages ) }">
+	<MvIF EXPR = "{ l.review_averages:rtng_count EQ 0 }">
+		<MvIF EXPR = "{ NOT TGReviewsProductsAverage_Delete( l.review_averages:product_id ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+	<MvELSEIF EXPR = "{ NOT TGReviewsProductsAverage_Insert( l.review_averages ) }">
 		<MvIF EXPR = "{ NOT [ g.Module_Library_Native_DBAPI ].DB_Error_IsIndexDuplicate( g.Error_Message ) }">	<MvFUNCTIONRETURN VALUE = 0>
 		<MvELSEIF EXPR = "{ NOT TGReviewsProductsAverage_Update( l.review_averages ) }">						<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
@@ -4691,12 +4699,7 @@
 	</MvIF>
 
 	<MvIF EXPR = "{ TGReviewsProductsAverages.d.EOF }">
-		<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProductsAverages">
-
-		<MvIF EXPR = "{ NOT TGReviewsProductsAverage_Delete( l.product_id ) }">
-			<MvFUNCTIONRETURN VALUE = 0>
-		</MvIF>
-	
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProductsAverages">	
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( 'MOD-SYS-TGR-00096' ) }">
 	</MvIF>
 
