@@ -1172,7 +1172,7 @@
 					On form submission (front-end submissions only), you can add extra validation before the review is submitted.<br>
 					The following are able to be set to <code>0</code>, or <code>1</code>. If empty, it defaults the review module settings.<br>
 					<code>l.settings:tgreviews_prelogic:allow_same_reviewer</code>: If this is set to 1, it will bypass the check if that user's email has already submitted a review (approved or not)<br>
-					<code>l.settings:tgreviews_prelogic:allow_submission</code>: If you need to do your own checks (i.e. other spam filters/checks), you can set this to 0 to hault the review from processing. If set to empty, or 1, will default to the reviews module settings.
+					<code>l.settings:tgreviews_prelogic:allow_submission</code>: If you need to do your own checks (i.e. other spam filters/checks), you can set this to 0 to hault the review from processing. If set to empty, or 1, will default to the reviews module settings.<br>
 					<code>l.settings:tgreviews_prelogic:approve</code>: If you want to allow the review to go through and be approved (i.e. rating is over 4, approve it), you can set this to 1. If you set this to 0, and you have auto approval on, it will overwrite this setting and not approve the review.<br>
 					You will need to handle the error messaging, and highlighting of fields via the Template Code.
 					<br><br>
