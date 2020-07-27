@@ -924,14 +924,10 @@
 		<MvIF EXPR = "{ NOT TGReviewsNotificationSettings_Load( g.TGReviewsNotificationSettings ) }">
 			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
-
-		<MvIF EXPR = "{ NOT TGReviewsTemplates_Load_Cached( g.TGReviewsTemplates ) }">
-			<MvFUNCTIONRETURN VALUE = 0>
-		</MvIF>
 	</MvIF>
 
 	<MvIF EXPR = "{ l.tab NE 'TGR_SETT' }">
-		<MvHIDE FIELDS = "g.TGReviewsGeneralSettings, g.TGReviewsNotificationSettings, g.TGReviewsTemplates">
+		<MvHIDE FIELDS = "g.TGReviewsGeneralSettings, g.TGReviewsNotificationSettings">
 		<MvFUNCTIONRETURN VALUE = 1>
 	</MvIF>
 
@@ -1217,6 +1213,10 @@
 			</table>
 		</div>
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
+
+		<MvIF EXPR = "{ NOT TGReviewsTemplates_Load_Cached( g.TGReviewsTemplates ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
 
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'TGR_SETT', 'PRERENDER_LOGIC_TEMPLATE' ) }">
 		<table border="0" cellpadding="2" cellspacing="0" width="100%">
@@ -2748,7 +2748,7 @@
 
 	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
 
-	<MvASSIGN NAME = "l.count" VALUE = 1>
+	<MvASSIGN NAME = "l.count" VALUE = 0>
 
 	<MvWHILE EXPR = "{ l.count LT 5 }">
 		<MvASSIGN NAME = "l.count" VALUE = "{ l.count + 1 }">
