@@ -4263,7 +4263,7 @@
 	<MvREFERENCE NAME = "l.cache"						VARIABLE = "g.Session:cache:TGReviewsTemplates_load_cached">
 
 	<MvIF EXPR = "{ ISNULL l.cache:result }">
-		<MvASSIGN NAME = "l.cache:result"				VALUE = "{ TGReviewsTemplates_Load( l.cache:TGReviewsTemplates ) }">
+		<MvASSIGN NAME = "l.cache:result"				VALUE = "{ TGReviewsTemplates_Load( l.cache:templates ) }">
 		<MvIF EXPR = "{ NOT l.cache:result }">
 			<MvASSIGN NAME = "l.cache:error_code"		VALUE = "{ g.Error_Code }">
 			<MvASSIGN NAME = "l.cache:error_message"	VALUE = "{ g.Error_Message }">
@@ -4279,7 +4279,7 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( l.cache:error_code, l.cache:error_message ) }">
 	</MvIF>
 
-	<MvASSIGN NAME = "l.templates"						VALUE = "{ l.cache:TGReviewsTemplates }">
+	<MvASSIGN NAME = "l.templates"						VALUE = "{ l.cache:templates }">
 
 	<MvFUNCTIONRETURN VALUE = "{ l.cache:result }">
 </MvFUNCTION>
