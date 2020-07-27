@@ -1950,7 +1950,6 @@
 					NOT [ g.Module_JSON ].JSON_Input_Number(	'o', 			'Order_ID',		l.review:order_id,	-1, -1 )	OR
 					NOT [ g.Module_JSON ].JSON_Input_Number(	'R', 			'Rating',		l.review:rating,	-1, -1 )	OR
 					NOT [ g.Module_JSON ].JSON_Input_Boolean(	'o', 			'Notify',		l.review:notify )				OR
-					NOT [ g.Module_JSON ].JSON_Input_Boolean(	'o', 			'Notified',		l.review:notified )				OR
 					NOT [ g.Module_JSON ].JSON_Input_Boolean(	'o', 			'Verified',		l.review:verified )				OR
 					NOT [ g.Module_JSON ].JSON_Input_Text(		'o', 			'Store_Reply',	l.review:store_rply )			OR
 					NOT [ g.Module_JSON ].JSON_Input_Text(		l.fld_name,		'Name',			l.review:name )					OR
@@ -2011,10 +2010,6 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'ID', 'A review with the id \'' $ l.review:id $ '\' not found' ) }">
 	</MvIF>
 
-	<MvIF EXPR = "{ [ g.Module_JSON ].JSON_Product_Load( l.product ) }">
-		<MvASSIGN NAME = "l.review:product_id" VALUE = "{ l.product:id }">
-	</MvIF>
-
 	<MvIF EXPR = "{ [ g.Module_Feature_CUS_JSON ].JSON_Customer_Load( l.customer ) }">
 		<MvASSIGN NAME = "l.review:cust_id" VALUE = "{ l.customer:id }">
 	</MvIF>
@@ -2024,7 +2019,6 @@
 					NOT [ g.Module_JSON ].JSON_Input_Number(	'o', 	'Order_ID',		l.review:order_id,	-1, -1 )	OR
 					NOT [ g.Module_JSON ].JSON_Input_Number(	'o', 	'Rating',		l.review:rating,	-1, -1 )	OR
 					NOT [ g.Module_JSON ].JSON_Input_Boolean(	'o', 	'Notify',		l.review:notify )				OR
-					NOT [ g.Module_JSON ].JSON_Input_Boolean(	'o', 	'Notified',		l.review:notified )				OR
 					NOT [ g.Module_JSON ].JSON_Input_Boolean(	'o', 	'Verified',		l.review:verified )				OR
 					NOT [ g.Module_JSON ].JSON_Input_Text(		'o', 	'Store_Reply',	l.review:store_rply )			OR
 					NOT [ g.Module_JSON ].JSON_Input_Text(		'o',	'Name',			l.review:name )					OR

@@ -150,7 +150,7 @@ ProductReview_List.prototype.onCreateRootColumnList = function()
 					name: 'Code',
 					code: 'code'
 				}, 'code', 'Product:code')
-				.SetSortByField( 'Product:code' )
+				.SetSortByField( 'Product:code' ),
 			);
 		}
 

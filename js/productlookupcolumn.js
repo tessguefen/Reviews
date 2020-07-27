@@ -16,6 +16,10 @@ DeriveFrom( MMBatchList_Column, Reviews_ProductLookup_Column );
 
 Reviews_ProductLookup_Column.prototype.onDisplayEdit = function( record, item )
 {
+	if (record.id > 0 ) {
+		return DrawMMBatchListString_Data( record.Product.code );
+	}
+
 	var self = this;
 	var container, input, input_container, button;
 
