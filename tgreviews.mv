@@ -433,9 +433,9 @@
 		</MvCOMMENT>
 
 		<MvQUERY NAME	= "Merchant"
-				 QUERY	= "{ 'ALTER TABLE ' $ g.Store_Table_Prefix $ ' CHANGE store_reply store_rply ' $ [ g.Module_Library_Native_DBAPI ].DB_Type_MEMO() }">
+				 QUERY	= "{ 'ALTER TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Products CHANGE store_reply store_rply ' $ [ g.Module_Library_Native_DBAPI ].DB_Type_MEMO() }">
 		<MvIF EXPR = "{ g.MvQUERY_Error }">
-			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00017', 'Could not Rename store_reply to store_rply' ) }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00017', g.MvQUERY_Error ) }">
 		</MvIF>
 	</MvIF>
 
@@ -1658,14 +1658,14 @@
 	<MvFUNCTIONRETURN VALUE = "id:tgrp.id,created:tgrp.created,product_id:tgrp.product_id,cust_id:tgrp.cust_id,order_id:tgrp.order_id,
 							   approved:tgrp.approved,rating:tgrp.rating,name:tgrp.name,email:tgrp.email,
 							   location:tgrp.location,notify:tgrp.notify,title:tgrp.title,summary:tgrp.summary,
-							   store_reply:tgrp.store_rply,notified:tgrp.notified,verified:tgrp.verified">
+							   store_rply:tgrp.store_rply,notified:tgrp.notified,verified:tgrp.verified">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "JSON_BaseProductReviews_OrderBy" PARAMETERS = "" STANDARDOUTPUTLEVEL = "">
 	<MvFUNCTIONRETURN VALUE = "id:tgrp.id,created:tgrp.created,product_id:tgrp.product_id,cust_id:tgrp.cust_id,order_id:tgrp.order_id,
 							   approved:tgrp.approved,rating:tgrp.rating,name:tgrp.name,email:tgrp.email,
 							   location:tgrp.location,notify:tgrp.notify,title:tgrp.title,summary:tgrp.summary,
-							   store_reply:tgrp.store_rply,notified:tgrp.notified,verified:tgrp.verified">
+							   store_rply:tgrp.store_rply,notified:tgrp.notified,verified:tgrp.verified">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "JSON_ProductReviews_Filters_Query_Callback_With_Fields" PARAMETERS = "module var, query var, filterlist var, callback_query_fields" STANDARDOUTPUTLEVEL = "">
@@ -3798,7 +3798,7 @@
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'notify',				'Notify',					'NOTIFY',				0,								0,			'bool' ) }">
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'title',				'Title',					'TITLE',				l.general_settings:fld_title,	'',			'string' ) }">
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'summary',				'Summary',					'SUMMARY',				l.general_settings:fld_summry,	'',			'string' ) }">
-	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'store_reply',			'Store Reply',				'STORE_REPLY',			0,								'',			'string' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'store_rply',			'Store Reply',				'STORE_REPLY',			0,								'',			'string' ) }">
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'notified',				'Notified',					'NOTIFIED',				0,								0,			'time_t' ) }">
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'verified',				'Verified',					'VERIFIED',				0,								0,			'bool' ) }">
 
@@ -4336,6 +4336,14 @@
 	<MvASSIGN NAME = "l.review:store_rply"	VALUE = "{ TGReviewsProducts.d.store_rply }">
 	<MvASSIGN NAME = "l.review:notified"	VALUE = "{ TGReviewsProducts.d.notified }">
 	<MvASSIGN NAME = "l.review:verified"	VALUE = "{ TGReviewsProducts.d.verified }">
+
+	<MvCOMMENT>
+	|
+	|	Backwards Compatibility
+	|
+	</MvCOMMENT>
+
+	<MvASSIGN NAME = "l.review:store_reply"	VALUE = "{ TGReviewsProducts.d.store_rply }">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "TGReviewsProduct_Load" PARAMETERS = "id, review var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
