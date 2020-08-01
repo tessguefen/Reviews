@@ -1619,6 +1619,9 @@
 	<MvASSIGN NAME = "l.filter_columns" 	VALUE = "{ JSON_BaseProductReviews_Filters() }">
 	<MvASSIGN NAME = "l.orderby_columns"	VALUE = "{ JSON_BaseProductReviews_OrderBy() }">
 
+	<MvASSIGN NAME = "l.null"				VALUE = "{ [ g.Module_JSON ].JSON_Filter( l.search_query, l.filter, l.filter_columns ) }">
+	<MvASSIGN NAME = "l.null"				VALUE = "{ [ g.Module_Library_DB ].SQL_Query_OrderBy_Fields( l.search_query, l.sort, l.orderby_columns, 'tgrp.id' ) }">
+	
 	<MvASSIGN NAME = "l.null"				VALUE = "{ JSON_ProductReviews_Filters_Query_Callback_With_Fields( l.module, l.search_query, l.filter, l.filter_columns ) }">
 	<MvASSIGN NAME = "l.null"				VALUE = "{ JSON_ProductReviews_OrderBy_Callback_With_Fields( l.search_query, l.sort, l.orderby_columns, 'tgrp.id', l.filter_columns ) }">
 
