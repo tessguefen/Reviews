@@ -63,7 +63,7 @@
 
 <mvt:if expr="g.TGR_Review_Success EQ 1">
 	<p class="x-messages x-messages--success">
-	Thank you for your review!
+		Thank you for your review!
 	</p>
 	<mvt:exit />
 </mvt:if>
@@ -74,6 +74,7 @@
 			&mvte:global:TGR_Error;
 		</p>
 	</mvt:if>
+
 	<form method="POST" action="&mvte:tgr:link;" class="tgreviews-form">
 		<input type="hidden" name="Action" value="TGRADD" />
 		<input type="hidden" name="TGR_Product_Code" value="&mvte:product:code;" />
@@ -98,29 +99,49 @@
 				</div>
 			</div>
 
-			<div class="c-form-list__item c-form-list__item--full">
+			<div class="c-form-list__item c-form-list__item--full &mvte:global:TGR_Name_class;">
 				<label class="u-hide-visually" for="TGR_Name">Name</label>
-				<input type="text" class="c-form-input &mvte:global:TGR_Name_class;" id="TGR_Name" name="TGR_Name" value="&mvte:global:TGR_Name;" placeholder="Name" />
+				<mvt:if expr="l.settings:tgr:fields_requred:name">
+					<input type="text" class="c-form-input" id="TGR_Name" name="TGR_Name" value="&mvte:global:TGR_Name;" placeholder="Name*" required />
+				<mvt:else>
+					<input type="text" class="c-form-input" id="TGR_Name" name="TGR_Name" value="&mvte:global:TGR_Name;" placeholder="Name" />
+				</mvt:if>
 			</div>
 
-			<div class="c-form-list__item c-form-list__item--full">
+			<div class="c-form-list__item c-form-list__item--full &mvte:global:TGR_Email_class;">
 				<label class="u-hide-visually" for="TGR_Email">Email</label>
-				<input type="email" class="c-form-input &mvte:global:TGR_Email_class;" id="TGR_Email" name="TGR_Email" value="&mvte:global:TGR_Email;" placeholder="Email" />
+				<mvt:if expr="l.settings:tgr:fields_requred:email">
+					<input type="email" class="c-form-input" id="TGR_Email" name="TGR_Email" value="&mvte:global:TGR_Email;" placeholder="Email*" required />
+				<mvt:else>
+					<input type="email" class="c-form-input" id="TGR_Email" name="TGR_Email" value="&mvte:global:TGR_Email;" placeholder="Email" />
+				</mvt:if>
 			</div>
 
-			<div class="c-form-list__item c-form-list__item--full">
+			<div class="c-form-list__item c-form-list__item--full &mvte:global:TGR_Location_class;">
 				<label class="u-hide-visually" for="TGR_Location">Location</label>
-				<input type="text" class="c-form-input &mvte:global:TGR_Location_class;" id="TGR_Location" name="TGR_Location" value="&mvte:global:TGR_Location;" placeholder="Location" />
+				<mvt:if expr="l.settings:tgr:fields_requred:location">
+					<input type="text" class="c-form-input" id="TGR_Location" name="TGR_Location" value="&mvte:global:TGR_Location;" placeholder="Location*" required />
+				<mvt:else>
+					<input type="text" class="c-form-input" id="TGR_Location" name="TGR_Location" value="&mvte:global:TGR_Location;" placeholder="Location" />
+				</mvt:if>
 			</div>
 
-			<div class="c-form-list__item c-form-list__item--full">
+			<div class="c-form-list__item c-form-list__item--full &mvte:global:TGR_Title_class;">
 				<label class="u-hide-visually" for="TGR_Title">Title</label>
-				<input type="text" class="c-form-input &mvte:global:TGR_Title_class;" id="TGR_Title" name="TGR_Title" value="&mvte:global:TGR_Title;" placeholder="Title" />
+				<mvt:if expr="l.settings:tgr:fields_requred:title">
+					<input type="text" class="c-form-input" id="TGR_Title" name="TGR_Title" value="&mvte:global:TGR_Title;" placeholder="Title*" required />
+				<mvt:else>
+					<input type="text" class="c-form-input" id="TGR_Title" name="TGR_Title" value="&mvte:global:TGR_Title;" placeholder="Title" />
+				</mvt:if>
 			</div>
 
-			<div class="c-form-list__item c-form-list__item--full">
-				<label class="u-hide-visually" for="TGR_Summary">Title</label>
-				<textarea class="c-form-input c-form-input--long &mvte:global:TGR_Summary_class;" id="TGR_Summary" name="TGR_Summary" value="&mvte:global:TGR_Summary;" placeholder="Summary">&mvte:global:TGR_Summary;</textarea>
+			<div class="c-form-list__item c-form-list__item--full &mvte:global:TGR_Summary_class;">
+				<label class="u-hide-visually" for="TGR_Summary">Summary</label>
+				<mvt:if expr="l.settings:tgr:fields_requred:summary">
+					<textarea class="c-form-input c-form-input--long" id="TGR_Summary" name="TGR_Summary" value="&mvte:global:TGR_Summary;" placeholder="Summary*" required>&mvte:global:TGR_Summary;</textarea>
+				<mvt:else>
+					<textarea class="c-form-input c-form-input--long" id="TGR_Summary" name="TGR_Summary" value="&mvte:global:TGR_Summary;" placeholder="Summary">&mvte:global:TGR_Summary;</textarea>
+				</mvt:if>
 			</div>
 
 			<mvt:if expr="l.settings:tgr:additional_fields">
@@ -134,11 +155,10 @@
 
 			<div class="c-form-list__item c-form-list__item--full">
 				<label for="TGR_Notify" class="c-form-checkbox">
-					<input class="c-form-checkbox__input" type="checkbox" name="TGR_Notify" value="1"&mvte:tgr:notify_checked;>
+					<input id="TGR_Notify" class="c-form-checkbox__input" type="checkbox" name="TGR_Notify" value="1"&mvte:tgr:notify_checked;>
 					<span class="c-form-checkbox__caption u-font-small">Notify me when my review is approved</span>
 				</label>
 			</div>
-
 
 			<mvt:if expr="l.settings:tgr:recaptcha:enabled EQ 1">
 				<div class="c-form-list__item c-form-list__item--full">

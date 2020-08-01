@@ -776,7 +776,7 @@
 		</MvCOMMENT>
 
 		<MvQUERY NAME = "Merchant"
-				 QUERY = "{ 'RENAME TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Orders  TO ' $ g.Store_Table_Prefix $ 'TGReviewsOrders' }">
+				 QUERY = "{ 'RENAME TABLE ' $ g.Store_Table_Prefix $ 'TGReviews_Orders TO ' $ g.Store_Table_Prefix $ 'TGReviewsOrders' }">
 		<MvIF EXPR = "{ g.MvQUERY_Error }">
 			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00033', g.MvQUERY_Error ) }">
 		</MvIF>
@@ -2523,8 +2523,13 @@
 		<MvASSIGN NAME = "l.all_settings:tgr:additional_fields" INDEX = "{ l.field_count }" MEMBER = "value" VALUE = "{ miva_variable_value( 'g.TGR_AdditionalFields:' $ l.additionalfield:code ) }">
 	</MvFOREACH>
 
-	<MvASSIGN NAME = "l.all_settings:tgr:recaptcha:enabled"		VALUE = "{ l.general_settings:rc_enabled }">
-	<MvASSIGN NAME = "l.all_settings:tgr:recaptcha:public_key"	VALUE = "{ l.general_settings:rc_pub_key }">
+	<MvASSIGN NAME = "l.all_settings:tgr:fields_requred:name"		VALUE = "{ l.general_settings:fld_name }">
+	<MvASSIGN NAME = "l.all_settings:tgr:fields_requred:email"		VALUE = "{ l.general_settings:fld_email }">
+	<MvASSIGN NAME = "l.all_settings:tgr:fields_requred:location"	VALUE = "{ l.general_settings:fld_loc }">
+	<MvASSIGN NAME = "l.all_settings:tgr:fields_requred:summary"	VALUE = "{ l.general_settings:fld_summry }">
+	<MvASSIGN NAME = "l.all_settings:tgr:fields_requred:title"		VALUE = "{ l.general_settings:fld_title }">
+	<MvASSIGN NAME = "l.all_settings:tgr:recaptcha:enabled"			VALUE = "{ l.general_settings:rc_enabled }">
+	<MvASSIGN NAME = "l.all_settings:tgr:recaptcha:public_key"		VALUE = "{ l.general_settings:rc_pub_key }">
 
 	<MvDO FILE = "{ g.Store_Template_Path $ l.form_template:filename }" NAME = "l.null" VALUE = "{ Template_Render( l.null, l.all_settings ) }">
 </MvFUNCTION>
@@ -5366,14 +5371,14 @@
 
 	<MvIF EXPR = "{ g.TGR_Rating EQ 0 OR g.TGR_Rating GT 5 }">
 		<MvASSIGN NAME = "g.TGR_Error"			VALUE = "Rating must be between 1-5.">
-		<MvASSIGN NAME = "g.TGR_Rating_Class"	VALUE = "error">
+		<MvASSIGN NAME = "g.TGR_Rating_Class"	VALUE = "error has-error">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 
 	<MvIF EXPR = "{ l.general_settings:fld_name }">
 		<MvIF EXPR = "{ ISNULL g.TGR_Name }">
 			<MvASSIGN NAME = "g.TGR_Error"		VALUE = "Name is required.">
-			<MvASSIGN NAME = "g.TGR_Name_Class"	VALUE = "error">
+			<MvASSIGN NAME = "g.TGR_Name_Class"	VALUE = "error has-error">
 			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
 	</MvIF>
@@ -5381,7 +5386,7 @@
 	<MvIF EXPR = "{ ( l.general_settings:fld_email ) OR ( NOT ISNULL g.TGR_Email ) }">
 		<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_Email( g.TGR_Email ) }">
 			<MvASSIGN NAME = "g.TGR_Error"			VALUE = "{ g.Validation_Message }">
-			<MvASSIGN NAME = "g.TGR_Email_Class"	VALUE = "error">
+			<MvASSIGN NAME = "g.TGR_Email_Class"	VALUE = "error has-error">
 			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
 	</MvIF>
@@ -5389,7 +5394,7 @@
 	<MvIF EXPR = "{ l.general_settings:fld_loc }">
 		<MvIF EXPR = "{ ISNULL g.TGR_Name }">
 			<MvASSIGN NAME = "g.TGR_Error"			VALUE = "Location is required.">
-			<MvASSIGN NAME = "g.TGR_Location_Class"	VALUE = "error">
+			<MvASSIGN NAME = "g.TGR_Location_Class"	VALUE = "error has-error">
 			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
 	</MvIF>
@@ -5397,7 +5402,7 @@
 	<MvIF EXPR = "{ l.general_settings:fld_summry }">
 		<MvIF EXPR = "{ ISNULL g.TGR_Summary }">
 			<MvASSIGN NAME = "g.TGR_Error"			VALUE = "Summary is required.">
-			<MvASSIGN NAME = "g.TGR_Summary_Class"	VALUE = "error">
+			<MvASSIGN NAME = "g.TGR_Summary_Class"	VALUE = "error has-error">
 			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
 	</MvIF>
@@ -5405,7 +5410,7 @@
 	<MvIF EXPR = "{ l.general_settings:fld_title }">
 		<MvIF EXPR = "{ ISNULL g.TGR_Title }">
 			<MvASSIGN NAME = "g.TGR_Error"			VALUE = "Title is required.">
-			<MvASSIGN NAME = "g.TGR_Title_Class"	VALUE = "error">
+			<MvASSIGN NAME = "g.TGR_Title_Class"	VALUE = "error has-error">
 			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
 	</MvIF>
