@@ -3,7 +3,7 @@
 <MvCOMMENT>
 |
 | Prefix         : MOD-SYS-TGR-
-| Next Error Code: 135
+| Next Error Code: 137
 |
 </MvCOMMENT>
 
@@ -1526,17 +1526,17 @@
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "Module_JSON_API" PARAMETERS = "module var, function" STANDARDOUTPUTLEVEL = "">
-	<MvIF EXPR = "{ g.Module_Function EQ 'Product_Reviews_Load_Query' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_API_Product_Reviews_Load_Query( l.module ) }">
-	<MvELSEIF EXPR = "{ g.Module_Function EQ 'Product_Review_Insert' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_API_Product_Review_Insert( l.module ) }">
-	<MvELSEIF EXPR = "{ g.Module_Function EQ 'Product_Review_Update' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_API_Product_Review_Update( l.module ) }">
-	<MvELSEIF EXPR = "{ g.Module_Function EQ 'Product_Review_Delete' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_API_Product_Review_Delete( l.module ) }">
-	<MvELSEIF EXPR = "{ g.Module_Function EQ 'AdditionalFields_Load_Query' }">	<MvFUNCTIONRETURN VALUE = "{ JSON_API_AdditionalFields_Load_Query( l.module ) }">
-	<MvELSEIF EXPR = "{ g.Module_Function EQ 'AdditionalField_Insert' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_API_AdditionalField_Insert( l.module ) }">
-	<MvELSEIF EXPR = "{ g.Module_Function EQ 'AdditionalField_Update' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_API_AdditionalField_Update( l.module ) }">
-	<MvELSEIF EXPR = "{ g.Module_Function EQ 'AdditionalField_Delete' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_API_AdditionalField_Delete( l.module ) }">
+	<MvIF EXPR = "{ l.function EQ 'Product_Reviews_Load_Query' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_API_Product_Reviews_Load_Query( l.module ) }">
+	<MvELSEIF EXPR = "{ l.function EQ 'Product_Review_Insert' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_API_Product_Review_Insert( l.module ) }">
+	<MvELSEIF EXPR = "{ l.function EQ 'Product_Review_Update' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_API_Product_Review_Update( l.module ) }">
+	<MvELSEIF EXPR = "{ l.function EQ 'Product_Review_Delete' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_API_Product_Review_Delete( l.module ) }">
+	<MvELSEIF EXPR = "{ l.function EQ 'AdditionalFields_Load_Query' }">	<MvFUNCTIONRETURN VALUE = "{ JSON_API_AdditionalFields_Load_Query( l.module ) }">
+	<MvELSEIF EXPR = "{ l.function EQ 'AdditionalField_Insert' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_API_AdditionalField_Insert( l.module ) }">
+	<MvELSEIF EXPR = "{ l.function EQ 'AdditionalField_Update' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_API_AdditionalField_Update( l.module ) }">
+	<MvELSEIF EXPR = "{ l.function EQ 'AdditionalField_Delete' }">		<MvFUNCTIONRETURN VALUE = "{ JSON_API_AdditionalField_Delete( l.module ) }">
 	</MvIF>
 
-	<MvFUNCTIONRETURN VALUE = 1>
+	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( 'MOD-SYS-TGR-00136', 'Invalid function' ) }">
 </MvFUNCTION>
 
 <MvCOMMENT>
@@ -1743,7 +1743,7 @@
 <MvFUNCTION NAME = "JSON_Query_Callback_Handle_Field" PARAMETERS = "query var, callback_query_customfields, field_code" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ l.field_code EQ '*' }">
 		<MvFOREACH ITERATOR = "l.additionalfield" ARRAY = "l.additionalfields" COUNT = "{ TGReviewsAdditionalField_Load_All_Cached( l.additionalfields ) }">
-			<MvEVAL EXPR = "{ JSON_Query_Callback_Handle_Field( l.query, l.callback_query_customfields, l.additionalfield:code ) }">
+			<MvASSIGN NAME = "l.null" VALUE = "{ JSON_Query_Callback_Handle_Field( l.query, l.callback_query_customfields, l.additionalfield:code ) }">
 		</MvFOREACH>
 
 		<MvFUNCTIONRETURN VALUE = 1>
@@ -1753,7 +1753,7 @@
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 
-	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_Data_Reference( l.query, 'tgrav_' $ l.additionalfield:id, l.ref ) }">
+	<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Library_DB ].SQL_Query_Data_Reference( l.query, 'tgrav_' $ l.additionalfield:id, l.ref ) }">
 
 	<MvREFERENCE NAME = "l.queried" VARIABLE = "l.ref:data:queried">
 
@@ -5777,7 +5777,6 @@
 			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
 
-		<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Feature_SCH_DB ].ScheduledTaskLog_Insert( l.task:id, 'I', 'No Orders in Review: Mail After Queue' ) }">
 		<MvFUNCTIONRETURN VALUE = 1>
 	</MvIF>
 
