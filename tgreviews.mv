@@ -14,7 +14,7 @@
 	<MvASSIGN NAME = "l.module:version"		VALUE = "2.000">
 	<MvASSIGN NAME = "l.module:api_ver"		VALUE = "9.12">
 	<MvASSIGN NAME = "l.module:description"	VALUE = "Product Reviews module allows your customers to easily write reviews for products. This module also allows for importing and exporting product reviews.">
-	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside, component, fields_prod, not_prod, fulfill, scheduledtask, vis_product, export, import, json_api">
+	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside, component, fields_prod, not_prod, fulfill, scheduledtask, vis_product, export, import, json_api, prod_facet">
 </MvFUNCTION>
 
 <MvCOMMENT>
@@ -2286,6 +2286,93 @@
 	<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( 'MOD-SYS-TGR-00042', 'Deleted Review Additional Field \'' $ l.additionalfield_id $ '\'' ) }">
 
 	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
+</MvFUNCTION>
+
+<MvCOMMENT>
+|
+| Feature prod_facet
+|
+</MvCOMMENT>
+
+<MvFUNCTION NAME = "Module_Product_Facets" PARAMETERS = "module var, facets var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.facets"										VALUE = "">
+
+	<MvASSIGN NAME = "l.facets" INDEX = 1 MEMBER = "code"			VALUE = "tgr_rating">
+	<MvASSIGN NAME = "l.facets" INDEX = 1 MEMBER = "name"			VALUE = "Average Rating">
+	<MvASSIGN NAME = "l.facets" INDEX = 1 MEMBER = "allowed_types"	VALUE = "checkbox,radio,select">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_Product_Facet_Values_Query_PostProcess" PARAMETERS = "module var, query var, facet var, values var, value_count" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = "{ l.value_count }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_Product_Facet_Value_Prompt" PARAMETERS = "module var, facet var, value var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = "{ l.value }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_Product_Facet_Value_Prompt_JavaScript" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_Product_Facet_Value_Selected" PARAMETERS = "module var, facet var, value var, input_values var, input_value_count" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = "{ miva_array_search( l.input_values, 1, l.input_value, 'l.input_value EQ l.value' ) }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_Product_Facet_Values_Query" PARAMETERS = "module var, query var, facet var, values var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ l.facet:code NE 'tgr_rating' }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvASSIGN NAME = "l.values" 		VALUE = "">
+	<MvASSIGN NAME = "l.value_count"	VALUE = 0>
+	<MvASSIGN NAME = "l.facet_query"	VALUE = "{ l.query }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SELECT( l.facet_query, 'DISTINCT FLOOR( tgra.rating ) AS tgr_rating, COUNT( tgra.rating ) AS rating_count' ) }">
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_FROM( l.facet_query, g.Store_Table_Prefix $ 'TGReviewsProductsAverages', 'tgra' ) }">
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_GROUP_BY( l.facet_query, 'tgra.rating' ) }">
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.facet_query, 'tgra.product_id = prod.id', '' ) }">
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_ORDER_BY( l.facet_query, 'tgra.rating', 'DESC' ) }">
+
+	<MvASSIGN NAME = "l.facet_sql"		VALUE = "{ [ g.Module_Library_DB ].SQL_Query_Build( l.facet_query, l.facet_fields ) }">
+
+	<MvIF EXPR = "{ NOT [ g.Module_Library_Native_DBAPI ].DB_OPENVIEW_Range( 'Merchant', 'TGReviewsProductsAverages', l.facet_sql, l.facet_fields, 0, 0 ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvWHILE EXPR = "{ NOT TGReviewsProductsAverages.d.EOF }">
+		<MvREFERENCEARRAY NAME = "l.value" VARIABLE = "l.values_by_value">
+			<MvMEMBER NAME = "{ TGReviewsProductsAverages.d.tgr_rating }">
+		</MvREFERENCEARRAY>
+
+		<MvIF EXPR = "{ NOT ISNULL l.value:value }">
+			<MvASSIGN NAME = "l.value:count"	VALUE = "{ l.value:count + TGReviewsProductsAverages.d.rating_count }">
+		<MvELSE>
+			<MvASSIGN NAME = "l.value:value"	VALUE = "{ TGReviewsProductsAverages.d.tgr_rating }">
+			<MvASSIGN NAME = "l.value:count"	VALUE = "{ TGReviewsProductsAverages.d.rating_count }">
+
+			<MvASSIGN NAME = "l.value_count"	VALUE = "{ miva_array_insert_ref( l.values, l.value, -1 ) }">
+		</MvIF>
+
+		<MvSKIP NAME = "Merchant" VIEW = "TGReviewsProductsAverages" ROWS = 1>
+	</MvWHILE>
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProductsAverages">
+	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].ListLoad_EOF_Return( '#Error#', l.value_count ) }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_Product_Facet_Query_Search" PARAMETERS = "module var, query var, facet var, facet_values var" STANDARDOUTPUTLEVEL = "">
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_DISTINCT( l.query ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_FROM_Before( l.query, 'prod', g.Store_Table_Prefix $ 'TGReviewsProductsAverages', 'tgra' ) }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SUB_WHERE_BEGIN( l.query ) }">
+		<MvFOREACH ITERATOR = "l.facet_value" ARRAY = "l.facet_values">
+			<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.query, 'FLOOR( tgra.rating ) = ? AND prod.id = tgra.product_id', [ g.Module_Library_DB ].SQL_Query_Field( l.facet_value ) ) }">
+		</MvFOREACH>
+	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SUB_WHERE_END_First( l.query, 'OR' ) }">
+
+	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvCOMMENT>
