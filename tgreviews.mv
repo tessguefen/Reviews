@@ -3,7 +3,7 @@
 <MvCOMMENT>
 |
 | Prefix         : MOD-SYS-TGR-
-| Next Error Code: 137
+| Next Error Code: 139
 |
 </MvCOMMENT>
 
@@ -2337,7 +2337,7 @@
 	<MvASSIGN NAME = "l.facet_sql"		VALUE = "{ [ g.Module_Library_DB ].SQL_Query_Build( l.facet_query, l.facet_fields ) }">
 
 	<MvIF EXPR = "{ NOT [ g.Module_Library_Native_DBAPI ].DB_OPENVIEW_Range( 'Merchant', 'TGReviewsProductsAverages', l.facet_sql, l.facet_fields, 0, 0 ) }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-137', g.MvOPENVIEW_Error ) }">
 	</MvIF>
 
 	<MvASSIGN NAME = "l.ratings"		VALUE = "">
@@ -2383,7 +2383,7 @@
 		<MvASSIGN NAME = "l.count" VALUE = "{ l.count - 1 }">
 	</MvWHILE>
 
-	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].ListLoad_EOF_Return( '#Error#', l.value_count ) }">
+	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].ListLoad_EOF_Return( 'MOD-SYS-TGR-138', l.value_count ) }">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Product_Facet_Query_Search" PARAMETERS = "module var, query var, facet var, facet_values var" STANDARDOUTPUTLEVEL = "">
