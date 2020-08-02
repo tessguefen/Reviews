@@ -2087,6 +2087,8 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Error( g.Error_Code, g.Error_Message ) }">
 	</MvIF>
 
+	<MvASSIGN NAME = "l.null" VALUE = "{ TGReviewsProductsAverages_Update_Product( l.review:product_id ) }">
+
 	<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( 'MOD-SYS-TGR-00038', 'Deleted review \'' $ l.review:id $ '\'' ) }">
 
 	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_Success() }">
@@ -3533,6 +3535,10 @@
 		</MvIF>
 	</MvIF>
 
+	<MvIF EXPR = "{ NOT TGReviewsProductsAverage_Delete( l.product:id ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -4588,9 +4594,8 @@
 
 	<MvTRANSACT NAME = "Merchant">
 
-	<MvIF EXPR = "{ NOT TGReviewsProduct_Delete_LowLevel( l.id )		OR
-					NOT TGReviewsAdditionalValues_Delete_Review( l.id )	OR
-					NOT TGReviewsProductsAverages_Update_Product( l.review:product_id ) }">
+	<MvIF EXPR = "{ NOT TGReviewsProduct_Delete_LowLevel( l.id ) OR
+					NOT TGReviewsAdditionalValues_Delete_Review( l.id ) }">
 		<MvROLLBACK NAME = "Merchant">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
