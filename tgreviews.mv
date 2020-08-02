@@ -2309,7 +2309,7 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Product_Facet_Value_Prompt" PARAMETERS = "module var, facet var, value var" STANDARDOUTPUTLEVEL = "">
-	<MvFUNCTIONRETURN VALUE = "{ l.value }">
+	<MvFUNCTIONRETURN VALUE = "{ l.value $ ' & Up' }">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Product_Facet_Value_Prompt_JavaScript" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
@@ -2340,6 +2340,9 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
 	</MvIF>
 
+	<MvASSIGN NAME = "l.ratings"		VALUE = "">
+	<MvASSIGN NAME = "l.rating_count"	VALUE = 0>
+
 	<MvWHILE EXPR = "{ NOT TGReviewsProductsAverages.d.EOF }">
 		<MvREFERENCEARRAY NAME = "l.value" VARIABLE = "l.values_by_value">
 			<MvMEMBER NAME = "{ TGReviewsProductsAverages.d.tgr_rating }">
@@ -2351,13 +2354,35 @@
 			<MvASSIGN NAME = "l.value:value"	VALUE = "{ TGReviewsProductsAverages.d.tgr_rating }">
 			<MvASSIGN NAME = "l.value:count"	VALUE = "{ TGReviewsProductsAverages.d.rating_count }">
 
-			<MvASSIGN NAME = "l.value_count"	VALUE = "{ miva_array_insert_ref( l.values, l.value, -1 ) }">
+			<MvASSIGN NAME = "l.value_count"	VALUE = "{ miva_array_insert_ref( l.ratings, l.value, -1 ) }">
 		</MvIF>
 
 		<MvSKIP NAME = "Merchant" VIEW = "TGReviewsProductsAverages" ROWS = 1>
 	</MvWHILE>
 
 	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProductsAverages">
+
+	<MvASSIGN NAME = "l.count" VALUE = 4>
+
+	<MvWHILE EXPR = "{ l.count GT 0 }">
+		<MvASSIGN NAME = "l.rating_value:value" VALUE = "{ l.count }">
+		<MvASSIGN NAME = "l.rating_value:count" VALUE = 0>
+
+		<MvFOREACH ITERATOR = "l.rating" ARRAY = "l.ratings">
+			<MvIF EXPR = "{ l.rating:value LT l.count }">
+				<MvFOREACHCONTINUE>
+			</MvIF>
+
+			<MvASSIGN NAME = "l.rating_value:count" VALUE = "{ l.rating_value:count + l.rating:count }">
+		</MvFOREACH>
+
+		<MvIF EXPR = "{ l.rating_value:count GT 0 }">
+			<MvASSIGN NAME = "l.value_count" VALUE = "{ miva_array_insert_var( l.values, l.rating_value, -1 ) }">
+		</MvIF>
+
+		<MvASSIGN NAME = "l.count" VALUE = "{ l.count - 1 }">
+	</MvWHILE>
+
 	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].ListLoad_EOF_Return( '#Error#', l.value_count ) }">
 </MvFUNCTION>
 
@@ -2368,7 +2393,7 @@
 
 	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SUB_WHERE_BEGIN( l.query ) }">
 		<MvFOREACH ITERATOR = "l.facet_value" ARRAY = "l.facet_values">
-			<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.query, 'FLOOR( tgra.rating ) = ? AND prod.id = tgra.product_id', [ g.Module_Library_DB ].SQL_Query_Field( l.facet_value ) ) }">
+			<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.query, 'FLOOR( tgra.rating ) >= ? AND prod.id = tgra.product_id', [ g.Module_Library_DB ].SQL_Query_Field( l.facet_value ) ) }">
 		</MvFOREACH>
 	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SUB_WHERE_END_First( l.query, 'OR' ) }">
 
