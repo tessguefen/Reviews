@@ -2301,20 +2301,61 @@
 
 	<MvASSIGN NAME = "l.facets" INDEX = 1 MEMBER = "code"			VALUE = "tgr_rating">
 	<MvASSIGN NAME = "l.facets" INDEX = 1 MEMBER = "name"			VALUE = "Average Rating">
-	<MvASSIGN NAME = "l.facets" INDEX = 1 MEMBER = "allowed_types"	VALUE = "checkbox,radio,select">
+	<MvASSIGN NAME = "l.facets" INDEX = 1 MEMBER = "allowed_types"	VALUE = "checkbox,radio,select,rangeslider">
 
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Product_Facet_Values_Query_PostProcess" PARAMETERS = "module var, query var, facet var, values var, value_count" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ l.facet:input_value_count EQ 0 }">
+		<MvFUNCTIONRETURN VALUE = "{ l.value_count }">
+	</MvIF>
+
+	<MvIF EXPR = "{ l.facet:type EQ 'rangeslider' }">
+		<MvIF EXPR = "{ l.value_count NE 1 }">
+			<MvFUNCTIONRETURN VALUE = "{ l.value_count }">
+		</MvIF>
+
+		<MvASSIGN NAME = "l.low_value"	VALUE = "{ min( gettoken( l.values[ 1 ]:value, '-', 1 ), gettoken( l.facet:input_values[ 1 ], '-', 1 ) ) }">
+		<MvASSIGN NAME = "l.high_value"	VALUE = "{ max( gettoken( l.values[ 1 ]:value, '-', 2 ), gettoken( l.facet:input_values[ 1 ], '-', 2 ) ) }">
+
+		<MvCOMMENT>
+		|
+		| Rangeslider doesn't use the count so we don't bother calculating it
+		|
+		</MvCOMMENT>
+
+		<MvASSIGN NAME = "l.values" INDEX = 1	MEMBER = "value"	VALUE = "{ l.low_value $ '-' $ l.high_value }">
+		<MvASSIGN NAME = "l.values" INDEX = 1	MEMBER = "count"	VALUE = 0>
+
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
 	<MvFUNCTIONRETURN VALUE = "{ l.value_count }">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Product_Facet_Value_Prompt" PARAMETERS = "module var, facet var, value var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ l.facet:type EQ 'rangeslider' }">
+		<MvFUNCTIONRETURN VALUE = "{ l.value }">
+	</MvIF>
+
 	<MvFUNCTIONRETURN VALUE = "{ l.value $ ' & Up' }">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Product_Facet_Value_Prompt_JavaScript" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvIF EXPR = "{ g.Session:cache:tgreviews:module_product_facet_value_javascript }">
+		<MvFUNCTIONRETURN>
+	</MvIF>
+
+	<MvASSIGN NAME = "g.Session:cache:tgreviews:module_product_facet_value_javascript" VALUE = 1>
+
+	<MvEVAL EXPR = "{ [ g.Module_Admin ].Element_CurrencyFormatter_JavaScript() }">
+
+	<script type="text/javascript">
+		MMFacet_RangeSlider_FormatValue_AddHook( '<MvEVAL EXPR = "{ encodejavascriptstring( l.module:code ) }">', function( facet_code, value ) {
+			return MMCurrencyFormatter( value, true );
+		} );
+	</script>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Product_Facet_Value_Selected" PARAMETERS = "module var, facet var, value var, input_values var, input_value_count" STANDARDOUTPUTLEVEL = "">
@@ -2365,6 +2406,10 @@
 	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProductsAverages">
 
 	<MvASSIGN NAME = "l.count" VALUE = 4>
+	
+	<MvIF EXPR = "{ l.facet:type EQ 'rangeslider' }">
+		<MvASSIGN NAME = "l.count" VALUE = 5>
+	</MvIF>
 
 	<MvWHILE EXPR = "{ l.count GT 0 }">
 		<MvASSIGN NAME = "l.rating_value:value" VALUE = "{ l.count }">
@@ -2385,6 +2430,13 @@
 		<MvASSIGN NAME = "l.count" VALUE = "{ l.count - 1 }">
 	</MvWHILE>
 
+	<MvIF EXPR = "{ l.facet:type EQ 'rangeslider' AND l.value_count GT 1 }">
+		<MvASSIGN NAME = "l.values" INDEX = 1	MEMBER = "value"	VALUE = "{ l.values[ 1 ]:value $ '-' $ l.values[ l.value_count ]:value }">
+		<MvASSIGN NAME = "l.values" INDEX = 1	MEMBER = "count"	VALUE = "{ l.product_count }">
+
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
 	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].ListLoad_EOF_Return( 'MOD-SYS-TGR-138', l.value_count ) }">
 </MvFUNCTION>
 
@@ -2393,11 +2445,22 @@
 
 	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_FROM_Before( l.query, 'prod', g.Store_Table_Prefix $ 'TGReviewsProductsAverages', 'tgra' ) }">
 
-	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SUB_WHERE_BEGIN( l.query ) }">
-		<MvFOREACH ITERATOR = "l.facet_value" ARRAY = "l.facet_values">
-			<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.query, 'FLOOR( tgra.rating ) >= ? AND prod.id = tgra.product_id', [ g.Module_Library_DB ].SQL_Query_Field( l.facet_value ) ) }">
-		</MvFOREACH>
-	<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SUB_WHERE_END_First( l.query, 'OR' ) }">
+	<MvIF EXPR = "{ l.facet:type EQ 'rangeslider' }">
+		<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SUB_WHERE_BEGIN( l.query ) }">
+			<MvFOREACH ITERATOR = "l.facet_value" ARRAY = "l.facet_values">
+				<MvASSIGN NAME = "l.rating_low"		VALUE = "{ floor( gettoken( l.facet_value, '-', 1 ) ) }">
+				<MvASSIGN NAME = "l.rating_high"	VALUE = "{ floor( gettoken( l.facet_value, '-', 2 ) ) }">
+	
+				<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.query, 'FLOOR( tgra.rating ) >= ? AND FLOOR( tgra.rating ) <= ? AND prod.id = tgra.product_id', [ g.Module_Library_DB ].SQL_Query_Field( l.rating_low ) $ ',' $ [ g.Module_Library_DB ].SQL_Query_Field( l.rating_high ) ) }">
+			</MvFOREACH>
+		<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SUB_WHERE_END_First( l.query, 'OR' ) }">
+	<MvELSE>
+		<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SUB_WHERE_BEGIN( l.query ) }">
+			<MvFOREACH ITERATOR = "l.facet_value" ARRAY = "l.facet_values">
+				<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_WHERE( l.query, 'FLOOR( tgra.rating ) >= ? AND prod.id = tgra.product_id', [ g.Module_Library_DB ].SQL_Query_Field( l.facet_value ) ) }">
+			</MvFOREACH>
+		<MvEVAL EXPR = "{ [ g.Module_Library_DB ].SQL_Query_SUB_WHERE_END_First( l.query, 'OR' ) }">
+	</MvIF>
 
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
