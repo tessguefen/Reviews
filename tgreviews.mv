@@ -3,7 +3,7 @@
 <MvCOMMENT>
 |
 | Prefix         : MOD-SYS-TGR-
-| Next Error Code: 139
+| Next Error Code: 141
 |
 </MvCOMMENT>
 
@@ -1224,14 +1224,14 @@
 				<td align="left" nowrap valign="top" colspan="2">
 					On form submission (front-end submissions only), you can add extra validation before the review is submitted.<br>
 					The following are able to be set to <code>0</code>, or <code>1</code>. If empty, it defaults the review module settings.<br>
-					<code>l.settings:tgreviews_prelogic:allow_same_reviewer</code>: If this is set to 1, it will bypass the check if that user's email has already submitted a review (approved or not)<br>
-					<code>l.settings:tgreviews_prelogic:allow_submission</code>: If you need to do your own checks (i.e. other spam filters/checks), you can set this to 0 to hault the review from processing. If set to empty, or 1, will default to the reviews module settings.<br>
-					<code>l.settings:tgreviews_prelogic:approve</code>: If you want to allow the review to go through and be approved (i.e. rating is over 4, approve it), you can set this to 1. If you set this to 0, and you have auto approval on, it will overwrite this setting and not approve the review.<br>
+					<code>l.settings:tgreviews_prelogic:allow_same_reviewer</code> If this is set to 1, it will bypass the check if that user's email has already submitted a review (approved or not)<br>
+					<code>l.settings:tgreviews_prelogic:allow_submission</code> If you need to do your own checks (i.e. other spam filters/checks), you can set this to 0 to hault the review from processing. If set to empty, or 1, will default to the reviews module settings.<br>
+					<code>l.settings:tgreviews_prelogic:approve</code> If you want to allow the review to go through and be approved (i.e. rating is over 4, approve it), you can set this to 1. If you set this to 0, and you have auto approval on, it will overwrite this setting and not approve the review.<br>
 					You will need to handle the error messaging, and highlighting of fields via the Template Code.
 					<br><br>
 				</td>
 			</tr>
-			<MvEVAL EXPR = "{ Admin_Template( 'Pre-Render Logic', 'TGReviewsTemplates:prlog_tmpl_', g.TGReviewsTemplates:prlog_tmpl, l.load_fields ) }">
+			<MvEVAL EXPR = "{ Admin_Template( 'Pre-Render Logic', 'TGReviews_prlog_tmpl_', g.TGReviewsTemplates:prlog_tmpl, l.load_fields ) }">
 		</table>
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
 
@@ -1243,7 +1243,7 @@
 					<br><br>
 				</td>
 			</tr>
-			<MvEVAL EXPR = "{ Admin_Template( 'Form', 'TGReviewsTemplates:form_tmpl_', g.TGReviewsTemplates:form_tmpl, l.load_fields ) }">
+			<MvEVAL EXPR = "{ Admin_Template( 'Form', 'TGReviews_form_tmpl_', g.TGReviewsTemplates:form_tmpl, l.load_fields ) }">
 		</table>
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
 
@@ -1255,7 +1255,7 @@
 					<br><br>
 				</td>
 			</tr>
-			<MvEVAL EXPR = "{ Admin_Template( 'Reviews', 'TGReviewsTemplates:rvws_tmpl_', g.TGReviewsTemplates:rvws_tmpl, l.load_fields ) }">
+			<MvEVAL EXPR = "{ Admin_Template( 'Reviews', 'TGReviews_rvws_tmpl_', g.TGReviewsTemplates:rvws_tmpl, l.load_fields ) }">
 		</table>
 		<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
 
@@ -1368,9 +1368,9 @@
 			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
 
-		<MvIF EXPR = "{ NOT Admin_Template_Update( l.module, 'Pre-Render Logic', 'TGReviewsTemplates:prlog_tmpl_', l.templates:prlog_tmpl )	OR
-						NOT Admin_Template_Update( l.module, 'Form', 'TGReviewsTemplates:form_tmpl_', l.templates:form_tmpl )				OR
-						NOT Admin_Template_Update( l.module, 'Reviews', 'TGReviewsTemplates:rvws_tmpl_', l.templates:rvws_tmpl ) }">
+		<MvIF EXPR = "{ NOT Admin_Template_Update( l.module, 'Pre-Render Logic', 'TGReviews_prlog_tmpl_', l.templates:prlog_tmpl )	OR
+						NOT Admin_Template_Update( l.module, 'Form', 'TGReviews_form_tmpl_', l.templates:form_tmpl )				OR
+						NOT Admin_Template_Update( l.module, 'Reviews', 'TGReviews_rvws_tmpl_', l.templates:rvws_tmpl ) }">
 			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
 	</MvIF>
@@ -5423,9 +5423,6 @@
 			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
 
-		<MvASSIGN NAME = "l.template_id"										VALUE = "{ l.template_id }">
-		<MvASSIGN NAME = "l.template_id"										VALUE = "{ l.template_id }">
-
 		<MvASSIGN NAME = "l.load_fields"										VALUE = 1>
 	<MvELSE>
 		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_Template_Current( l.template_id, l.template ) }">
@@ -5607,6 +5604,13 @@
 			<MvASSIGN NAME = "g.TGR_Error" VALUE = "You have reviewed this product already.">
 			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
+
+		<MvIF EXPR = "{ g.Basket:cust_id GT 0 }">
+			<MvIF EXPR = "{ Review_Check_CustomerXProduct( g.Basket:cust_id, l.product:id ) }">
+				<MvASSIGN NAME = "g.TGR_Error" VALUE = "You have reviewed this product already.">
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+		</MvIF>
 	</MvIF>
 
 	<MvIF EXPR = "{ l.general_settings:rc_enabled }">
@@ -5739,6 +5743,25 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
+<MvFUNCTION NAME = "Review_Check_CustomerXProduct" PARAMETERS = "cust_id, product_id" STANDARDOUTPUTLEVEL = ""  ERROROUTPUTLEVEL = "">
+<MvOPENVIEW	NAME	= "Merchant"
+			VIEW	= "TGReviewsProducts"
+			QUERY	= "{'SELECT id FROM ' $ g.Store_Table_Prefix $ 'TGReviewsProducts WHERE cust_id = ? AND product_id = ? LIMIT 1' }"
+			FIELDS	= "l.cust_id, l.product_id">
+<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00139', g.MvOPENVIEW_Error ) }">
+</MvIF>
+
+<MvIF EXPR = "{ TGReviewsProducts.d.EOF }">
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
+	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( 'MOD-SYS-TGR-00140' ) }">
+</MvIF>
+
+<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
+
+<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
 <MvFUNCTION NAME = "Admin_Formatted_Item_Function" PARAMETERS = "function_name, parameters" STANDARDOUTPUTLEVEL = "html, text">
 <div style="background: #ffffff; overflow:auto;width:auto;padding:.2em 0;">
 <pre style="margin: 0; line-height: 125%;"><span style="color: #446fbd">&lt;mvt:item</span> <span style="color: #6d8600">name=</span><span style="color: #535353">&quot;tgreviews&quot;</span> <span style="color: #6d8600">param=</span><span style="color: #535353">&quot;<span style="color: #446fbd"><MvEVAL EXPR = "{ l.function_name }"></span>(<MvEVAL EXPR = "{ l.parameters }">)&quot;</span> <span style="color: #446fbd">/&gt;</span></pre>
@@ -5868,6 +5891,13 @@
 		<MvIF EXPR = "{ Review_Check_EmailXProduct( l.order:bill_email, l.item:product_id ) }">
 			<MvFOREACHCONTINUE>
 		</MvIF>
+
+		<MvIF EXPR = "{ l.order:cust_id GT 0 }">
+			<MvIF EXPR = "{ Review_Check_CustomerXProduct( l.order:cust_id, l.item:product_id ) }">
+				<MvFOREACHCONTINUE>
+			</MvIF>
+		</MvIF>
+
 
 		<MvASSIGN NAME = "l.item:options_count"	VALUE = "{ [ g.Module_Library_DB ].OrderOptionList_Load_Line( l.item:line_id, l.item:options ) }">
 		<MvASSIGN NAME = "l.order:item_count"	VALUE = "{ miva_array_insert_var( l.order:items, l.item, -1 ) }">
