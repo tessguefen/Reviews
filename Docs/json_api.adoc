@@ -1,0 +1,128 @@
+<<<
+
+[[_jsonAPI]]
+== JSON API
+
+The following functions are available via the JSON API for the module.
+
+[[__productReviewsLoadQuery]]
+=== Product_Reviews_Load_Query
+
+[[___productReviewsLoadQueryParameters]]
+==== Request Parameters
+
+[options="header",cols="25%,25%,50%"]
+|===
+|Key|Type|Description
+|Count|Number|Count is used to limit how many reviews you want returned per request
+|Offset|Number|Used conjunction with the *Count* parameter for paginating results of large datasets. Default is 0, which is no offset.
+|Sort|String|Field to sort results by. Available Sorting fields are <<___productReviewsLoadQuerySortSearch,listed below>>.
+|Filter|Object|Array of Object containing search filters.See usage here: https://docs.miva.com/json-api/list-load-query-overview[ List Load Query Overview ]. Available Search Filter fields are <<___productReviewsLoadQuerySortSearch,listed below>>.
+|===
+
+[[___productReviewsLoadQuerySortSearch]]
+==== Supported Sort & Search Filter Columns
+
+|===
+|id|created|product_id
+|cust_id|order_id|approved
+|rating|name|email
+|location|notify|title
+|summary|store_rply|notified
+|verified|AdditionalFields:*|Product:*
+|===
+
+*AdditionalFields* can be sorted/ searched based on which ones have been set up in the store. To only load one in, utilize the additional field code.
+
+```
+AdditionalFields:my_code
+```
+
+*Product* can be sorted/ searched based on the base product fields (id, code, price, etc.). You can use this if you do not have the ``product_id`` available to you.
+
+```
+Product:code
+```
+
+<<<
+
+[[___productReviewsLoadQueryExampleRequest]]
+==== Example Request
+
+[source,json]
+----
+{
+	"Store_Code": "DTS",
+	"Function": "Module",
+	"Module_Code": "tgreviews",
+	"Module_Function": "Product_Reviews_Load_Query",
+	"Filter": [
+		{
+			"name": "ondemandcolumns",
+			"value": [
+				"AdditionalFields:*"
+			]
+		},
+		{
+			"name": "search",
+			"value": [
+				{
+					"field": "Product:code",
+					"operator": "EQ",
+					"value": "46529871"
+				},
+				 {
+					"field": "approved",
+					"operator": "TRUE",
+					"value": ""
+				}
+			]
+		}
+	]
+}
+----
+
+<<<
+
+[[___productReviewsLoadQueryExampleResponse]]
+==== Example Response
+
+[source,json]
+----
+{
+    "success": 1,
+    "data": {
+        "total_count": 1,
+        "start_offset": 0,
+        "data": [
+            {
+                "id": 14,
+                "created": 1595796177,
+                "product_id": 7,
+                "cust_id": 0,
+                "order_id": 0,
+                "approved": 1,
+                "rating": 3,
+                "name": "Some Reviewer",
+                "email": "some@email.com",
+                "location": "",
+                "notify": 0,
+                "title": "Hi I am a title",
+                "summary": "Hi I am a summary",
+                "store_rply": "",
+                "notified": 0,
+                "verified": 0,
+                "AdditionalFields": {
+                    "cons": "",
+                    "pros": ""
+                },
+                "Product": {
+                    "id": 7,
+                    "code": "46529871",
+                    ...
+                }
+            }
+        ]
+    }
+}
+----

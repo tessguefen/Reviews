@@ -1,0 +1,7 @@
+:source-highlighter: rouge
+include::titlepage.adoc[]
+include::setup.adoc[]
+include::settings.adoc[]
+include::templates.adoc[]
+include::tgreviews_item.adoc[]
+include::json_api.adoc[]

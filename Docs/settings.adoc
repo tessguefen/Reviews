@@ -1,0 +1,218 @@
+<<<
+
+[[_settings]]
+== Settings
+
+[[__fieldSettings]]
+=== Field Settings
+
+The field settings allow you to make certain fields required, or optional.
+
+*Please Note*: These settings are utilized in the following areas:
+
+- Front-end Submission Reviews
+- Product Reviews Import
+- Product Reviews JSON API
+- Admin Product Review Submissions
+
+<<<
+
+[[__reviewSettings]]
+=== Review Settings
+
+The review settings allow you to set some default settings
+
+*Reviews Per Page*
+
+_Default: 5_
+
+This is the default amount of reviews that will be displayed when displaying the reviews template.
+
+*Default Sorting Method*
+
+_Default: Default_
+
+This is the default sorting method for reviews that will be displayed when displaying the reviews template.
+
+*Default* will display the reviews based on their addition to the store, from newest to oldest, not their date.
+
+*Most Revent Reviews* will display the reviews based on their review date, from newest to oldest.
+
+*Least Recent Reviews* will display the reviews based on their review date, from oldest to newest.
+
+*Highest To Lowest Rating* will display the reviews based on their rating, from highest to lowest.
+
+*Lowest To Highest Rating* will display the reviews based on their rating, from lowest to highest.
+
+*Auto Approve Reviews*
+
+_Default: Not enabled_
+
+Enabling this will auto approve reviews. In version *2.000*, this can be overwritten by the Pre-Submission Logic Template.
+
+<<<
+
+[[__reCAPTCHASettings]]
+=== reCAPTCHA Settings
+
+The reCAPTCHA settings allow you to enable, or disable reCAPTCHA. If enabled, the reCAPTCHA will display for front-end form submissions.
+
+*Please Note:* You will need the following for reCAPTCHA:
+
+- Public Key
+- Private Key
+
+<<<
+
+[[__mailAfterNotifcation]]
+=== Mail After Notification
+
+If this notification is enabled, it will send notification emails to users who have placed orders on the store (moving forward once the notification is enabled).
+
+This notification is tied to a scheduled task operation called *Product Reviews: Trigger 'Mail After' Emails for Reviews*.
+
+You will need to create this Scheduled Task, and have it enabled for this notification to run. If this is not set-up, the notification queue will not clear out or run.
+
+*Please Note:*
+
+- Customer checks are done by checking if the customer has an account. If not, it will default by checking the billing email on the order, and compare that to emails on product reviews.
+- If the customer on the order has reviewed an item already, it will not display in the email.
+- If the customer on the order has no items to review, the order will be removed from the queue and the customer will not recieve an email.
+- The only orders added to the queue are *Shopper* and *User* orders. Any other order source/type will be skipped.
+- The *from* email acts the same way as the *Miva Template Based Emails*. If you are having issues with the mail notification settings, please contact your host.
+
+[[___mailAfterNotifcationOptions]]
+==== Mail After Notification Options
+
+*Notification Enabled*
+
+_Default: Not enabled_
+
+Enabling this will start adding orders to the queue. This must be paired with the scheduled task (see above for more information)
+
+*Send After X day(s)*
+
+_Default: 7_
+
+This is the amount of days you want to wait until sending the email off to the customer
+
+*After*
+
+_Default: Order Date_
+
+You can select between two options: *Order Date* or *Shipment Date*.
+
+Shipment date will be based off the first shipment that is found for that order.
+
+*From*
+
+_Default: Store Email_
+
+This is the from email for the email notification. This is not a template, and is text based.
+
+*CC*
+
+_Default: None_
+
+This is the CC email for the email notification. This is not a template, and is text based.
+
+*BCC*
+
+_Default: None_
+
+This is the BCC email for the email notification. This is not a template, and is text based.
+
+*Subject*
+
+_Default: Please Review Your Recent Purchase on [ Store Name ]_
+
+This is the subject for the email notifcation. This is not a template, and is text based.
+
+<<<
+
+[[__merchantNotifcation]]
+=== Merchant Notification
+
+If this notification is enabled, it will send notification emails to the email specified in the *To* field anytime a review is placed on the store (front-end submission only)
+
+*Please Note:*
+
+- The *from* email acts the same way as the *Miva Template Based Emails*. If you are having issues with the mail notification settings, please contact your host.
+
+[[__merchantNotifcationOptions]]
+==== Merchant Notification Options
+
+*Notification Enabled*
+
+_Default: Not enabled_
+
+Enabling this will start sending notification emails to the email specified in the *To* field anytime a review is placed on the store.
+
+*To*
+
+_Default: Store Email_
+
+This is the to email for the email notification. This is not a template, and is text based.
+
+*From*
+
+_Default: Store Email_
+
+This is the from email for the email notification. This is not a template, and is text based.
+
+*CC*
+
+_Default: None_
+
+This is the CC email for the email notification. This is not a template, and is text based.
+
+*BCC*
+
+_Default: None_
+
+This is the BCC email for the email notification. This is not a template, and is text based.
+
+*Subject*
+
+_Default: You have Received a Product Review on [ Store Name ]_
+
+This is the subject for the email notifcation. This is not a template, and is text based.
+
+<<<
+
+[[__customerNotifcation]]
+=== Customer Notification
+
+This notification is sent to customers who opt in to be notified when their review is approved. If you do not want this email as an option, simply remove the input field for the notification opt-in in the template/ front-end.
+
+*Please Note:*
+
+- The *from* email acts the same way as the *Miva Template Based Emails*. If you are having issues with the mail notification settings, please contact your host.
+
+[[__customerNotifcationOptions]]
+==== Customer Notification Options
+
+*From*
+
+_Default: Store Email_
+
+This is the from email for the email notification. This is not a template, and is text based.
+
+*CC*
+
+_Default: None_
+
+This is the CC email for the email notification. This is not a template, and is text based.
+
+*BCC*
+
+_Default: None_
+
+This is the BCC email for the email notification. This is not a template, and is text based.
+
+*Subject*
+
+_Default: Your Recent Product Review on [ Store Name ]_
+
+This is the subject for the email notifcation. This is not a template, and is text based.
+

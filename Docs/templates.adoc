@@ -1,0 +1,94 @@
+<<<
+
+[[_templates]]
+== Templates
+
+There are *3* templates you can edit with in the Module Settings, which are controlled by the *tgreviews* item, and *3* templates that are used for body content in email notifications.
+
+[[__itemTemplates]]
+=== Item Templates
+
+[[___presubmissionLogic]]
+==== Pre-Submission Logic Template
+
+This template will be run before the normal validation for a user submitted review. This logic will not run when importing reviews via the Import, JSON API, or Admin.
+
+The following variables are available to set in the template:
+
+*Allow Same Reviewer*
+
+[source,xml]
+----
+<mvt:assign name="l.settings:tgreviews_prelogic:allow_same_reviewer" value="1" />
+----
+
+If this is set to *1*, it will bypass the check to see if that user has already submitted a review (approved or not). If this variable is set to *0*, or is *null/empty*, it will first check by email address, then (if logged in) by customer id.
+
+*Allow Submission*
+
+[source,xml]
+----
+<mvt:assign name="l.settings:tgreviews_prelogic:allow_submission" value="0" />
+----
+
+If you need to do your own validation checks (ex. spam filtering), this variable can be set to *0* to hault the review from submitting. If this variable is set to *1*, or is *null/empty*, it will default to the module settings.
+
+*Please Note:* If you are haulting the review, you will need to return your own error message and handle that in the template code.
+
+*Approve Submission*
+
+[source,xml]
+----
+<mvt:assign name="l.settings:tgreviews_prelogic:approve" value="1" />
+----
+
+If you want to allow the review to go through and be auto-approved (ex. rating is 4 and over, approve it), the variable can be set to *1*. If this is set to *0*, or is *null/empty*, it will default to the module settings.
+
+<<<
+
+[[___reviewFormTemplate]]
+==== Review Form Template
+
+This template will be rendered when the following item is called on the page:
+
+[source,xml]
+----
+<mvt:item name="tgreviews" param="Form_Template()" />
+----
+
+[[___reviewsTemplate]]
+==== Reviews Template
+
+This template will be rendered when the following item is called on the page:
+
+[source,xml]
+----
+<mvt:item name="tgreviews" param="Reviews_Template( l.settings:product:id )" />
+----
+
+<<<
+
+[[__emailTemplates]]
+=== Email Templates
+
+[[___mailAfterEmailTemplate]]
+==== Reviews Email Template: Mail After
+
+Page Code: *TGR_MailAfter_Email*
+
+This template is used as the body content for the *Mail After Email Notification*
+
+[[___merchantNotificationEmailTemplate]]
+==== Reviews Email Template: Merchant Notification
+
+Page Code: *TGR_Merchant_Email*
+
+This template is used as the body content for the *Merchant Notification*
+
+[[___customerNotificationEmailTemplate]]
+==== Reviews Email Template: Customer Notification
+
+Page Code: *TGR_Customer_Email*
+
+This template is used as the body content for the *Customer Notification*
+
