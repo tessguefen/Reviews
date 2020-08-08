@@ -11,4 +11,4 @@ fonts/
 	roboto-bold_italic.ttf
 
 
-asciidoctor-pdf -a pdf-stylesdir=themes -a pdf-style=basic -a pdf-fontsdir=fonts tgreviews-documentation.adoc
+asciidoctor-pdf -a pdf-stylesdir=themes -a imagesdir=images -a pdf-style=basic -a pdf-fontsdir=fonts tgreviews-documentation.adoc

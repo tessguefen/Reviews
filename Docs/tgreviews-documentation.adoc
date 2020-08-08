@@ -1,7 +1,11 @@
 :source-highlighter: rouge
 include::titlepage.adoc[]
 include::setup.adoc[]
+include::scheduledtasks.adoc[]
 include::settings.adoc[]
+include::technical-setup.adoc[]
+include::customfields.adoc[]
 include::templates.adoc[]
-include::tgreviews_item.adoc[]
-include::json_api.adoc[]
+include::tgreviews-item.adoc[]
+include::import-export.adoc[]
+include::json-api.adoc[]

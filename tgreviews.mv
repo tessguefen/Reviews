@@ -3,7 +3,7 @@
 <MvCOMMENT>
 |
 | Prefix         : MOD-SYS-TGR-
-| Next Error Code: 141
+| Next Error Code: 143
 |
 </MvCOMMENT>
 
@@ -1953,6 +1953,7 @@
 					NOT [ g.Module_JSON ].JSON_Input_Number(	'R', 			'Rating',		l.review:rating,	-1, -1 )	OR
 					NOT [ g.Module_JSON ].JSON_Input_Boolean(	'o', 			'Notify',		l.review:notify )				OR
 					NOT [ g.Module_JSON ].JSON_Input_Boolean(	'o', 			'Verified',		l.review:verified )				OR
+					NOT [ g.Module_JSON ].JSON_Input_Number(	'o', 			'Notified',		l.review:notified,	-1, -1 )	OR
 					NOT [ g.Module_JSON ].JSON_Input_Text(		'o', 			'Store_Reply',	l.review:store_rply )			OR
 					NOT [ g.Module_JSON ].JSON_Input_Text(		l.fld_name,		'Name',			l.review:name )					OR
 					NOT [ g.Module_JSON ].JSON_Input_Text(		l.fld_email,	'Email',		l.review:email )				OR
@@ -2229,9 +2230,11 @@
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_InputErrors() }">
 	</MvIF>
 
-	<MvIF EXPR = "{ NOT TGReviewsAdditionalField_Load_ID( l.additionalfield:id, l.previous_additionalfield ) }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'ID', 'An Additional Field with the id \'' $ l.additionalfield:id $ '\' not found' ) }">
+	<MvIF EXPR = "{ NOT TGReviewsAdditionalField_Load_ID( l.additionalfield_id, l.previous_additionalfield ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_JSON ].JSON_Response_FieldError( 'ID', 'An Additional Field with the id \'' $ l.additionalfield_id $ '\' not found' ) }">
 	</MvIF>
+
+	<MvASSIGN NAME = "l.additionalfield" VALUE = "{ l.previous_additionalfield }">
 
 	<MvIF EXPR = "{ NOT [ g.Module_JSON ].JSON_Input_Code( 		'O', 'Code',	l.additionalfield:code )			OR
 					NOT [ g.Module_JSON ].JSON_Input_Text(		'O', 'Name',	l.additionalfield:name ) }">
@@ -3834,6 +3837,7 @@
 	<MvEVAL EXPR = "{ ReviewExport_Export_Line( l.output_file, 
 		miva_csv_encode( 'CREATED',			g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
 		miva_csv_encode( 'PRODUCT_CODE',	g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+		miva_csv_encode( 'CUSTOMER_LOGIN',	g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
 		miva_csv_encode( 'ORDER_ID',		g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
 		miva_csv_encode( 'APPROVED',		g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
 		miva_csv_encode( 'RATING',			g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
@@ -3891,9 +3895,18 @@
 				<MvASSIGN NAME = "l.review:notified_formatted"		VALUE = "{ l.review:formatted_notified_date $ ' ' $ l.review:formatted_notified_time }">
 			</MvIF>
 
+			<MvASSIGN NAME = "l.review:customer_login" 				VALUE = "">
+
+			<MvIF EXPR = "{ l.review:cust_id GT 0 }">
+				<MvIF EXPR = "{ [ g.Module_Feature_CUS_DB ].Customer_Load_ID_Cached( l.review:cust_id, l.customer ) }">
+					<MvASSIGN NAME = "l.review:customer_login"		VALUE = "{ l.customer:login }">
+				</MvIF>
+			</MvIF>
+
 			<MvEVAL EXPR = "{ ReviewExport_Export_Line( l.output_file, 
 				miva_csv_encode( l.review:created_formatted,	g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
 				miva_csv_encode( l.review:product:code,			g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
+				miva_csv_encode( l.review:customer_login,		g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
 				miva_csv_encode( l.review:order_id,				g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
 				miva_csv_encode( l.review:approved,				g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
 				miva_csv_encode( l.review:rating,				g.ReviewExport_Delimiter ) $ g.ReviewExport_Delimiter $
@@ -3977,6 +3990,7 @@
 	<MvCOMMENT>											field			name						header						required						default			validation		</MvCOMMENT>
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'created',				'Created',					'CREATED',				0,								'',			'time_t' ) }">
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'product_code',			'Product Code',				'PRODUCT_CODE',			1,								'',			'code' ) }">
+	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'customer_login',		'Customer Login',			'CUSTOMER_LOGIN',		0,								'',			'string' ) }">
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'order_id',				'Order ID',					'ORDER_ID',				0,								0,			'integer_nonneg' ) }">
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'approved',				'Approved',					'APPROVED',				1,								0,			'bool' ) }">
 	<MvEVAL EXPR = "{ Add_Standard_Column( l.columns,	'rating',				'Rating',					'RATING',				1,								'',			'integer_nonneg' ) }">
@@ -4038,12 +4052,25 @@
 		</MvIF>
 	</MvIF>
 
+	<MvIF EXPR = "{ NOT ISNULL l.record:customer_login }">
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_CUS_DB ].Customer_Load_Login( l.record:customer_login, l.customer ) }">
+			<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].Error_Is_EOF() }">
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+		</MvIF>
+	</MvIF>
+
 	<MvIF EXPR = "{ NOT l.product:id }">
 		<MvEVAL EXPR = "{ Record_Skip( l.session, 'Product Code not found' ) }">
 		<MvFUNCTIONRETURN VALUE = 1>
 	</MvIF>
 
-	<MvFUNCTIONRETURN VALUE = "{ Review_Import( l.import, l.session, l.record, l.product, l.run_data ) }">
+	<MvIF EXPR = "{ NOT ISNULL l.record:customer_login AND NOT l.customer:id }">
+		<MvEVAL EXPR = "{ Record_Skip( l.session, 'Customer Login not found' ) }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = "{ Review_Import( l.import, l.session, l.record, l.product, l.customer, l.run_data ) }">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ImportModule_Delimited_Import_End" PARAMETERS = "module var, import var, session var, run_data var" STANDARDOUTPUTLEVEL = "">
@@ -4086,7 +4113,7 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Review_Import" PARAMETERS = "import var, session var, record var, product var, run_data var" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Review_Import" PARAMETERS = "import var, session var, record var, product var, customer var, run_data var" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ NOT Validate_Fields_Create( l.session, l.record, l.run_data ) }">
 		<MvFUNCTIONRETURN VALUE = 1>
 	</MvIF>
@@ -4094,6 +4121,10 @@
 	<MvASSIGN NAME = "l.review:created"		VALUE = "{ l.record:created }">
 	<MvASSIGN NAME = "l.review:product_id"	VALUE = "{ l.product:id }">
 	<MvASSIGN NAME = "l.review:order_id"	VALUE = "{ l.record:order_id }">
+	<MvASSIGN NAME = "l.review:cust_id"		VALUE = 0>
+	<MvIF EXPR = "{ l.customer:id }">
+		<MvASSIGN NAME = "l.review:cust_id"	VALUE = "{ l.customer:id }">
+	</MvIF>
 	<MvASSIGN NAME = "l.review:approved"	VALUE = "{ l.record:approved }">
 	<MvASSIGN NAME = "l.review:rating"		VALUE = "{ l.record:rating }">
 	<MvASSIGN NAME = "l.review:name"		VALUE = "{ l.record:name }">
@@ -5694,7 +5725,47 @@
 	<MvFUNCTIONRETURN VALUE = "{ miva_json_decode( l.google_response, l.data ) AND l.data:success }">
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Product_Review_Check_Verified" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = ""  ERROROUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Product_Review_Check_Verified" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ l.review:cust_id GT 0 }">
+		<MvIF EXPR = "{ Product_Review_Check_Verified_Customer( l.review ) }">
+			<MvFUNCTIONRETURN VALUE = 1>
+		</MvIF>
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = "{ Product_Review_Check_Verified_Email( l.review ) }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Product_Review_Check_Verified_Customer" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = ""  ERROROUTPUTLEVEL = "">
+	<MvOPENVIEW	NAME	= "Merchant"
+				VIEW	= "Product_Review_Check_Verified"
+				QUERY	= "{'SELECT
+								o.id
+							 FROM '
+								$ g.Store_Table_Prefix $ 'Orders o
+							 LEFT JOIN '
+								$ g.Store_Table_Prefix $ 'OrderItems oi
+							 ON
+								oi.order_id = o.id
+							 WHERE
+								o.cust_id = ? AND
+								oi.product_id = ?
+							 LIMIT 1' }"
+				FIELDS	= "l.review:cust_id, l.review:product_id">
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00141', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ Product_Review_Check_Verified.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "Product_Review_Check_Verified">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( 'MOD-SYS-TGR-00142' ) }">
+	</MvIF>
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "Product_Review_Check_Verified">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Product_Review_Check_Verified_Email" PARAMETERS = "review var" STANDARDOUTPUTLEVEL = ""  ERROROUTPUTLEVEL = "">
 	<MvOPENVIEW	NAME	= "Merchant"
 				VIEW	= "Product_Review_Check_Verified"
 				QUERY	= "{'SELECT
