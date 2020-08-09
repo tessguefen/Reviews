@@ -18,7 +18,7 @@
 
 ``Reviews_Template( product_id )``
 
-This will return the ``reviews`` array to ``l.settings:tgr:reviews``. If you do not pass a product id (or put 0/ an empty string), it will return all approved product reviews.
+This will return the ``reviews`` structure to ``l.settings:tgr:reviews``. If you do not pass a product id (or put 0/ an empty string), it will return all approved product reviews.
 
 [source,xml]
 ----

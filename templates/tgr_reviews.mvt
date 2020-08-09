@@ -315,6 +315,13 @@
 
 	<div class="tgreviews-reviews">
 		<mvt:foreach iterator="review" array="tgr:reviews">
+			<mvt:if expr="ISNULL l.settings:product:id">
+				<mvt:do file="g.Module_Library_DB" name="l.success" value="Product_Load_ID_Cached( l.settings:review:product_id, l.settings:review:product )" />
+				<mvt:if expr="NOT l.settings:review:product:active">
+					<mvt:foreachcontinue />
+				</mvt:if>
+			</mvt:if>
+
 			<div class="tgreviews-review">
 
 				<div class="tgreviews-rating-title">
@@ -340,6 +347,10 @@
 					<mvt:item name="tgreviews" param="Date( 'F jS, Y', l.settings:review:created, l.settings:review:formatted_created )" />
 					&mvte:review:name;<mvt:if expr="l.settings:review:location"> (&mvte:review:location;)</mvt:if> | &mvte:review:formatted_created;
 				</div>
+
+				<mvt:if expr="ISNULL l.settings:product:id">
+					<span class="u-font-small">Review for &mvte:review:product:name;</span>
+				</mvt:if>
 
 				<mvt:if expr="miva_array_elements( l.settings:review:additional_fields ) GT 0">
 					<div class="tgreviews-review__additionalfields">

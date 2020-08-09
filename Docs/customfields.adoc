@@ -20,11 +20,14 @@ The following can be used for exporting, and can be utilized in the JSON API usi
 |tgr_review_count|Product Review Count|The count of approved reviews for the specified product
 |===
 
+<<<
 
 [[__facets]]
 === Facets
 
 The following facets will be available if you're utilizing Miva's Facet system.
+
+image::facets.png[Facet Setting]
 
 [stripes=odd]
 |===

@@ -2871,8 +2871,10 @@
 <MvFUNCTION NAME = "Reviews_Load_Query_Cached" PARAMETERS = "product_id, rating_filter, offset, max, sort, nextoffset var, output var"  STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.id"								VALUE = "{ int( l.product_id ) }">
 
-	<MvIF EXPR = "{ l.id LE 0 }">
+	<MvIF EXPR = "{ l.id LT 0 }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( 'MOD-SYS-TGR-00045' ) }">
+	<MvELSEIF EXPR = "{ l.id EQ 0 }">
+		<MvFUNCTIONRETURN VALUE = "{ Reviews_Load_Query( 0, l.rating_filter, l.offset, l.max, l.sort, l.nextoffset, l.output ) }">
 	</MvIF>
 
 	<MvREFERENCEARRAY NAME = "l.cache" 					VARIABLE = "g.Session:cache:reviews_load_query_cache">
@@ -2952,8 +2954,10 @@
 <MvFUNCTION NAME = "Product_Review_Breakdowns_Load_Cached" PARAMETERS = "product_id, breakdowns var"  STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.id"								VALUE = "{ int( l.product_id ) }">
 
-	<MvIF EXPR = "{ l.id LE 0 }">
+	<MvIF EXPR = "{ l.id LT 0 }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( 'MOD-SYS-TGR-00047' ) }">
+	<MvELSEIF EXPR = "{ l.id EQ 0 }">
+		<MvFUNCTIONRETURN VALUE = "{ Product_Review_Breakdowns_Load_All_Cached( l.breakdowns ) }">
 	</MvIF>
 
 	<MvREFERENCEARRAY NAME = "l.cache" 					VARIABLE = "g.Session:cache:product_review_breakdowns_load_cache">
@@ -2981,6 +2985,66 @@
 	</MvIF>
 
 	<MvASSIGN NAME = "l.breakdowns"						VALUE = "{ l.cache:breakdowns }">
+
+	<MvFUNCTIONRETURN VALUE = "{ l.cache:result }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Product_Review_Breakdowns_Load_All" PARAMETERS = "breakdowns var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.breakdowns" VALUE = "">
+
+	<MvOPENVIEW NAME	= "Merchant"
+				VIEW	= "TGReviewsProducts"
+				QUERY	= "{ 'SELECT COUNT(rating) as rating_count, rating FROM ' $ g.Store_Table_Prefix $ 'TGReviewsProducts WHERE approved = 1 GROUP BY rating' }">
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvWHILE EXPR = "{ NOT TGReviewsProducts.d.EOF }">
+		<MvASSIGN NAME = "l.breakdowns" INDEX = "{ TGReviewsProducts.d.rating }" MEMBER = "rating"	VALUE = "{ TGReviewsProducts.d.rating }">
+		<MvASSIGN NAME = "l.breakdowns" INDEX = "{ TGReviewsProducts.d.rating }" MEMBER = "count"	VALUE = "{ TGReviewsProducts.d.rating_count }">
+
+		<MvSKIP NAME = "Merchant" VIEW = "TGReviewsProducts" ROWS = 1>
+	</MvWHILE>
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
+
+	<MvASSIGN NAME = "l.count" VALUE = 0>
+
+	<MvWHILE EXPR = "{ l.count LT 5 }">
+		<MvASSIGN NAME = "l.count" VALUE = "{ l.count + 1 }">
+
+		<MvIF EXPR = "{ l.breakdowns[ l.count ] }">
+			<MvWHILECONTINUE>
+		</MvIF>
+
+		<MvASSIGN NAME = "l.breakdowns" INDEX = "{ l.count }" MEMBER = "rating"	VALUE = "{ l.count }">
+		<MvASSIGN NAME = "l.breakdowns" INDEX = "{ l.count }" MEMBER = "count"	VALUE = 0>
+	</MvWHILE>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Product_Review_Breakdowns_Load_All_Cached" PARAMETERS = "breakdowns var" STANDARDOUTPUTLEVEL = "">
+	<MvREFERENCE NAME = "l.cache"						VARIABLE = "g.Session:cache:product_review_breakdowns_load_all_cached">
+
+	<MvIF EXPR = "{ ISNULL l.cache:result }">
+		<MvASSIGN NAME = "l.cache:result"				VALUE = "{ Product_Review_Breakdowns_Load_All( l.cache:breakdowns ) }">
+		<MvIF EXPR = "{ NOT l.cache:result }">
+			<MvASSIGN NAME = "l.cache:error_code"		VALUE = "{ g.Error_Code }">
+			<MvASSIGN NAME = "l.cache:error_message"	VALUE = "{ g.Error_Message }">
+			<MvASSIGN NAME = "l.cache:error_db_eof"		VALUE = "{ g.Error_DB_EOF }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT l.cache:result }">
+		<MvIF EXPR = "{ l.cache:error_db_eof }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( l.cache:error_code ) }">
+		</MvIF>
+
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( l.cache:error_code, l.cache:error_message ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.breakdowns"				VALUE = "{ l.cache:breakdowns }">
 
 	<MvFUNCTIONRETURN VALUE = "{ l.cache:result }">
 </MvFUNCTION>
@@ -4739,9 +4803,12 @@
 <MvFUNCTION NAME = "TGReviewsProductsAverage_Load_Cached" PARAMETERS = "product_id, product_rating var" STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.id"								VALUE = "{ int( l.product_id ) }">
 
-	<MvIF EXPR = "{ l.id LE 0 }">
+	<MvIF EXPR = "{ l.id LT 0 }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( 'MOD-SYS-TGR-00084' ) }">
+	<MvELSEIF EXPR = "{ l.id EQ 0 }">
+		<MvFUNCTIONRETURN VALUE = "{ TGReviewsProductsAverageAll_Load_Cached( l.product_rating ) }">
 	</MvIF>
+	
 
 	<MvREFERENCEARRAY NAME = "l.cache"					VARIABLE = "g.Session:cache:TGReviewsProductsAverage_Load_Cached">
 		<MvDIMENSION INDEX = "{ l.id }">
@@ -4765,6 +4832,61 @@
 	</MvIF>
 
 	<MvASSIGN NAME = "l.product_rating"					VALUE = "{ l.cache:product_rating }">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsProductsAverageAll_Load_Cached" PARAMETERS = "product_rating var" STANDARDOUTPUTLEVEL = "">
+	<MvREFERENCE NAME = "l.cache"						VARIABLE = "g.Session:cache:tgreviewsproductsaverageall_load_cached">
+
+	<MvIF EXPR = "{ ISNULL l.cache:result }">
+		<MvASSIGN NAME = "l.cache:result"				VALUE = "{ TGReviewsProductsAverageAll_Load( l.cache:product_rating ) }">
+		<MvIF EXPR = "{ NOT l.cache:result }">
+			<MvASSIGN NAME = "l.cache:error_code"		VALUE = "{ g.Error_Code }">
+			<MvASSIGN NAME = "l.cache:error_message"	VALUE = "{ g.Error_Message }">
+			<MvASSIGN NAME = "l.cache:error_db_eof"		VALUE = "{ g.Error_DB_EOF }">
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT l.cache:result }">
+		<MvIF EXPR = "{ l.cache:error_db_eof }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( l.cache:error_code ) }">
+		</MvIF>
+
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( l.cache:error_code, l.cache:error_message ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.product_rating"				VALUE = "{ l.cache:product_rating }">
+
+	<MvFUNCTIONRETURN VALUE = "{ l.cache:result }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "TGReviewsProductsAverageAll_Load" PARAMETERS = "review_averages var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvOPENVIEW NAME	= "Merchant"
+				VIEW	= "TGReviewsProductsAverages"
+				QUERY	= "{ 'SELECT ROUND( AVG( rating ), 2) as tgr_rating, COUNT( rating ) as tgr_review_count FROM ' $ g.Store_Table_Prefix $ 'TGReviewsProductsAverages' }">
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ TGReviewsProductsAverages.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProductsAverages">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error#' ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.review_averages:rating"				VALUE = "{ TGReviewsProductsAverages.d.tgr_rating }">
+	<MvASSIGN NAME = "l.review_averages:rtng_count"			VALUE = "{ TGReviewsProductsAverages.d.tgr_review_count }">
+
+	<MvCOMMENT>
+	|
+	|	Backwards Compatibility for the customfield codes
+	|
+	</MvCOMMENT>
+
+	<MvASSIGN NAME = "l.review_averages:tgr_rating"			VALUE = "{ TGReviewsProductsAverages.d.tgr_rating }">
+	<MvASSIGN NAME = "l.review_averages:tgr_review_count"	VALUE = "{ TGReviewsProductsAverages.d.tgr_review_count }">
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProductsAverages">
 
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>

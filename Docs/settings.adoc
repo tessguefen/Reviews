@@ -78,7 +78,7 @@ You will need to <<_scheduledTasks,create the Mail After Task>>, and have it ena
 |===
 |Option|Default|Description
 |Notification Enabled|Not enabled|Enabling this will start adding orders to the queue. This must be paired with the scheduled task (<<__mailAfterNotification,see above for more information>>)
-|Send After X day(s)|7|This is the amount of days you want to wait until sending the email off to the customer
+|Send After X day(s)|7|This is the amount of days you want to wait until sending the email off to the customer (based off the `After` setting)
 |After|Order Date|You can select between two options: *Order Date* or *Shipment Date*. Shipment date will be based off the first shipment that is found for that order.
 |From|Store Email|This is the from email for the email notification. This is not a template, and is text based.
 |CC|None|This is the CC email for the email notification. This is not a template, and is text based.
