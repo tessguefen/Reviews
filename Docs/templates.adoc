@@ -42,7 +42,7 @@ If you need to do your own validation checks (ex. spam filtering), this variable
 <mvt:assign name="l.settings:tgreviews_prelogic:approve" value="1" />
 ----
 
-If you want to allow the review to go through and be auto-approved (ex. rating is 4 and over, approve it), the variable can be set to *1*. If this is set to *0*, or is *null/empty*, it will default to the module settings.
+If you want to allow the review to go through and be auto-approved (ex. rating is 4 and over, approve it), the variable can be set to *1*. If this is set to *0*, and you have auto-approve on, this will ovewrite that setting and not approve the review. If it *is null/ empty*, it will default to the module settings.
 
 <<<
 
