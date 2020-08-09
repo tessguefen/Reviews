@@ -105,7 +105,7 @@ function ProductReview_List( product, auto_approve )
 		self.Feature_OnDemandColumns_Enable();
 
 		if (self.product && self.product.id) {
-			self.OnSearch_GetFilter_AddHook( this.Product_onSearch_GetFilter );
+			self.OnSearch_GetFilter_AddHook( self.Product_onSearch_GetFilter );
 		}
 
 		if ( CanI( 'SYSM', 0, 1, 0, 0 ) ) {
@@ -249,7 +249,14 @@ ProductReview_List.prototype.onCreate = function()
 
 ProductReview_List.prototype.Product_onSearch_GetFilter = function()
 {
-	return [ 'Product_ID:' + encodeURIComponent( this.product.id ) ];
+	var self = this;
+
+	return [ new MMBatchList_Filter( 'search', [{
+			"field": "product_id",
+			"operator": "EQ",
+			"value": self.product.id
+		}]
+	)];
 }
 
 ProductReview_List.prototype.onSave = function( item, callback, delegator ) {
