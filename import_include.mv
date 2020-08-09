@@ -1,71 +1,49 @@
+<MIVA STANDARDOUTPUTLEVEL = "">
+
 <MvCOMMENT>
-| ========================================================================================================================
-|   REVIEW IMPORT FUNCTIONS
-| ========================================================================================================================
+|
+| Helper functions
+|
 </MvCOMMENT>
-<MvFUNCTION NAME = "Reviews_Import" PARAMETERS = "import var, session var, record var, run_data var" STANDARDOUTPUTLEVEL = "">
-	<MvIF EXPR = "{ NOT Validate_Fields_Create( l.session, l.record, l.run_data ) }">
-		<MvFUNCTIONRETURN VALUE = 1>
-	</MvIF>
 
-	<MvFOREACH ITERATOR = "l.column" ARRAY = "l.run_data:columns_all">
-		<MvEVAL EXPR = "{ Set_Field_Default( l.session, l.record, l.run_data, l.column ) }">
-	</MvFOREACH>
-	
-	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].Product_Load_Code( l.record:product_code, l.record:product ) }">
-		<MvEVAL EXPR = "{ Record_Skip( l.session, 'Could not load product with code:' $ l.record:product_code ) }">
-		<MvFUNCTIONRETURN VALUE = 1>
-	</MvIF>
+<MvFUNCTION NAME = "Record_Skip" PARAMETERS = "session var, message" STANDARDOUTPUTLEVEL = "">
+	<MvEVAL EXPR = "{ [ g.Module_Feature_IMP_UT ].Import_Session_Delimited_Log( l.session, 'Skipped - ' $ l.message ) }">
+	<MvEVAL EXPR = "{ [ g.Module_Feature_IMP_UT ].Import_Session_StatusField_Increment( l.session, 'records_skipped', 1 ) }">
+</MvFUNCTION>
 
-	<MvASSIGN NAME = "l.record:product_id" VALUE = "{ l.record:product:id }">
+<MvFUNCTION NAME = "Record_Problem" PARAMETERS = "session var, message" STANDARDOUTPUTLEVEL = "">
+	<MvEVAL EXPR = "{ [ g.Module_Feature_IMP_UT ].Import_Session_Delimited_Log( l.session, 'Record Problem - ' $ l.message ) }">
+	<MvEVAL EXPR = "{ [ g.Module_Feature_IMP_UT ].Import_Session_StatusField_Increment( l.session, 'record_problems', 1 ) }">
+</MvFUNCTION>
 
-	<MvASSIGN NAME = "l.record:id" VALUE = "0" />
-
-	<MvIF EXPR = "{ Product_Review_Similar( l.record ) }">
-		<MvEVAL EXPR = "{ Record_Skip( l.session, 'Similar Review found (product code, title, summary & email match)' ) }">
-		<MvFUNCTIONRETURN VALUE = 1>
-	</MvIF>
-
-	<MvIF EXPR = "{ l.record:rating LT 1 OR l.record:rating GT 5 }">
-		<MvEVAL EXPR = "{ Record_Skip( l.session, 'Rating must be 1-5.' ) }">
-		<MvFUNCTIONRETURN VALUE = 1>
-	</MvIF>
-
-	<MvIF EXPR = "{ NOT ( ISNULL l.record:email ) AND  ( NOT [ g.Module_Admin ].Validate_Email( l.record:email ) ) }">
-		<MvEVAL EXPR = "{ Record_Skip( l.session, 'Email specified is not a valid email:' $ l.record:email ) }">
-		<MvFUNCTIONRETURN VALUE = 1>
-	</MvIF>
-
-	<MvIF EXPR = "{ ISNULL l.record:created }">
-		<MvASSIGN NAME = "l.record:created" VALUE = "{ s.dyn_time_t }">
-	</MvIF>
-
-	<MvIF EXPR = "{ NOT Product_Reviews_Insert( l.record ) }">
-		<MvEVAL EXPR = "{ Record_Skip( l.session, g.Review_Error ) }">
-		<MvFUNCTIONRETURN VALUE = 1>
-	</MvIF>
-
-
-	<MvFOREACH ITERATOR = "l.field" ARRAY = "l.members" COUNT = "{ miva_struct_members( l.record, l.members ) }">
-		<MvASSIGN NAME = "l.value" VALUE = "{ miva_variable_value( 'l.record:' $ l.field ) }">
-		<MvIF EXPR = "{ ( 'field_' CIN l.field ) AND l.value }">
-			<MvASSIGN NAME = "l.clean_field" VALUE = "{ substring_var( l.field, 7, ( len_var( l.field ) - 6 ) ) }" />
-			<MvASSIGN NAME = "l.record_fields"  MEMBER = "{ l.clean_field }" VALUE = "{ l.value }">
+<MvFUNCTION NAME = "Validate_Fields_Create" PARAMETERS = "session var, product var, run_data var" STANDARDOUTPUTLEVEL = "">
+	<MvFOREACH ITERATOR = "l.column" ARRAY = "l.run_data:columns_list">
+		<MvIF EXPR = "{ NOT Validate_Field( l.session, l.product, l.run_data, l.column, l.column:required ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
 	</MvFOREACH>
 
-	<MvIF EXPR = "{ NOT ISNULL ( l.record_fields ) }">
-		<MvASSIGN NAME = "l.void" VALUE = "{ Product_Reviews_AdditionalValues_InsertUpdate_LowLevel( l.record:id, l.record_fields ) }">
-	</MvIF>
+	<MvFOREACH ITERATOR = "l.column" ARRAY = "l.run_data:columns_all">
+		<MvEVAL EXPR = "{ Set_Field_Default( l.session, l.product, l.run_data, l.column ) }">
+	</MvFOREACH>
 
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
+<MvFUNCTION NAME = "Validate_Fields_Update" PARAMETERS = "session var, product var, run_data var" STANDARDOUTPUTLEVEL = "">
+	<MvFOREACH ITERATOR = "l.column" ARRAY = "l.run_data:columns_list">
+		<MvIF EXPR = "{ NOT Validate_Field( l.session, l.product, l.run_data, l.column, 0 ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+	</MvFOREACH>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
 
 <MvCOMMENT>
-| ========================================================================================================================
-|   VALIDATE FUNCTIONS
-| ========================================================================================================================
+|
+| Validation Functions
+|
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "Validate_Code" PARAMETERS = "session var, record var, column var, required" STANDARDOUTPUTLEVEL = "">
@@ -404,9 +382,9 @@
 </MvFUNCTION>
 
 <MvCOMMENT>
-| ========================================================================================================================
-|   MISCELLANEOUS UTILITY FUNCTIONS
-| ========================================================================================================================
+|
+| Miscellaneous Utility Functions
+|
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "Create_Columns_Present" PARAMETERS = "import var, columns_present var" STANDARDOUTPUTLEVEL = "">
@@ -430,60 +408,24 @@
 	<MvREFERENCE    NAME = "l.columns"              INDEX = "{ l.column_pos }"      VARIABLE = "l.column">
 </MvFUNCTION>
 
+<MvFUNCTION NAME = "Add_Custom_Field_Column" PARAMETERS = "columns var, field var, module var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN       NAME = "l.column:field"         VALUE = "{ 'custom-' $ l.field:code }">
+	<MvASSIGN       NAME = "l.column:name"          VALUE = "{ l.field:name }">
+	<MvASSIGN       NAME = "l.column:header"        VALUE = "{ toupper( glosub( l.field:name, ' ', '_' ) ) }">
+	<MvASSIGN       NAME = "l.column:required"      VALUE = 0>
+	<MvASSIGN       NAME = "l.column:default"       VALUE = "">
+	<MvASSIGN       NAME = "l.column:validation"    VALUE = "string">
+	<MvASSIGN       NAME = "l.column:code"          VALUE = "{ l.field:code }">
+	<MvASSIGN       NAME = "l.column:module"        VALUE = "{ l.module }">
+
+	<MvASSIGN       NAME = "l.column_pos"           VALUE = "{ miva_array_max( l.columns ) + 1 }">
+	<MvREFERENCE    NAME = "l.columns"              INDEX = "{ l.column_pos }"      VARIABLE = "l.column">
+</MvFUNCTION>
+
 <MvFUNCTION NAME = "Add_Status_Field" PARAMETERS = "fields var, code, prompt, initial" STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN       NAME = "l.field_pos"        VALUE = "{ miva_array_max( l.fields ) + 1 }">
 	<MvREFERENCE    NAME = "l.field"            VARIABLE = "{ 'l.fields[' $ l.field_pos $ ']' }">
 	<MvASSIGN       NAME = "l.field:code"       VALUE = "{ l.code }">
 	<MvASSIGN       NAME = "l.field:prompt"     VALUE = "{ l.prompt }">
 	<MvASSIGN       NAME = "l.field:initial"    VALUE = "{ l.initial }">
-</MvFUNCTION>
-
-
-<MvCOMMENT>
-| ========================================================================================================================
-|   HELPER FUNCTIONS
-| ========================================================================================================================
-</MvCOMMENT>
-
-
-<MvFUNCTION NAME = "Validate_Columns" PARAMETERS = "import var, columns_present var" STANDARDOUTPUTLEVEL = "">
-	<MvIF EXPR = "{ NOT l.columns_present:product_code OR NOT l.columns_present:rating OR NOT l.columns_present:title OR NOT l.columns_present:summary }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'TGReviews-IMPORT-0002', 'Product Code, Rating, Title & Summary must be present.' ) }">
-	</MvIF>
-
-	<MvFUNCTIONRETURN VALUE = 1>
-</MvFUNCTION>
-
-<MvFUNCTION NAME = "Record_Skip" PARAMETERS = "session var, message" STANDARDOUTPUTLEVEL = "">
-	<MvEVAL EXPR = "{ [ g.Module_Feature_IMP_UT ].Import_Session_Delimited_Log( l.session, 'Skipped - ' $ l.message ) }">
-	<MvEVAL EXPR = "{ [ g.Module_Feature_IMP_UT ].Import_Session_StatusField_Increment( l.session, 'records_skipped', 1 ) }">
-</MvFUNCTION>
-
-<MvFUNCTION NAME = "Record_Problem" PARAMETERS = "session var, message" STANDARDOUTPUTLEVEL = "">
-	<MvEVAL EXPR = "{ [ g.Module_Feature_IMP_UT ].Import_Session_Delimited_Log( l.session, 'Record Problem - ' $ l.message ) }">
-	<MvEVAL EXPR = "{ [ g.Module_Feature_IMP_UT ].Import_Session_StatusField_Increment( l.session, 'record_problems', 1 ) }">
-</MvFUNCTION>
-
-<MvFUNCTION NAME = "Validate_Fields_Create" PARAMETERS = "session var, product var, run_data var" STANDARDOUTPUTLEVEL = "">
-	<MvFOREACH ITERATOR = "l.column" ARRAY = "l.run_data:columns_list">
-		<MvIF EXPR = "{ NOT Validate_Field( l.session, l.product, l.run_data, l.column, l.column:required ) }">
-			<MvFUNCTIONRETURN VALUE = 0>
-		</MvIF>
-	</MvFOREACH>
-
-	<MvFOREACH ITERATOR = "l.column" ARRAY = "l.run_data:columns_all">
-		<MvEVAL EXPR = "{ Set_Field_Default( l.session, l.product, l.run_data, l.column ) }">
-	</MvFOREACH>
-
-	<MvFUNCTIONRETURN VALUE = 1>
-</MvFUNCTION>
-
-<MvFUNCTION NAME = "Validate_Fields_Update" PARAMETERS = "session var, product var, run_data var" STANDARDOUTPUTLEVEL = "">
-	<MvFOREACH ITERATOR = "l.column" ARRAY = "l.run_data:columns_list">
-		<MvIF EXPR = "{ NOT Validate_Field( l.session, l.product, l.run_data, l.column, 0 ) }">
-			<MvFUNCTIONRETURN VALUE = 0>
-		</MvIF>
-	</MvFOREACH>
-
-	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>

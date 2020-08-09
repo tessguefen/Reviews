@@ -1,13 +1,13 @@
+/* eslint-disable */
 function Reviews_ProductLookup_Column( header_text, code, fieldname )
 {
 	MMBatchList_Column.call( this, header_text, code );
 
-	this.SetSortByField( code );
-	this.SetDefaultActive( true );
 	this.SetFieldName( fieldname );
 	this.SetHeaderAttributeList( { 'class': 'mm9_batchlist_column_header' } );
 	this.SetHeaderStyleList( { 'width': '150px' } );
 	this.SetOnDisplayEdit( this.onDisplayEdit );
+	this.SetInvalidateDataOnVisible( true );
 
 	return this;
 }
@@ -16,6 +16,10 @@ DeriveFrom( MMBatchList_Column, Reviews_ProductLookup_Column );
 
 Reviews_ProductLookup_Column.prototype.onDisplayEdit = function( record, item )
 {
+	if (record.id > 0 ) {
+		return DrawMMBatchListString_Data( record.Product.code );
+	}
+
 	var self = this;
 	var container, input, input_container, button;
 
@@ -45,7 +49,7 @@ Reviews_ProductLookup_Column.prototype.Lookup = function( item )
 	dialog		= new ProductLookup_Dialog();
 	dialog.onok	= function()
 	{
-		var i, i_len, inputlist, selected_record;
+		var i, i_len, inputlist, divlist, selected_record;
 
 
 		if ( !item.row || ( ( selected_record = dialog.SelectedProduct() ) === null ) )

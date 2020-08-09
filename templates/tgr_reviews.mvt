@@ -2,20 +2,25 @@
 	No Reviews Yet!
 	<mvt:exit />
 </mvt:if>
+
 <style>
 .tgreivews-breaker {
 	height: 1.5rem;
 	clear: left;
 }
+
 .tgreviews {
-	width: 500px;
+	width: 400px;
 	max-width: 100%;
+	margin: auto;
 }
+
 .tgreviews div {
 	-moz-box-sizing: border-box;
 	-webkit-box-sizing: border-box;
 	box-sizing: border-box;
 }
+
 .tgreviews-average-overlay {
 	overflow: hidden;
 	position: absolute;
@@ -24,9 +29,11 @@
 	white-space: nowrap;
 	color: #000; 
 }
+
 .tgreviews-breakdown {
 	clear: left;
 }
+
 .tgreviews-breakdown__rating,
 .tgreviews-breakdown__count {
 	-webkit-flex:0 0 auto;
@@ -35,9 +42,11 @@
 	-o-flex:0 0 auto;
 	flex:0 0 auto;
 }
+
 .tgreviews-breakdown__rating {
 	text-align: right;
 }
+
 .tgreviews-breakdown__percent {
 	-webkit-flex: 1 1 auto;
 	-moz-flex: 1 1 auto;
@@ -45,33 +54,38 @@
 	-o-flex: 1 1 auto;
 	flex: 1 1 auto;
 }
+
 .tgreviews-breakdown__percentage {
 	height: 5px;
-	background: #ccc;
+	background: #DDDDDD;
 	position: relative;
 	margin-top: 5px;
 }
+
 .tgreviews-breakdown__percentage-overlay {
-	background: #FFED85;
+	background: #FFA500;
 	height: 5px;
 	position: absolute;
 	top: 0;
 	left: 0;
 }
+
 .tgreviews-breakdown__rating,
 .tgreviews-breakdown__percent,
 .tgreviews-breakdown__count {
 	float: left;
 	padding: 2px 5px;
 }
+
 .tgreviews-breakdown__star {
-	-webkit-transform: rotateZ(100deg);
-	transform: rotateZ(100deg);
+	color: #DDDDDD;
 }
+
 .tgreviews-half {
 	float: left;
 	width: 50%;
 }
+
 .tgreviews-sorting,
 .tgreviews-breakdown,
 .tgreviews-flex {
@@ -82,6 +96,7 @@
 	display: flex;
 	align-items: center;
 }
+
 .tgreviews-label,
 .tgreviews-pagination-label {
 	font-size: 11px;
@@ -89,6 +104,7 @@
 	text-transform: uppercase;
 	margin-right: 1rem;
 }
+
 .tgreviews-label {
 	-webkit-flex: 0 0 auto;
 	-moz-flex: 0 0 auto;
@@ -96,84 +112,91 @@
 	-o-flex: 0 0 auto;
 	flex: 0 0 auto;
 }
-.tgreviews-select {
-	padding: 0.75rem 1rem;
-	font-size: 12px;
-	border: 1px solid #cccccc;
-	-moz-box-sizing: border-box;
-	-webkit-box-sizing: border-box;
-	box-sizing: border-box;
-	-webkit-flex: 1 1 auto;
-	-moz-flex: 1 1 auto;
-	-ms-flex: 1 1 auto;
-	-o-flex: 1 1 auto;
-	flex: 1 1 auto;
-}
+
 .tgreviews-average {
 	text-align: center;
 }
+
 .tgreviews-average__star,
 .tgreviews-average__star-overlay {
 	position: relative;
-	color: rgba(0,0,0,.5);
+	color: #DDDDDD;
 }
+
 .tgreviews-average__star {
-	font-size: 1.5rem;
+	font-size: 1.25rem;
 	display: inline-block;
 	position: relative;
 }
+
 .tgreviews-average__star-overlay {
 	position: absolute;
 	top: 0;
 	left: 0;
-	color: #FFED85;
+	color: #FFA500;
 	overflow: hidden;
+	bottom: 0;
+	display: inline-block;
+	text-align: left;
+	white-space: nowrap;
 }
+
 .tgreviews-average__text {
 	font-weight: bold;
 	text-transform: uppercase;
 	font-size: 11px;
 }
+
 .tgreviews-review {
-	border-bottom: 1px solid #ccc;
+	border-bottom: 1px solid #DDDDDD;
 	line-height: 1.5;
 }
+
 .tgreviews-rating-title {
 	margin-bottom: 0.25rem;
 	position: relative;
 	clear: both;
 }
+
 .tgreviews-verified-buyer {
 	font-size: 9px;
 	font-weight: bold;
 	text-transform: uppercase;
 }
+
 .tgreviews-rating-stars {
 	font-size: 1rem;
-	color: #FFED85;
+	color: #FFA500;
 }
+
 .tgreviews-review__rating {
 	padding: 2px 5px;
 	font-size: 11px;
-	border: 1px solid #ccc;
+	border: 1px solid #DDDDDD;
 	margin-right: 0.5rem;
 }
+
 .tgreviews-review__user {
 	font-size: 11px;
 	margin-bottom: 0.25rem;
 }
+
 .tgreviews-review__additionalfields {
 	margin: 0.5rem 0;
 }
+
 .tgreviews-review__addlfield-label {
 	font-weight: bold;
 }
+
 .tgreviews-review__title {
 	float: left;
 }
+
 .tgreviews-review__rating-info {
 	float:right;
 }
+
 .tgreviews-rating-title:before,
 .tgreviews-rating-title:after {
 	content: " ";
@@ -200,20 +223,30 @@
 		<div class="tgreivews-breaker"></div>
 	</mvt:if>
 
-	<div class="tgreviews-row tgreviews-flex">
-		<div class="tgreviews-half tgreviews-flex__div">
+	<div class="o-layout u-grids-2--m u-grids-1 o-layout--align-center">
+		<div class="o-layout__item">
 			<div class="tgreviews-average">
 				<mvt:assign name="l.settings:star_width" value="( l.settings:tgr:avg_rating / 5 ) * 100" />
 				<span class="tgreviews-average__star" title="&mvte:tgr:avg_rating; out of 5.">
-					&#9733;&#9733;&#9733;&#9733;&#9733;
-					<span class="tgreviews-average__star-overlay" style="width:&mvte:star_width;%;">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+					<span class="u-icon-star-full"></span>
+					<span class="u-icon-star-full"></span>
+					<span class="u-icon-star-full"></span>
+					<span class="u-icon-star-full"></span>
+					<span class="u-icon-star-full"></span>
+					<span class="tgreviews-average__star-overlay" style="width:&mvte:star_width;%;">
+						<span class="u-icon-star-full"></span>
+						<span class="u-icon-star-full"></span>
+						<span class="u-icon-star-full"></span>
+						<span class="u-icon-star-full"></span>
+						<span class="u-icon-star-full"></span>
+					</span>
 				</span>
 				<div class="tgreviews-average__text">
 					&mvte:tgr:avg_rating;/5 Star<mvt:if expr="l.settings:tgr:avg_rating GT 1">s</mvt:if> out of &mvte:tgr:review_count; Review<mvt:if expr="l.settings:tgr:review_count">s</mvt:if>
 				</div>
 			</div>
 		</div>
-		<div class="tgreviews-half tgreviews-flex__div">
+		<div class="o-layout__item">
 			<mvt:foreach iterator="breakdown" array="tgr:breakdown">
 				<mvt:assign name="l.settings:breakdown:percent" value="( l.settings:breakdown:count / l.settings:tgr:review_count ) * 100" />
 				<div class="tgreviews-breakdown">
@@ -223,7 +256,7 @@
 						<mvt:else>
 							<span>&mvte:breakdown:rating;</span>
 						</mvt:if>
-						 <span class="tgreviews-breakdown__star">&#9733;</span>
+						 <span class="tgreviews-breakdown__star"><span class="u-icon-star-full"></span></span>
 					</div>
 					<div class="tgreviews-breakdown__percent" title="&mvte:breakdown:count; Reviews out of &mvte:tgr:review_count; are rated &mvte:breakdown:rating;">
 						<div class="tgreviews-breakdown__percentage">
@@ -243,17 +276,23 @@
 
 	<div class="tgreviews-row">
 		<form method="POST" action="&mvte:tgr:link;" class="tgreviews-sorting">
-			<label class="tgreviews-label">Sort By</label>
 			<mvt:if expr="g.TGR_Show_Rating">
 				<input type="hidden" name="TGR_Show_Rating" value="&mvte:global:TGR_Show_Rating;" />
 			</mvt:if>
-			<select class="tgreviews-select" name="TGR_Sort" onchange="this.form.submit()">
-				<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( '-id', g.TGR_Sort, 'Default' )" />
-				<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( '-created', g.TGR_Sort, 'Most Recent Reviews' )" />
-				<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( 'created', g.TGR_Sort, 'Least Recent Reviews' )" />
-				<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( '-rating', g.TGR_Sort, 'Highest To Lowest Rating' )" />
-				<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( 'rating', g.TGR_Sort, 'Lowest To Highest Rating' )" />
-			</select>
+			<div class="c-form-list">
+				<div class="c-form-list__item">
+					<label class="c-form-label u-font-xsmall u-text-uppercase u-text-normal" for="TGR_Sort">Sort By</label>
+					<div class="c-form-select">
+						<select id="TGR_Sort" class="c-form-select__dropdown u-font-small u-text-uppercase" name="TGR_Sort" onchange="this.form.submit(); return true;">
+							<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( '-id',		g.TGR_Sort, 'Default' )" />
+							<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( '-created',	g.TGR_Sort, 'Most Recent Reviews' )" />
+							<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( 'created',	g.TGR_Sort, 'Least Recent Reviews' )" />
+							<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( '-rating',	g.TGR_Sort, 'Highest To Lowest Rating' )" />
+							<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( 'rating',		g.TGR_Sort, 'Lowest To Highest Rating' )" />
+						</select>
+					</div>
+				</div>
+			</div>
 		</form>
 	</div>
 
@@ -276,6 +315,13 @@
 
 	<div class="tgreviews-reviews">
 		<mvt:foreach iterator="review" array="tgr:reviews">
+			<mvt:if expr="ISNULL l.settings:product:id">
+				<mvt:do file="g.Module_Library_DB" name="l.success" value="Product_Load_ID_Cached( l.settings:review:product_id, l.settings:review:product )" />
+				<mvt:if expr="NOT l.settings:review:product:active">
+					<mvt:foreachcontinue />
+				</mvt:if>
+			</mvt:if>
+
 			<div class="tgreviews-review">
 
 				<div class="tgreviews-rating-title">
@@ -290,7 +336,7 @@
 					<div class="tgreviews-review__rating-info">
 						<mvt:assign name="l.settings:review:rating_output" value="l.settings:review:rating" />
 						<mvt:while expr="l.settings:review:rating_output GT 0">
-							<span class="tgreviews-rating-stars">&#9733;</span>
+							<span class="tgreviews-rating-stars"><span class="u-icon-star-full"></span></span>
 							<mvt:assign name="l.settings:review:rating_output" value="l.settings:review:rating_output - 1" />
 						</mvt:while>
 						<span class="tgreviews-review__rating">&mvte:review:rating;</span>
@@ -302,9 +348,16 @@
 					&mvte:review:name;<mvt:if expr="l.settings:review:location"> (&mvte:review:location;)</mvt:if> | &mvte:review:formatted_created;
 				</div>
 
+				<mvt:if expr="ISNULL l.settings:product:id">
+					<span class="u-font-small">Review for &mvte:review:product:name;</span>
+				</mvt:if>
+
 				<mvt:if expr="miva_array_elements( l.settings:review:additional_fields ) GT 0">
 					<div class="tgreviews-review__additionalfields">
 						<mvt:foreach iterator="addl_field" array="review:additional_fields">
+							<mvt:if expr="ISNULL l.settings:addl_field:value">
+								<mvt:foreachcontinue />
+							</mvt:if>
 							<div class="tgreviews-review__addlfield">
 								<span class="tgreviews-review__addlfield-label">&mvte:addl_field:name;:</span> &mvte:addl_field:value;
 							</div>
@@ -317,9 +370,9 @@
 						&mvte:review:summary;
 					</div>
 				</mvt:if>
-				<mvt:if expr="l.settings:review:store_reply">
+				<mvt:if expr="l.settings:review:store_rply">
 					<div class="tgreviews-review__storenote">
-						<em><strong>Note From Store Owner:</strong> &mvte:review:store_reply;</em>
+						<em><strong>Note From Store Owner:</strong> &mvte:review:store_rply;</em>
 					</div>
 				</mvt:if>
 				<div class="tgreivews-breaker"></div>

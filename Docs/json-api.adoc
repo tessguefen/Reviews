@@ -1,0 +1,430 @@
+<<<
+
+[[_jsonAPI]]
+== JSON API
+
+The following functions are available via the JSON API for the module.
+
+[[__productReviewsLoadQuery]]
+=== Product_Reviews_Load_Query
+
+This function is used to query one or more reviews from the Module.
+
+[[___productReviewsLoadQueryParameters]]
+==== Request Parameters
+
+[stripes=odd,options="header",cols="25%,25%,50%"]
+|===
+|Key|Type|Description
+|Count|Number|Count is used to limit how many reviews you want returned per request
+|Offset|Number|Used conjunction with the *Count* parameter for paginating results of large datasets. Default is 0, which is no offset.
+|Sort|String|Field to sort results by. Available Sorting fields are <<___productReviewsLoadQuerySortSearch,listed below>>.
+|Filter|Object|Array of Object containing search filters.See usage here: https://docs.miva.com/json-api/list-load-query-overview[ List Load Query Overview ]. Available Search Filter fields are <<___productReviewsLoadQuerySortSearch,listed below>>.
+|===
+
+[[___productReviewsLoadQuerySortSearch]]
+==== Supported Sort & Search Filter Columns
+
+[stripes=odd]
+|===
+|id|created|product_id
+|cust_id|order_id|approved
+|rating|name|email
+|location|notify|title
+|summary|store_rply|notified
+|verified|AdditionalFields:*|Product:*
+|===
+
+*AdditionalFields* can be sorted/ searched based on which ones have been set up in the store. To only load one in, utilize the additional field code.
+
+```
+AdditionalFields:my_code
+```
+
+*Product* can be sorted/ searched based on the base product fields (id, code, price, etc.). You can use this if you do not have the ``product_id`` available to you.
+
+```
+Product:code
+```
+
+<<<
+
+[[___productReviewsLoadQueryExampleRequest]]
+==== Example Request
+
+[source,json]
+----
+{
+	"Store_Code": "DTS",
+	"Function": "Module",
+	"Module_Code": "tgreviews",
+	"Module_Function": "Product_Reviews_Load_Query",
+	"Filter": [
+		{
+			"name": "ondemandcolumns",
+			"value": [
+				"AdditionalFields:*"
+			]
+		},
+		{
+			"name": "search",
+			"value": [
+				{
+					"field": "Product:code",
+					"operator": "EQ",
+					"value": "46529871"
+				},
+				 {
+					"field": "approved",
+					"operator": "TRUE",
+					"value": ""
+				}
+			]
+		}
+	]
+}
+----
+
+<<<
+
+[[___productReviewsLoadQueryExampleResponse]]
+==== Example Response
+
+[source,json]
+----
+{
+	"success": 1,
+	"data": {
+		"total_count": 1,
+		"start_offset": 0,
+		"data": [
+			{
+				"id": 14,
+				"created": 1595796177,
+				"product_id": 7,
+				"cust_id": 0,
+				"order_id": 0,
+				"approved": 1,
+				"rating": 3,
+				"name": "Some Reviewer",
+				"email": "some@email.com",
+				"location": "",
+				"notify": 0,
+				"title": "Hi I am a title",
+				"summary": "Hi I am a summary",
+				"store_rply": "",
+				"notified": 0,
+				"verified": 0,
+				"AdditionalFields": {
+					"cons": "",
+					"pros": ""
+				},
+				"Product": {
+					"id": 7,
+					"code": "46529871",
+					...
+				}
+			}
+		]
+	}
+}
+----
+
+<<<
+
+[[__productReviewInsert]]
+=== Product_Review_Insert
+
+This function allows you to insert a review. This will not trigger the Merchant Notification Email, or the Customer Notification Email (if Notify: Yes, and Approved: Yes).
+
+[[___productReviewInsertParameters]]
+==== Request Parameters
+
+[stripes=odd,options="header",cols="20%,15%,20%,45%"]
+|===
+|Key|Type|Required|Description
+|Product_Code|String|Yes|Code of the Product for the Review. You may swap this out with *Product_ID* and send the product's ID instead if needed.
+|Customer_Login|Login|No|Customer's Login to associate the review to the customer. You may swap this out with *Customer_ID* and send the customer's ID instead if needed. If you send an invalid Customer Login/ ID, you will not recieve an error.
+|Approved|Boolean|No|If the review is approved or not
+|Created|Unix Timestamp|No|When the review was created. If omitted, will take the current unix timestamp when it is inserted
+|Order_ID|Number|No|Associate a Review with an Order
+|Rating|Number|Yes|Rating for the Review
+|Notify|Boolean|No|Whether or not to notify the reviewer that their review is approved. If inserted, and approved at the same time, this *will not fire off an email*. This is to help prevent accidents.
+|Verified|Boolean|No|If this review is verified, it means the reviewer actually purchased the item.
+|Notified|Unix Timestamp|No|If the reviewer has been notified that their review has been approved
+|Store_Reply|String|No|Store Reply for the Review
+|Name|String|Based on <<__fieldSettings,Settings>>|Name of the Reviewer
+|Email|String|Based on <<__fieldSettings,Settings>>|Email of the Reviewer
+|Location|String|Based on <<__fieldSettings,Settings>>|Location of the Reviewer
+|Summary|String|Based on <<__fieldSettings,Settings>>|Summary of the Review
+|Title|String|Based on <<__fieldSettings,Settings>>|Title of the Review
+|AdditionalFields|No|Object|An object containing additional fields to update (<<___productReviewInsertExampleRequest,see example below>>)
+|===
+
+[[___productReviewInsertExampleRequest]]
+==== Example Request
+
+[source,json]
+----
+{
+	"Store_Code": "DTS",
+	"Function": "Module",
+	"Module_Code": "tgreviews",
+	"Module_Function": "Product_Review_Insert",
+	"Product_Code": "AO1525",
+	"Email": "test@test.com",
+	"Rating": 1,
+	"Summary": "This is was the best $5.00 i spent.",
+	"Notify": 0,
+	"Approved": 1,
+	"AdditionalFields": {
+		"pros": "This product is great!",
+		"cons": "No Cons!"
+	}
+}
+----
+
+<<<
+
+[[__productReviewUpdate]]
+=== Product_Review_Update
+
+This function allows you to update a review. You can not update the Product on the review.
+
+[[___productReviewUpdateParameters]]
+==== Request Parameters
+
+[stripes=odd,options="header",cols="20%,15%,20%,45%"]
+|===
+|Key|Type|Required|Description
+|ID|Number|Yes|ID of the review you wish to update
+|Customer_Login|Login|No|Customer's Login to associate the review to the customer. You may swap this out with *Customer_ID* and send the customer's ID instead if needed. If you send an invalid Customer Login/ ID, you will not recieve an error.
+|Approved|Boolean|No|If the review is approved or not
+|Created|Unix Timestamp|No|When the review was created. If omitted, will take the current unix timestamp when it is inserted
+|Order_ID|Number|No|Associate a Review with an Order
+|Rating|Number|Yes|Rating for the Review
+|Notify|Boolean|No|Whether or not to notify the reviewer that their review is approved. If inserted, and approved at the same time, this *will not fire off an email*. This is to help prevent accidents.
+|Verified|Boolean|No|If this review is verified, it means the reviewer actually purchased the item.
+|Store_Reply|String|No|Store Reply for the Review
+|Name|String|Based on <<__fieldSettings,Settings>>|Name of the Reviewer
+|Email|String|Based on <<__fieldSettings,Settings>>|Email of the Reviewer
+|Location|String|Based on <<__fieldSettings,Settings>>|Location of the Reviewer
+|Summary|String|Based on <<__fieldSettings,Settings>>|Summary of the Review
+|Title|String|Based on <<__fieldSettings,Settings>>|Title of the Review
+|AdditionalFields|No|Object|An object containing additional fields to update (<<___productReviewUpdateExampleRequest,see example below>>)
+|===
+
+[[___productReviewUpdateExampleRequest]]
+==== Example Request
+
+[source,json]
+----
+{
+	"Store_Code": "DTS",
+	"Function": "Module",
+	"Module_Code": "tgreviews",
+	"Module_Function": "Product_Review_Update",
+	"ID": 22,
+	"Approved": true
+}
+----
+
+<<<
+
+[[__productReviewDelete]]
+=== Product_Review_Delete
+
+This function allows you to delete a review.
+
+[[___productReviewDeleteParameters]]
+==== Request Parameters
+
+[stripes=odd,options="header",cols="20%,15%,20%,45%"]
+|===
+|Key|Type|Required|Description
+|ID|Number|Yes|ID of the review you wish to delete
+|===
+
+[[___productReviewDeleteExampleRequest]]
+==== Example Request
+
+[source,json]
+----
+{
+	"Store_Code": "DTS",
+	"Function": "Module",
+	"Module_Code": "tgreviews",
+	"Module_Function": "Product_Review_Delete",
+	"ID": 22
+}
+----
+
+<<<
+
+[[__additionalFieldsLoadQuery]]
+=== AdditionalFields_Load_Query
+
+This function is used to query one or more Additional Fields from the Module.
+
+[[___additionalFieldsLoadQueryParameters]]
+==== Request Parameters
+
+[stripes=odd,options="header",cols="25%,25%,50%"]
+|===
+|Key|Type|Description
+|Count|Number|Count is used to limit how many reviews you want returned per request
+|Offset|Number|Used conjunction with the *Count* parameter for paginating results of large datasets. Default is 0, which is no offset.
+|Sort|String|Field to sort results by. Available Sorting fields are <<___additionalFieldsLoadQuerySortSearch,listed below>>.
+|Filter|Object|Array of Object containing search filters.See usage here: https://docs.miva.com/json-api/list-load-query-overview[ List Load Query Overview ]. Available Search Filter fields are <<___additionalFieldsLoadQuerySortSearch,listed below>>.
+|===
+
+[[___additionalFieldsLoadQuerySortSearch]]
+==== Supported Sort & Search Filter Columns
+
+[stripes=odd]
+|===
+|id|code|name
+|===
+
+<<<
+
+[[___additionalFieldsLoadQueryExampleRequest]]
+==== Example Request
+
+[source,json]
+----
+{
+	"Store_Code": "DTS",
+	"Function": "Module",
+	"Module_Code": "tgreviews",
+	"Module_Function": "AdditionalFields_Load_Query",
+	"Filter": [
+		{
+			"name": "search",
+			"value": [
+				{
+					"field": "name",
+					"operator": "EQ",
+					"value": "Pros"
+				}
+			]
+		}
+	]
+}
+----
+
+[[___additionalFieldsLoadQueryExampleResponse]]
+==== Example Response
+
+[source,json]
+----
+{
+	"success": 1,
+	"data": {
+		"total_count": 1,
+		"start_offset": 0,
+		"data": [
+			{
+				"id": 1,
+				"code": "pros",
+				"name": "Pros"
+			}
+		]
+	}
+}
+----
+
+<<<
+
+[[__additionalFieldInsert]]
+=== AdditionalField_Insert
+
+This function allows you to insert an Additional Field.
+
+[[___additionalFieldInsertParameters]]
+==== Request Parameters
+
+[stripes=odd,options="header",cols="20%,15%,20%,45%"]
+|===
+|Key|Type|Required|Description
+|Code|String|Yes|Code of the Additional Field. These are unique.
+|Name|String|Yes|Name/ Prompt of the Additional Field
+|===
+
+[[___additionalFieldInsertExampleRequest]]
+==== Example Request
+
+[source,json]
+----
+{
+	"Store_Code": "DTS",
+	"Function": "Module",
+	"Module_Code": "tgreviews",
+	"Module_Function": "AdditionalField_Insert",
+	"Code": "recommend",
+	"Name": "Would you recommend this to a friend?"
+}
+----
+
+<<<
+
+[[__additionalFieldUpdate]]
+=== AdditionalField_Update
+
+This function allows you to update an Additional Field.
+
+[[___additionalFieldUpdateParameters]]
+==== Request Parameters
+
+[stripes=odd,options="header",cols="20%,15%,20%,45%"]
+|===
+|Key|Type|Required|Description
+|ID|Number|Yes|ID of the Additional Field you wish to update
+|Code|String|No|Code of the Additional Field. These are unique.
+|Name|String|No|Name/ Prompt of the Additional Field
+|===
+
+[[___additionalFieldUpdateExampleRequest]]
+==== Example Request
+
+[source,json]
+----
+{
+	"Store_Code": "DTS",
+	"Function": "Module",
+	"Module_Code": "tgreviews",
+	"Module_Function": "AdditionalField_Update",
+	"ID": 3,
+	"Name": "Would you recommend this?"
+}
+----
+
+<<<
+
+[[__additionalFieldDelete]]
+=== Product_Review_Delete
+
+This function allows you to delete a review.
+
+[[___additionalFieldDeleteParameters]]
+==== Request Parameters
+
+[stripes=odd,options="header",cols="20%,15%,20%,45%"]
+|===
+|Key|Type|Required|Description
+|ID|Number|Yes|ID of the additional field you wish to delete
+|===
+
+[[___additionalFieldDeleteExampleRequest]]
+==== Example Request
+
+[source,json]
+----
+{
+	"Store_Code": "DTS",
+	"Function": "Module",
+	"Module_Code": "tgreviews",
+	"Module_Function": "AdditionalField_Delete",
+	"ID": 3
+}
+----

@@ -1,0 +1,99 @@
+<<<
+
+[[_tgreviewsItem]]
+== tgreviews Item
+
+[[__itemFormTemplate]]
+=== Render the Form Template
+
+``Form_Template()``
+
+[source,xml]
+----
+<mvt:item name="tgreviews" param="Form_Template()" />
+----
+
+[[__itemReviewsTemplate]]
+=== Render the Reviews Template
+
+``Reviews_Template( product_id )``
+
+This will return the ``reviews`` structure to ``l.settings:tgr:reviews``. If you do not pass a product id (or put 0/ an empty string), it will return all approved product reviews.
+
+[source,xml]
+----
+<mvt:item name="tgreviews" param="Reviews_Template( l.settings:product:id )" />
+----
+
+[[__itemLoadReviewData]]
+=== Load Review Data
+
+``Load_Product_Reviews( product_id, reviews var )``
+
+Use this to load the review data to a variable and utilize in template code.
+
+[source,xml]
+----
+<mvt:item name="tgreviews" param="Load_Product_Reviews( l.settings:product:id, l.settings:product:reviews )" />
+----
+
+[[__itemFormatTimestamp]]
+=== Format Timestamp
+
+``Date( format, timestamp, return var )``
+
+Format a timestamp, and save to a variable (3rd parameter). Uses PHP's date function as a reference.
+
+[source,xml]
+----
+<mvt:item name="tgreviews" param="Date( 'F jS, Y', l.settings:review:created, l.settings:review:formatted_created )" />
+----
+
+[[__itemLoadProductRating]]
+=== Load Product Rating
+
+``Product_Rating( product_id, product_rating var )``
+
+Load a product's average rating and save to a variable.
+
+[source,xml]
+----
+<mvt:item name="tgreviews" param="Product_Rating( l.settings:product:id, l.settings:product:product_rating )" />
+----
+
+[[__itemLoadProductBreakdsowns]]
+=== Load Product Review Breakdowns
+
+``Product_Review_Breakdowns( product_id, breakdowns var )``
+
+Load a product's review breakdowns and save to a variable.
+
+[source,xml]
+----
+<mvt:item name="tgreviews" param="Product_Review_Breakdowns( l.settings:product:id, l.settings:tgr:breakdown )" />
+----
+
+[[__itemLoadProductReviewsCount]]
+=== Load Product Review Count
+
+``Product_Review_Count( product_id, count var )``
+
+Load a product's reviews count and save to a variable.
+
+[source,xml]
+----
+<mvt:item name="tgreviews" param="Product_Review_Count( l.settings:product:id, l.settings:tgr:review_count )" />
+----
+
+[[__itemTestMailAfter]]
+=== Test the Mail After Email by Triggering it
+
+``Test_MailAfter_Email( order_id, email )``
+
+This will trigger the email for any order you specify, to the email you specify. This is specifically made to test the email template. Please note: BCC and CC will not carry through. If you have left a review on a product in the order, it will skip that product.
+
+[source,xml]
+----
+<mvt:item name="tgreviews" param="Test_MailAfter_Email( 12345, 'test@test.com' )" />
+----
+

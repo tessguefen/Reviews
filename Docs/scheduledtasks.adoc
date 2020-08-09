@@ -1,0 +1,17 @@
+<<<
+
+[[_scheduledTasks]]
+== Scheduled Tasks
+
+There is one scheduled task that should be created if you are utilizing the <<__mailAfterNotification,Mail After Notification>>.
+
+[[__setUpScheduledTask]]
+=== Setting up the Mail After Scheduled Tasks
+
+. Navigate to *Store Settings*
+. Click the *Scheduled Tasks* tab
+. Click the *+* icon to add a scheduled task
+. Add a description to the new task (ex. Trigger Mail After Emails for Reviews)
+. Select the operation *Product Reviews: Trigger 'Mail After' Emails for Reviews*
+. Set up your schedule (_Recommended to be every 3 hours_)
+

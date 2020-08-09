@@ -1,0 +1,61 @@
+<<<
+
+[[_setup]]
+== Setup
+
+[[_requirements]]
+=== Requirements
+
+Miva Merchant: *9.14.00*
+
+Store User Interface: *Miva Merchant CSSUI*
+
+[[_installation]]
+=== Installation
+
+. Log into your Miva Merchant Admin
+. Navigate to *Modules*
+. Click the *+* icon to add a new Module
+. Click *Upload* and upload *tgreviews.mvc*
+. Press the *+ Add* button
+. Navigate to *System Extension Settings*
+. Click on the *Add/Remove Modules* tab
+. Look for *Product Reviews* and click *Install*
+. The *Product Reviews* module is now installed!
+
+Update your <<_settings,Settings>> accordingly.
+
+Make sure to <<_scheduledTasks,Create the Mail After Task>> if you're utilizing the <<__mailAfterNotification,Mail After Notification>>.
+
+<<_technicalSetup,Jump to Technical set-up>>
+
+<<<
+
+[[_itemSetup]]
+=== Setting up the tgreviews item
+
+*By default, this item should be created. In the case you do not see the item tgreviews in your items list, follow these steps:*
+
+. Navigate to *User Interface*
+. Click on the *Items* tabs
+. Click the *+* icon to add a new item
+. Set the code to *tgreviews*
+. Set the module to *tgreviews*
+. Click the *+ Add* button
+
+You may now utilize the item on the pages you assign it to.
+
+<<<
+
+[[_upgrading]]
+=== Upgrading
+
+If upgrading from a version below *2.000*, you may want to test this upgrade on a dev store (copy of your store).
+
+Before upgrading, make sure the following is in place:
+
+* The *tgreviews* item is assigned to the pages where your reviews are submitted (most likely this is the PROD page, which should already have this item assigned)
+* Any customizations that call the module itself, with ``mvt:do`` are reviewed by a developer.
+** Version *2.000* has drastically changed, and most functions have been re-written/ re-named.
+** Item level functions are backwards compatible if using the item
+

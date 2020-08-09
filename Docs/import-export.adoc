@@ -1,0 +1,57 @@
+<<<
+
+[[_importExport]]
+== Importing/ Exporting Review Data
+
+[[__export]]
+=== Exporting
+
+To export the Review Data, navigate to *Data Management*. There will be an export labeled *Product Reviews*. Click this to export the product reviews to a CSV. You will have the option name the export file, as well as the option to email the file to a specified email address. By default this will be set to the store's email.
+
+image::export.png[Export Page]
+
+[[__import]]
+=== Importing
+
+To import previous Review Data, you will need to set up the Product Review import.
+
+. Navigate to *Data Management*
+. Click on the *Import Settings* tab
+. Click the *+* icon to add a new import
+. For the description of the import, label it whatever you'd like (ex. *Product Reviews Import*)
+. Select the import module labeled *Product Reviews*
+. Click *Add*
+. Click the *Import/ Export* tab
+. You will now see a new import label for the product reviews import
+
+The import will check certain fields to see if a similar review exists. This is to help prevent duplicates. The following fields are checked:
+
+- Product Code
+- Title
+- Summary
+- Email
+
+If all four of these fields match a review that is already in the system, it will skip the review.
+
+The following are the fields that can be imported:
+
+[stripes=odd,options="header",cols="20%,15%,20%,45%"]
+|===
+|Field|Type|Required|Description
+|CREATED|Unix Timestamp or MM/DD/YYYY HH:MM:SS|No|When the review was created. If omitted, will take the current unix timestamp when it is inserted
+|PRODUCT_CODE|String|Yes|Code of the Product for the Review.
+|CUSTOMER_LOGIN|Login|No|Customer's Login to associate the review to the customer.
+|Order_ID|Number|No|Associate a Review with an Order
+|APPROVED|Boolean|No|If the review is approved or not
+|RATING|Number|Yes|Rating for the Review
+|NAME|String|Based on <<__fieldSettings,Settings>>|Name of the Reviewer
+|EMAIL|String/Email|Based on <<__fieldSettings,Settings>>|Email of the Reviewer
+|LOCATION|String|Based on <<__fieldSettings,Settings>>|Location of the Reviewer
+|NOTIFY|Boolean|No|Whether or not to notify the reviewer that their review is approved. If inserted, and approved at the same time, this *will not fire off an email*. This is to help prevent accidents.
+|TITLE|String|Based on <<__fieldSettings,Settings>>|Title of the Review
+|SUMMARY|String|Based on <<__fieldSettings,Settings>>|Summary of the Review
+|STORE_REPLY|String|No|Store Reply for the Review
+|NOTIFIED|Unix Timestamp or MM/DD/YYYY HH:MM:SS|No|If the reviewer has been notified that their review has been approved
+|VERIFIED|Boolean|No|If this review is verified, it means the reviewer actually purchased the item.
+|FIELD:XXX|No|String|A value for the specified Field. If your additional field code is `pros`, your header row would be `FIELD:PROS`
+|===

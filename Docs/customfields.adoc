@@ -1,0 +1,38 @@
+<<<
+
+[[_customfieldsFacets]]
+== Customfields & Facets
+
+The module utilizes the *Product Custom Fields Feature* as well as the *Product Facet Feature*.
+
+[[__customfields]]
+=== Customfields
+
+The following can be used for exporting, and can be utilized in the JSON API using the `CustomField_Values` in the `ondemandcolumns` filter. See more https://docs.miva.com/json-api/list-load-query-overview#ondemandcolumns[here].
+
+*Please Note:* You can not overwrite/ update these fields (either with an import, or JSON API). These field values are based on the reviews in the store, per product.
+
+[stripes=odd]
+|===
+|Code|Prompt|Description
+
+|tgr_rating|Product Rating|The average rating for the specified product
+|tgr_review_count|Product Review Count|The count of approved reviews for the specified product
+|===
+
+<<<
+
+[[__facets]]
+=== Facets
+
+The following facets will be available if you're utilizing Miva's Facet system.
+
+image::facets.png[Facet Setting]
+
+[stripes=odd]
+|===
+|Code|Prompt|Type|Description
+
+|tgr_rating|Average Rating|Checkbox, Radio, Select, or Range Slider|Filters for the average rating, in the current product query. This will floor the averages so you will get the following options: *1 & Up*, *2 & Up*, *3 & Up*, *4 & Up*.
+|===
+

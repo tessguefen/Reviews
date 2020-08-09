@@ -1,0 +1,175 @@
+<style>
+	.tgreviews__form {
+		width: 400px;
+		max-width: 100%;
+		margin: auto;
+	}
+
+	.tgr_rating {
+		display: inline-flex;
+	}
+
+	.tgr_rating > input {
+		border: 0;
+		clip: rect(0 0 0 0);
+		height: 1px;
+		margin: -1px;
+		overflow: hidden;
+		padding: 0;
+		position: absolute;
+		width: 1px;
+	}
+
+	.tgr_rating > label {
+		font-size: 1.25rem;
+		padding: 0 0.25rem;
+		color: #DDDDDD;
+		cursor: pointer;
+		border-radius: 0.25rem;
+	}
+
+	.tgr_rating > label:first-child {
+		margin-right: -0.25rem;
+	}
+
+	.tgr_rating:not(:hover) > input:checked ~ label,
+	.tgr_rating > label:hover,
+	.tgr_rating > label:hover ~ label,
+	.tgr_rating > input:checked + label:hover,
+	.tgr_rating > input:checked ~ label:hover,
+	.tgr_rating > label:hover ~ input:checked ~ label,
+	.tgr_rating > input:checked ~ label:hover ~ label {
+		color: #FFA500;
+	}
+</style>
+
+<mvt:if expr="l.settings:product:link">
+	<mvt:assign name="l.settings:tgr:link" value="l.settings:product:link" />
+<mvt:else>
+	<mvt:assign name="l.settings:tgr:link" value="l.settings:urls:_self:auto" />
+</mvt:if>
+
+<mvt:assign name="g.TGR_Rating" value="int( g.TGR_Rating )" />
+<mvt:if expr="g.TGR_Rating EQ 0">
+	<mvt:assign name="g.TGR_Rating" value="5" />
+</mvt:if>
+
+<mvt:do file="g.Module_Admin" name="g.TGR_Notify" value="Trim_Boolean( g.TGR_Notify )" />
+<mvt:assign name="l.settings:tgr:notify_checked" value="''" />
+
+<mvt:if expr="g.TGR_Notify">
+	<mvt:assign name="l.settings:tgr:notify_checked" value="' checked'" />
+</mvt:if>
+
+<mvt:if expr="g.TGR_Review_Success EQ 1">
+	<p class="x-messages x-messages--success">
+		Thank you for your review!
+	</p>
+	<mvt:exit />
+</mvt:if>
+
+<div class="tgreviews__form">
+	<mvt:if expr="g.TGR_Error">
+		<p class="x-messages x-messages--error">
+			&mvte:global:TGR_Error;
+		</p>
+	</mvt:if>
+
+	<form method="POST" action="&mvte:tgr:link;" class="tgreviews-form">
+		<input type="hidden" name="Action" value="TGRADD" />
+		<input type="hidden" name="TGR_Product_Code" value="&mvte:product:code;" />
+		<input type="hidden" name="TGR_Order_ID" value="&mvte:global:TGR_Order_ID;" />
+		<legend class="u-hide-visually">Review &mvte:product:name;</legend>
+
+		<div class="c-form-list">
+			<div class="c-form-list__item c-form-list__item--full">
+				<div class="tgr_rating o-layout--justify-end o-layout--row-reverse">
+					<mvt:assign name="l.tgr_stars_count" value="miva_splitstring( '5,4,3,2,1', ',', l.settings:tgr_stars, 'trim' )" />
+					<mvt:foreach iterator="star" array="tgr_stars">
+						<mvt:assign name="l.settings:checked" value="''" />
+						<mvt:if expr="g.TGR_Rating EQ l.settings:star">
+							<mvt:assign name="l.settings:checked" value="' checked'" />
+						</mvt:if>
+
+						<input type="radio" name="TGR_Rating" value="&mvte:star;" id="tgrStar-&mvte:star;"&mvte:checked; />
+						<label id="star--tgrStar-&mvte:star;" for="tgrStar-&mvte:star;" aria-label="&mvte:star; Star<mvt:if expr="l.settings:star GT 1">s</mvt:if>">
+							<span class="u-icon-star-full"></span>
+						</label>
+					</mvt:foreach>
+				</div>
+			</div>
+
+			<div class="c-form-list__item c-form-list__item--full &mvte:global:TGR_Name_class;">
+				<label class="u-hide-visually" for="TGR_Name">Name</label>
+				<mvt:if expr="l.settings:tgr:fields_requred:name">
+					<input type="text" class="c-form-input" id="TGR_Name" name="TGR_Name" value="&mvte:global:TGR_Name;" placeholder="Name*" required />
+				<mvt:else>
+					<input type="text" class="c-form-input" id="TGR_Name" name="TGR_Name" value="&mvte:global:TGR_Name;" placeholder="Name" />
+				</mvt:if>
+			</div>
+
+			<div class="c-form-list__item c-form-list__item--full &mvte:global:TGR_Email_class;">
+				<label class="u-hide-visually" for="TGR_Email">Email</label>
+				<mvt:if expr="l.settings:tgr:fields_requred:email">
+					<input type="email" class="c-form-input" id="TGR_Email" name="TGR_Email" value="&mvte:global:TGR_Email;" placeholder="Email*" required />
+				<mvt:else>
+					<input type="email" class="c-form-input" id="TGR_Email" name="TGR_Email" value="&mvte:global:TGR_Email;" placeholder="Email" />
+				</mvt:if>
+			</div>
+
+			<div class="c-form-list__item c-form-list__item--full &mvte:global:TGR_Location_class;">
+				<label class="u-hide-visually" for="TGR_Location">Location</label>
+				<mvt:if expr="l.settings:tgr:fields_requred:location">
+					<input type="text" class="c-form-input" id="TGR_Location" name="TGR_Location" value="&mvte:global:TGR_Location;" placeholder="Location*" required />
+				<mvt:else>
+					<input type="text" class="c-form-input" id="TGR_Location" name="TGR_Location" value="&mvte:global:TGR_Location;" placeholder="Location" />
+				</mvt:if>
+			</div>
+
+			<div class="c-form-list__item c-form-list__item--full &mvte:global:TGR_Title_class;">
+				<label class="u-hide-visually" for="TGR_Title">Title</label>
+				<mvt:if expr="l.settings:tgr:fields_requred:title">
+					<input type="text" class="c-form-input" id="TGR_Title" name="TGR_Title" value="&mvte:global:TGR_Title;" placeholder="Title*" required />
+				<mvt:else>
+					<input type="text" class="c-form-input" id="TGR_Title" name="TGR_Title" value="&mvte:global:TGR_Title;" placeholder="Title" />
+				</mvt:if>
+			</div>
+
+			<div class="c-form-list__item c-form-list__item--full &mvte:global:TGR_Summary_class;">
+				<label class="u-hide-visually" for="TGR_Summary">Summary</label>
+				<mvt:if expr="l.settings:tgr:fields_requred:summary">
+					<textarea class="c-form-input c-form-input--long" id="TGR_Summary" name="TGR_Summary" value="&mvte:global:TGR_Summary;" placeholder="Summary*" required>&mvte:global:TGR_Summary;</textarea>
+				<mvt:else>
+					<textarea class="c-form-input c-form-input--long" id="TGR_Summary" name="TGR_Summary" value="&mvte:global:TGR_Summary;" placeholder="Summary">&mvte:global:TGR_Summary;</textarea>
+				</mvt:if>
+			</div>
+
+			<mvt:if expr="l.settings:tgr:additional_fields">
+				<mvt:foreach iterator="addl" array="tgr:additional_fields">
+					<div class="c-form-list__item c-form-list__item--full">
+						<label class="u-hide-visually" for="tgr_AdditionalFields:&mvte:addl:code;">&mvte:addl:name;</label>
+						<input type="text" class="c-form-input" id="tgr_AdditionalFields:&mvte:addl:code;" name="tgr_AdditionalFields:&mvte:addl:code;" value="&mvte:addl:value;" placeholder="&mvte:addl:name;" />
+					</div>
+				</mvt:foreach>
+			</mvt:if>
+
+			<div class="c-form-list__item c-form-list__item--full">
+				<label for="TGR_Notify" class="c-form-checkbox">
+					<input id="TGR_Notify" class="c-form-checkbox__input" type="checkbox" name="TGR_Notify" value="1"&mvte:tgr:notify_checked;>
+					<span class="c-form-checkbox__caption u-font-small">Notify me when my review is approved</span>
+				</label>
+			</div>
+
+			<mvt:if expr="l.settings:tgr:recaptcha:enabled EQ 1">
+				<div class="c-form-list__item c-form-list__item--full">
+					<script src="https://www.google.com/recaptcha/api.js" defer></script>
+					<div class="g-recaptcha" data-sitekey="&mvte:tgr:recaptcha:public_key;"></div>
+				</div>
+			</mvt:if>
+
+			<div class="c-form-list__item c-form-list__item--full">
+				<input class="c-button u-cta-style--primary" type="submit" value="Submit">
+			</div>
+		</div>
+	</form>
+</div>
