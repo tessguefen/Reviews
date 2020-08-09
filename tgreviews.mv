@@ -3,7 +3,7 @@
 <MvCOMMENT>
 |
 | Prefix         : MOD-SYS-TGR-
-| Next Error Code: 143
+| Next Error Code: 146
 |
 </MvCOMMENT>
 
@@ -2996,7 +2996,7 @@
 				VIEW	= "TGReviewsProducts"
 				QUERY	= "{ 'SELECT COUNT(rating) as rating_count, rating FROM ' $ g.Store_Table_Prefix $ 'TGReviewsProducts WHERE approved = 1 GROUP BY rating' }">
 	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00143', g.MvOPENVIEW_Error ) }">
 	</MvIF>
 
 	<MvWHILE EXPR = "{ NOT TGReviewsProducts.d.EOF }">
@@ -4866,12 +4866,12 @@
 				VIEW	= "TGReviewsProductsAverages"
 				QUERY	= "{ 'SELECT ROUND( AVG( rating ), 2) as tgr_rating, COUNT( rating ) as tgr_review_count FROM ' $ g.Store_Table_Prefix $ 'TGReviewsProductsAverages' }">
 	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00144', g.MvOPENVIEW_Error ) }">
 	</MvIF>
 
 	<MvIF EXPR = "{ TGReviewsProductsAverages.d.EOF }">
 		<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProductsAverages">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error#' ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( 'MOD-SYS-TGR-00145' ) }">
 	</MvIF>
 
 	<MvASSIGN NAME = "l.review_averages:rating"				VALUE = "{ TGReviewsProductsAverages.d.tgr_rating }">
