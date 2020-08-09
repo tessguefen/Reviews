@@ -402,9 +402,9 @@ This function allows you to update an Additional Field.
 <<<
 
 [[__additionalFieldDelete]]
-=== Product_Review_Delete
+=== AdditionalField_Delete
 
-This function allows you to delete a review.
+This function allows you to delete an additional field.
 
 [[___additionalFieldDeleteParameters]]
 ==== Request Parameters
