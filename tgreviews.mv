@@ -3,7 +3,7 @@
 <MvCOMMENT>
 |
 | Prefix         : MOD-SYS-TGR-
-| Next Error Code: 146
+| Next Error Code: 147
 |
 </MvCOMMENT>
 
@@ -801,7 +801,7 @@
 		<MvQUERY NAME = "Merchant"
 				 QUERY = "{ 'ALTER TABLE ' $ g.Store_Table_Prefix $ 'TGReviewsAdditionalValues MODIFY COLUMN value ' $ [ g.Module_Library_Native_DBAPI ].DB_Type_MEMO() }">
 		<MvIF EXPR = "{ g.MvQUERY_Error }">
-			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvQUERY_Error ) }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00146', g.MvQUERY_Error ) }">
 		</MvIF>
 	</MvIF>
 
