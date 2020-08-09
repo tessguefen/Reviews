@@ -1,0 +1,14 @@
+<<<
+
+[[_uninstalling]]
+== Uninstalling the Module
+
+To uninstall the module, you will need to make sure that the *tgreviews* item and any *Scheduled Tasks* that are using the *Product Reviews* scheduled tasks are fully removed.
+
+If you set up a *Product Review import*, you will need to delete all imports that correspond to the module.
+
+Once these are both removed, navigate to *System Extension Settings*, and click on the *Add/Remove Modules* tab.
+
+Find *Product Reviews* and click the *Remove* button.
+
+The module will remove all the Email Templates once uninstalled, and remove all *Product Review* data
