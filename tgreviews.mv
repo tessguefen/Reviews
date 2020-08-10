@@ -375,7 +375,7 @@
 							(
 								field_id	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
 								review_id	' $ [ g.Module_Library_Native_DBAPI ].DB_Type_NUMBER( 0, 0 )	$ ',
-								value		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_CHAR( 255 )		$ '
+								value		' $ [ g.Module_Library_Native_DBAPI ].DB_Type_MEMO()			$ '
 							)' }">
 	<MvIF EXPR = "{ g.MvQUERY_Error }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00013', g.MvQUERY_Error ) }">
