@@ -11,7 +11,7 @@
 	<MvASSIGN NAME = "l.module:code"		VALUE = "tgreviews">
 	<MvASSIGN NAME = "l.module:name"		VALUE = "Product Reviews">
 	<MvASSIGN NAME = "l.module:provider"	VALUE = "Tess Guefen">
-	<MvASSIGN NAME = "l.module:version"		VALUE = "2.001">
+	<MvASSIGN NAME = "l.module:version"		VALUE = "2.002">
 	<MvASSIGN NAME = "l.module:api_ver"		VALUE = "9.12">
 	<MvASSIGN NAME = "l.module:description"	VALUE = "Product Reviews module allows your customers to easily write reviews for products. This module also allows for importing and exporting product reviews.">
 	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside, component, fields_prod, not_prod, fulfill, scheduledtask, vis_product, export, import, json_api, prod_facet">
@@ -2540,24 +2540,27 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ComponentModule_Prerender" PARAMETERS = "module var, item, all_settings var, settings var, param" STANDARDOUTPUTLEVEL = "">
-	<MvASSIGN NAME = "g.TGR_Error"							VALUE = "">
-	<MvASSIGN NAME = "g.TGR_Review_ID"						VALUE = "">
-	<MvASSIGN NAME = "g.TGR_Review_Success"					VALUE = 0>
+	<MvIF EXPR = "{ g.TGR_Already_Reviewed NE 1 }">
+		<MvASSIGN NAME = "g.TGR_Error"							VALUE = "">
+		<MvASSIGN NAME = "g.TGR_Review_ID"						VALUE = "">
+		<MvASSIGN NAME = "g.TGR_Review_Success"					VALUE = 0>
+		<MvASSIGN NAME = "g.TGR_Already_Reviewed"				VALUE = 1>
 
-	<MvIF EXPR = "{ NOT ISNULL g.Action }">
-		<MvASSIGN NAME = "l.pos"		VALUE = 1>
-		<MvASSIGN NAME = "l.current"	VALUE = "{ toupper( gettoken( g.Action, ',', l.pos ) ) }">
-
-		<MvWHILE EXPR = "{ len( l.current ) }">
-			<MvIF EXPR = "{ l.current EQ 'TGRADD' }">
-				<MvASSIGN NAME = "l.null" VALUE = "{ Product_Review_Insert( l.all_settings ) }">
-
-				<MvWHILESTOP>
-			</MvIF>
-
-			<MvASSIGN NAME = "l.pos"		VALUE = "{ l.pos + 1 }">
+		<MvIF EXPR = "{ NOT ISNULL g.Action }">
+			<MvASSIGN NAME = "l.pos"		VALUE = 1>
 			<MvASSIGN NAME = "l.current"	VALUE = "{ toupper( gettoken( g.Action, ',', l.pos ) ) }">
-		</MvWHILE>
+
+			<MvWHILE EXPR = "{ len( l.current ) }">
+				<MvIF EXPR = "{ l.current EQ 'TGRADD' }">
+					<MvASSIGN NAME = "l.null"					VALUE = "{ Product_Review_Insert( l.all_settings ) }">
+
+					<MvWHILESTOP>
+				</MvIF>
+
+				<MvASSIGN NAME = "l.pos"		VALUE = "{ l.pos + 1 }">
+				<MvASSIGN NAME = "l.current"	VALUE = "{ toupper( gettoken( g.Action, ',', l.pos ) ) }">
+			</MvWHILE>
+		</MvIF>
 	</MvIF>
 
 	<MvFUNCTIONRETURN VALUE = 1>
