@@ -2540,11 +2540,11 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ComponentModule_Prerender" PARAMETERS = "module var, item, all_settings var, settings var, param" STANDARDOUTPUTLEVEL = "">
-	<MvIF EXPR = "{ g.TGR_Already_Reviewed NE 1 }">
-		<MvASSIGN NAME = "g.TGR_Error"							VALUE = "">
-		<MvASSIGN NAME = "g.TGR_Review_ID"						VALUE = "">
-		<MvASSIGN NAME = "g.TGR_Review_Success"					VALUE = 0>
-		<MvASSIGN NAME = "g.TGR_Already_Reviewed"				VALUE = 1>
+	<MvIF EXPR = "{ g.TGR_Review_Check NE 1 }">
+		<MvASSIGN NAME = "g.TGR_Error"				VALUE = "">
+		<MvASSIGN NAME = "g.TGR_Review_ID"			VALUE = "">
+		<MvASSIGN NAME = "g.TGR_Review_Success"		VALUE = 0>
+		<MvASSIGN NAME = "g.TGR_Review_Check"		VALUE = 1>
 
 		<MvIF EXPR = "{ NOT ISNULL g.Action }">
 			<MvASSIGN NAME = "l.pos"		VALUE = 1>
