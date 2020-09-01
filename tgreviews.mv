@@ -11,7 +11,7 @@
 	<MvASSIGN NAME = "l.module:code"		VALUE = "tgreviews">
 	<MvASSIGN NAME = "l.module:name"		VALUE = "Product Reviews">
 	<MvASSIGN NAME = "l.module:provider"	VALUE = "Tess Guefen">
-	<MvASSIGN NAME = "l.module:version"		VALUE = "2.002">
+	<MvASSIGN NAME = "l.module:version"		VALUE = "2.003">
 	<MvASSIGN NAME = "l.module:api_ver"		VALUE = "9.12">
 	<MvASSIGN NAME = "l.module:description"	VALUE = "Product Reviews module allows your customers to easily write reviews for products. This module also allows for importing and exporting product reviews.">
 	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside, component, fields_prod, not_prod, fulfill, scheduledtask, vis_product, export, import, json_api, prod_facet">
@@ -3209,7 +3209,7 @@
 	</MvIF>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Component_Test_MailAfter_Email" PARAMETERS = "module var, param, all_settings var, order_id, email" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "Component_Test_MailAfter_Email" PARAMETERS = "module var, param, all_settings var, order_id, email_address" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].Order_Load_ID( l.order_id, l.order ) }">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
@@ -3218,7 +3218,7 @@
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 
-	<MvASSIGN NAME = "l.email:to" 		VALUE = "{ l.email }">
+	<MvASSIGN NAME = "l.email:to" 		VALUE = "{ l.email_address }">
 	<MvASSIGN NAME = "l.email:from"		VALUE = "{ l.notification_settings:ma_from }">
 	<MvASSIGN NAME = "l.email:cc"		VALUE = "">
 	<MvASSIGN NAME = "l.email:bcc"		VALUE = "">
