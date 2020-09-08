@@ -1316,16 +1316,6 @@
 						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Test_MailAfter_Email', ' 12345, \'hello@email.com\' ') }"></td>
 						<td>This will trigger the email for any order you specify, to the email you specify. This is specifically made to test the email template. Please note: BCC and CC will not carry through. If you have left a review on a product in the order, it will skip that product.</td>
 					</tr>
-					<MvCOMMENT>
-					<tr>
-						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Customer_Product_Reviews_Load_Offset', ' cust_id, offset, search, searchable_fields, max, sort, nextoffset var, reviews var ') }"></td>
-						<td>Load all reviews written by a customer (cust_id). This will load all approved, and non approved reviews.</td>
-					</tr>
-					<tr>
-						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Customer_Product_Reviews_Product', ' g.Basket:cust_id, l.settings:product:id, l.settings:customer:reviews ') }"></td>
-						<td>Load all reviews written by a customer (cust_id) for a specific product (product_id). This will load all approved, and non approved reviews.</td>
-					</tr>
-					</MvCOMMENT>
 				</tbody>
 			</table>
 		</div>
@@ -2508,6 +2498,10 @@
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "ComponentModule_Initialize" PARAMETERS = "module var, item, all_settings var, settings var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ l.item EQ 'tgreviews_orderitems' }">
+		<MvFUNCTIONRETURN VALUE = "{ ComponentModule_Initialize_OrderItems( l.module, l.item, l.all_settings, l.settings ) }">
+	</MvIF>
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -2515,27 +2509,489 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ComponentModule_Tabs" PARAMETERS = "module var, item, settings var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ l.item EQ 'tgreviews_orderitems' }">
+		<MvASSIGN NAME = "l.tabs"		VALUE = "{ 'GT_PAGE/' $ l.item $ ':Reviews - Order Item List Items Layout' }">
+
+		<MvIF EXPR = "{ miva_array_elements( l.settings:imagetypes ) GT 0 }">
+			<MvASSIGN NAME = "l.tabs"	VALUE = "{ l.tabs $ ',GT_PAGE/' $ l.item $ '_dimensions:Reviews - Order Items Image Dimensions' }">
+		</MvIF>
+
+		<MvFUNCTIONRETURN VALUE = "{ l.tabs }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = "">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ComponentModuleValidate_SortMethod" PARAMETERS = "item, default_sort, value, sort_by, sorting_option, sorting_method" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ ( l.default_sort EQ l.value ) AND ( NOT l.sort_by ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( l.item, '', 'Sorting option \'' $ l.sorting_option $ '\' must be enabled to use the Default Sort Method of ' $ l.sorting_method ) }">
+	</MvIF>
+
+	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ComponentModule_Validate" PARAMETERS = "module var, item, field_prefix, fields var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ l.item EQ 'tgreviews_orderitems' }">
+		<MvASSIGN NAME = "l.fields:b_width"						VALUE = "{ trim( l.fields:b_width ) }">
+		<MvASSIGN NAME = "l.fields:b_height"					VALUE = "{ trim( l.fields:b_height ) }">
+		<MvASSIGN NAME = "l.fields:price"						VALUE = "{ trim( l.fields:price ) }">
+		<MvASSIGN NAME = "l.fields:additionalprice"				VALUE = "{ trim( l.fields:additionalprice ) }">
+		<MvASSIGN NAME = "l.fields:per_page"					VALUE = "{ trim( l.fields:per_page ) }">
+		<MvASSIGN NAME = "l.fields:page_disp_count"				VALUE = "{ trim( l.fields:page_disp_count ) }">
+		<MvASSIGN NAME = "l.fields:reverse_default_disp_order"	VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.fields:reverse_default_disp_order ) }">
+		<MvASSIGN NAME = "l.fields:displaydiscounts"			VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.fields:displaydiscounts ) }">
+		<MvASSIGN NAME = "l.fields:predictdiscounts"			VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.fields:predictdiscounts ) }">
+		<MvASSIGN NAME = "l.fields:field_code"					VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.fields:field_code ) }">
+		<MvASSIGN NAME = "l.fields:field_name"					VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.fields:field_name ) }">
+		<MvASSIGN NAME = "l.fields:field_options"				VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.fields:field_options ) }">
+		<MvASSIGN NAME = "l.fields:field_dtadded"				VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.fields:field_dtadded ) }">
+		<MvASSIGN NAME = "l.fields:field_notes"					VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.fields:field_notes ) }">
+		<MvASSIGN NAME = "l.fields:field_quantity"				VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.fields:field_quantity ) }">
+		<MvASSIGN NAME = "l.fields:field_price"					VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.fields:field_price ) }">
+		<MvASSIGN NAME = "l.fields:button_add"					VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.fields:button_add ) }">
+		<MvASSIGN NAME = "l.fields:notes"						VALUE = "{ trim( l.fields:notes ) }">
+
+		<MvIF EXPR = "{ l.fields:paginate }">
+			<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_WholeNumber_Positive_Required( l.fields:per_page ) }">
+				<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( l.item, l.field_prefix $ 'per_page', g.Validation_Message ) }">
+			</MvIF>
+		</MvIF>
+
+		<MvIF EXPR = "{ l.fields:paginate_count }">
+			<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_WholeNumber_Positive_Required( l.fields:page_disp_count ) }">
+				<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( l.item, l.field_prefix $ 'page_disp_count', g.Validation_Message ) }">
+			</MvIF>
+		</MvIF>
+
+		<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_WholeNumber_Positive_Required( l.fields:b_width ) }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( l.item $ '_dimensions', l.field_prefix $ 'b_width', g.Validation_Message ) }">
+		</MvIF>
+
+		<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_WholeNumber_Positive_Required( l.fields:b_height ) }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Admin ].FieldError( l.item $ '_dimensions', l.field_prefix $ 'b_height', g.Validation_Message ) }">
+		</MvIF>
+	</MvIF>
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ComponentModule_Update" PARAMETERS = "module var, item, field_prefix, fields var, settings var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ l.item EQ 'tgreviews_orderitems' }">
+		<MvASSIGN NAME = "l.settings:reverse_default_disp_order" 	VALUE = "{ l.fields:reverse_default_disp_order }">
+
+		<MvASSIGN NAME = "l.selectedfield_count"					VALUE = "{ [ g.Module_Library_Utilities ].CustomFieldSelect_Selected( l.fields:fields_custom, l.settings:fields_custom ) }">
+
+		<MvASSIGN NAME = "l.settings:predictdiscounts"	VALUE = "{ l.fields:predictdiscounts }">
+		<MvASSIGN NAME = "l.imagetype_count"			VALUE = "{ [ g.Module_Library_Utilities ].ImageTypeSelect_Selected( l.fields:imagetypes, l.settings:imagetypes ) }">
+
+		<MvCOMMENT>
+		|
+		| These settings are common between advanced and point + click mode
+		|
+		</MvCOMMENT>
+
+		<MvIF EXPR = "{ l.fields:paginate }">
+			<MvASSIGN NAME = "l.settings:per_page"			VALUE = "{ l.fields:per_page }">
+		<MvELSE>
+			<MvASSIGN NAME = "l.settings:per_page"			VALUE = 0>
+		</MvIF>
+
+		<MvIF EXPR = "{ l.fields:paginate_count }">
+			<MvASSIGN NAME = "l.settings:page_disp_count"	VALUE = "{ l.fields:page_disp_count }">
+		<MvELSE>
+			<MvASSIGN NAME = "l.settings:page_disp_count"	VALUE = 0>
+		</MvIF>
+
+		<MvASSIGN NAME = "l.settings:items_per_page_filter"	VALUE = "{ l.fields:items_per_page_filter }">
+
+		<MvASSIGN NAME = "l.settings:sort_by:switch"		VALUE = "{ l.fields:sort_by:switch }">
+		<MvASSIGN NAME = "l.settings:sort_by:name"			VALUE = "{ l.fields:sort_by:name }">
+		<MvASSIGN NAME = "l.settings:sort_by:code"			VALUE = "{ l.fields:sort_by:code }">
+		<MvASSIGN NAME = "l.settings:sort_by:price"			VALUE = "{ l.fields:sort_by:price }">
+		<MvASSIGN NAME = "l.settings:sort_by:dtadded"		VALUE = "{ l.fields:sort_by:dtadded }">
+
+		<MvASSIGN NAME = "l.settings:constrain"				VALUE = "{ l.fields:constrain }">
+		<MvASSIGN NAME = "l.settings:b_width"				VALUE = "{ l.fields:b_width }">
+		<MvASSIGN NAME = "l.settings:b_height"				VALUE = "{ l.fields:b_height }">
+
+		<MvIF EXPR = "{ l.fields:default_sort EQ '' }">
+			<MvASSIGN NAME = "l.settings:default_sort"		VALUE = "id_desc">
+		<MvELSE>
+			<MvASSIGN NAME = "l.settings:default_sort"		VALUE = "{ l.fields:default_sort }">
+		</MvIF>
+
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( '#Error#', l.module:name $ ' \'' $ l.item $ '\' settings updated' ) }">
+
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_ID( l.fields:template_version, l.template ) OR
+						NOT [ g.Module_Feature_TUI_DB ].ManagedTemplate_Load_ID( l.settings:template_id, l.managedtemplate ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvIF EXPR = "{ crypto_md5( l.fields:template_code ) EQ crypto_md5( l.template:source ) }">
+			<MvIF EXPR = "{ l.template:id NE l.managedtemplate:current_id }">
+				<MvASSIGN NAME = "l.managedtemplate:current_id"	VALUE = "{ l.template:id }">
+
+				<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Revert_ManagedTemplateVersion( l.managedtemplate, l.template, l.compile_error ) }">
+					<MvIF EXPR = "{ len( l.compile_error ) }">
+						<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Admin ].FieldError( l.item, l.field_prefix $ 'template_code', l.compile_error ) }">
+						<MvFUNCTIONRETURN VALUE = 1>
+					</MvIF>
+
+					<MvFUNCTIONRETURN VALUE = 0>
+				</MvIF>
+
+				<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( '#Error#', l.module:name $ ' \'' $ l.item $ '\' template reverted' ) }">
+			</MvIF>
+		<MvELSE>
+			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplateVersion( l.managedtemplate, l.fields:notes, l.fields:template_code, l.settings, l.compile_error ) }">
+				<MvIF EXPR = "{ len( l.compile_error ) }">
+					<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Admin ].FieldError( l.item, l.field_prefix $ 'template_code', l.compile_error ) }">
+					<MvFUNCTIONRETURN VALUE = 1>
+				</MvIF>
+
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+
+			<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( '#Error#',  l.module:name $ ' \'' $ l.item $ '\' template updated' ) }">
+		</MvIF>
+	</MvIF>
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "ComponentModule_Content" PARAMETERS = "module var, item, tab, load_fields, field_prefix, fields var, settings var" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "ComponentModule_Content" PARAMETERS = "module var, item, tab, load_fields, field_prefix, fields var, settings var"  STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
+	<MvIF EXPR = "{ l.item EQ 'tgreviews_orderitems' }">
+		<MvIF EXPR = "{ l.fields:template_clear_history }">
+			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplate_Delete_History( l.settings:template_id ) }">
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+	
+			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_Template_Current( l.settings:template_id, l.template ) }">
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+	
+			<MvASSIGN NAME = "l.fields:template_version"			VALUE = "{ l.template:id }">
+			<MvASSIGN NAME = "l.fields:template_version_selected"	VALUE = "{ l.template:id }">
+		<MvELSEIF EXPR = "{ l.fields:template_recall }">
+			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_ID( l.fields:template_version_selected, l.template ) }">
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+	
+			<MvASSIGN NAME = "l.template_id"						VALUE = "{ l.settings:template_id }">
+			<MvASSIGN NAME = "l.settings"							VALUE = "{ l.template:settings }">
+			<MvASSIGN NAME = "l.settings:template_id"				VALUE = "{ l.template_id }">
+	
+			<MvASSIGN NAME = "l.load_fields"						VALUE = 1>
+		<MvELSE>
+			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_Template_Current( l.settings:template_id, l.template ) }">
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+		</MvIF>
+	
+		<MvCOMMENT>
+		|
+		| Load all image types
+		|
+		</MvCOMMENT>
+	
+		<MvASSIGN NAME = "l.imagetype_count"						VALUE = "{ [ g.Module_Library_DB ].ImageTypeList_Load_All( l.imagetypes ) }">
+	
+		<MvIF EXPR = "{ l.load_fields }">
+			<MvIF EXPR = "{ ISNULL l.settings:constrain }">
+				<MvASSIGN NAME = "l.fields:constrain"				VALUE = "B">
+			<MvELSE>
+				<MvASSIGN NAME = "l.fields:constrain"				VALUE = "{ l.settings:constrain }">
+			</MvIF>
+	
+			<MvIF EXPR = "{ ISNULL l.settings:b_width }">
+				<MvASSIGN NAME = "l.fields:b_width"					VALUE = 75>
+			<MvELSE>
+				<MvASSIGN NAME = "l.fields:b_width"					VALUE = "{ l.settings:b_width }">
+			</MvIF>
+	
+			<MvIF EXPR = "{ ISNULL l.settings:b_height }">
+				<MvASSIGN NAME = "l.fields:b_height"				VALUE = 75>
+			<MvELSE>
+				<MvASSIGN NAME = "l.fields:b_height"				VALUE = "{ l.settings:b_height }">
+			</MvIF>
+	
+			<MvIF EXPR = "{ ISNULL l.settings:price }">
+				<MvASSIGN NAME = "l.fields:price"					VALUE = "base">
+			<MvELSE>
+				<MvASSIGN NAME = "l.fields:price"					VALUE = "{ l.settings:price }">
+			</MvIF>
+	
+			<MvASSIGN NAME = "l.fields:notes"						VALUE = "">
+			<MvASSIGN NAME = "l.fields:template_code"				VALUE = "{ l.template:source }">
+			<MvASSIGN NAME = "l.fields:additionalprice"				VALUE = "{ l.settings:additionalprice }">
+			<MvASSIGN NAME = "l.fields:displaydiscounts"			VALUE = "{ l.settings:displaydiscounts }">
+			<MvASSIGN NAME = "l.fields:predictdiscounts"			VALUE = "{ l.settings:predictdiscounts }">
+			<MvASSIGN NAME = "l.fields:field_code"					VALUE = "{ l.settings:field_code }">
+			<MvASSIGN NAME = "l.fields:field_name"					VALUE = "{ l.settings:field_name }">
+			<MvASSIGN NAME = "l.fields:field_options"				VALUE = "{ l.settings:field_options }">
+			<MvASSIGN NAME = "l.fields:field_dtadded"				VALUE = "{ l.settings:field_dtadded }">
+			<MvASSIGN NAME = "l.fields:field_notes"					VALUE = "{ l.settings:field_notes }">
+			<MvASSIGN NAME = "l.fields:field_quantity"				VALUE = "{ l.settings:field_quantity }">
+			<MvASSIGN NAME = "l.fields:field_price"					VALUE = "{ l.settings:field_price }">
+			<MvASSIGN NAME = "l.fields:button_add"					VALUE = "{ l.settings:button_add }">
+			<MvASSIGN NAME = "l.fields:invmsg"						VALUE = "{ l.settings:invmsg }">
+			<MvASSIGN NAME = "l.fields:imagetypes"					VALUE = "{ l.settings:imagetypes }">
+			<MvASSIGN NAME = "l.fields:image"						VALUE = "{ l.settings:imagetypes[ 1 ] }">
+	
+			<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].InitializeCustomFieldSelect( l.settings:fields_custom, l.fields:fields_custom ) }">
+	
+			<MvIF EXPR = "{ l.settings:per_page EQ 0 }">
+				<MvASSIGN NAME = "l.fields:paginate"				VALUE = 0>
+				<MvASSIGN NAME = "l.fields:per_page"				VALUE = 10>
+			<MvELSE>
+				<MvASSIGN NAME = "l.fields:paginate"				VALUE = 1>
+				<MvASSIGN NAME = "l.fields:per_page"				VALUE = "{ l.settings:per_page }">
+			</MvIF>
+	
+			<MvIF EXPR = "{ l.settings:page_disp_count EQ 0 }">
+				<MvASSIGN NAME = "l.fields:paginate_count"			VALUE = 0>
+				<MvASSIGN NAME = "l.fields:page_disp_count"			VALUE = 3>
+			<MvELSE>
+				<MvASSIGN NAME = "l.fields:paginate_count"			VALUE = 1>
+				<MvASSIGN NAME = "l.fields:page_disp_count"			VALUE = "{ l.settings:page_disp_count }">
+			</MvIF>
+	
+			<MvIF EXPR = "{ l.settings:items_per_page_filter EQ 0 }">
+				<MvASSIGN NAME = "l.fields:items_per_page_filter"	VALUE = 0>
+			<MvELSE>
+				<MvASSIGN NAME = "l.fields:items_per_page_filter"	VALUE = "{ l.settings:items_per_page_filter }">
+			</MvIF>
+	
+			<MvASSIGN NAME = "l.fields:template_version"			VALUE = "{ l.template:id }">
+			<MvASSIGN NAME = "l.fields:template_version_selected"	VALUE = "{ l.template:id }">
+			
+			<MvASSIGN NAME = "l.fields:sort_by:switch"				VALUE = "{ l.settings:sort_by:switch }">
+			<MvASSIGN NAME = "l.fields:sort_by:name"				VALUE = "{ l.settings:sort_by:name }">
+			<MvASSIGN NAME = "l.fields:sort_by:code"				VALUE = "{ l.settings:sort_by:code }">
+			<MvASSIGN NAME = "l.fields:sort_by:price"				VALUE = "{ l.settings:sort_by:price }">
+			<MvASSIGN NAME = "l.fields:sort_by:dtadded"				VALUE = "{ l.settings:sort_by:dtadded }">
+	
+			<MvIF EXPR = "{ l.settings:default_sort EQ '' }">
+				<MvASSIGN NAME = "l.fields:default_sort"			VALUE = "id_desc">
+			<MvELSE>
+				<MvASSIGN NAME = "l.fields:default_sort"			VALUE = "{ l.settings:default_sort }">
+			</MvIF>
+	
+			<MvASSIGN NAME = "l.fields:reverse_default_disp_order" 	VALUE = "{ l.settings:reverse_default_disp_order }">
+		</MvIF>
+	
+		<MvIF EXPR = "{ NOT [ g.Module_Admin ].Tab_Visible( l.tab, l.item ) }">
+			<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_AD ].TUI_Hide_ComponentFields( l.field_prefix, 'fields_custom,image,imagetypes,paginate,per_page,paginate_count,items_per_page_filter,page_disp_count,price,additionalprice,displaydiscounts,predictdiscounts,field_code,field_name,field_options,field_dtadded,field_notes,field_quantity,field_price,button_add,invmsg,default_sort,sort_by:switch,sort_by:name,sort_by:code,sort_by:price,sort_by:dtadded,reverse_default_disp_order,notes,template_code,template_version_selected,template_recall,template_clear_history,template_version,advanced' ) }">
+		<MvELSE>
+			<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'GT_PAGE', l.item ) }">
+			<table border="0" cellpadding="2" cellspacing="0" width="100%">
+			<tr><td colspan="2" width="100%">
+				<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawTemplateTextArea( l.field_prefix $ 'template_code', l.fields:template_code, 20, 100 ) }">
+			</td></tr>
+	
+			<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_AD ].TUI_Hide_ComponentFields( l.field_prefix, 'field_code,field_name,field_options,field_dtadded,field_notes,field_quantity,field_price' ) }">
+	
+			<MvASSIGN NAME = "l.customfield_count"					VALUE = "{ [ g.Module_Library_Utilities ].ProductCustomFieldList_Load( l.customfields ) }">
+	
+			<MvIF EXPR = "{ l.customfield_count }">
+				<tr><td align="left" valign="top" nowrap>
+					<b>Custom Fields:</b>
+				</td><td align="left" width="100%">
+					<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawCustomFieldSelect( l.field_prefix $ 'fields_custom', l.fields:fields_custom, l.customfields, l.customfield_count ) }">
+				</td></tr>
+			</MvIF>
+	
+			<MvIF EXPR = "{ l.imagetype_count EQ 0 }">
+				<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_AD ].TUI_Hide_ComponentFields( l.field_prefix, 'image,imagetypes' ) }">
+			<MvELSE>
+				<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_AD ].TUI_Hide_ComponentFields( l.field_prefix, 'image' ) }">
+
+				<tr><td align="left" valign="top" nowrap>
+					<b>Product Images:</b>
+				</td><td align="left" width="100%">
+					<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawImageTypeSelect( l.field_prefix $ 'imagetypes', l.fields:imagetypes, l.imagetypes, l.imagetype_count ) }">
+				</td></tr>
+			</MvIF>
+
+			<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_AD ].TUI_Hide_ComponentFields( l.field_prefix, 'price,additionalprice,displaydiscounts' ) }">
+
+			<tr><td>
+				&nbsp;
+			</td><td width="100%">
+				<label><MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawCheckBox( l.fields:predictdiscounts, l.field_prefix $ 'predictdiscounts', 1, 'Calculate Predicted Discounts and Sale Price' ) }"></label>
+			</td></tr>
+	
+			<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_AD ].TUI_Hide_ComponentFields( l.field_prefix, 'button_add,invmsg' ) }">
+	
+			<tr>
+				<td align="left" nowrap>
+					<b>Sorting Options:</b>
+				</td>
+				<td width="100%">
+					<table width="100%">
+						<tr>
+							<td align="left" style="padding-right: 15px;" nowrap>
+								<label><MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( l.field_prefix $ 'sort_by:switch', 0, l.fields:sort_by:switch, 'Off' ) }"></label><br />
+								<label><MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( l.field_prefix $ 'sort_by:switch', 1, l.fields:sort_by:switch, 'On' ) }"></label>
+							</td>
+							<td width="100%">
+								<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_AD ].TUI_Hide_ComponentFields( l.field_prefix, 'sort_by:name,sort_by:code,sort_by:price,sort_by:dtadded' ) }">
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+	
+			<tr>
+				<td align="left" style="padding-right: 15px;" nowrap>
+					<b>Default Sort Method:</b>
+				</td>
+				<td width="100%">
+					<table width="100%">
+						<tr>
+							<td align="left" style="padding-right: 15px;" nowrap>
+								<select name="{ encodeentities( l.field_prefix ) $ 'default_sort' }">
+									<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'id_desc',			l.fields:default_sort, 'Default' ) }">
+									<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'name_asc', 		l.fields:default_sort, 'Name Ascending' ) }">
+									<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'name_desc',	 	l.fields:default_sort, 'Name Descending' ) }">
+									<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'code_asc',		l.fields:default_sort, 'Code Ascending' ) }">
+									<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'code_desc',		l.fields:default_sort, 'Code Descending' ) }">
+								</select>
+							</td>
+							<td width="100%">
+								<font color="red"><b>WARNING:</b></font>&nbsp;&nbsp;Changing the default sorting option to any value other than "default" will increase page load times and increase the load on your server. Be fully aware of the effect this will have on your store before changing this option!
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+	
+			<tr><td align="left" nowrap>
+					&nbsp;
+			</td><td width="100%">
+					<label><MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawCheckbox( l.fields:reverse_default_disp_order, l.field_prefix $ 'reverse_default_disp_order', '1', 'Reverse Default Display Order' ) }"></label>
+			</td></tr>
+	
+			<tr><td align="left" nowrap valign="top">
+				<b>Pagination:</b>
+			</td><td align="left" nowrap width="100%">
+				<label><MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( l.field_prefix $ 'paginate', 0, l.fields:paginate, 'Do not paginate order items' ) }"></label><br />
+				<label><MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( l.field_prefix $ 'paginate', 1, l.fields:paginate, 'Display' ) }"></label> <input type="text" name="{ encodeentities( l.field_prefix ) $ 'per_page' }" value="{ encodeentities( l.fields:per_page ) }" size="5"> order items per page<br />
+			</td></tr>
+	
+			<tr><td align="left" nowrap valign="top">
+				<b>Page Numbers:</b>
+			</td><td align="left" nowrap width="100%">
+				<label><MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( l.field_prefix $ 'paginate_count', 0, l.fields:paginate_count, 'Do not show page count' ) }"></label><br />
+				<label><MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( l.field_prefix $ 'paginate_count', 1, l.fields:paginate_count, 'Display' ) }"></label> <input type="text" name="{ encodeentities( l.field_prefix ) $ 'page_disp_count' }" value="{ encodeentities( l.fields:page_disp_count ) }" size="5"> pages at a time
+			</td></tr>
+	
+			<tr><td align="left" nowrap valign="top">
+				<b>Items Per Page Filter:</b>
+			</td><td align="left" nowrap width="100%">
+				<label><MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( l.field_prefix $ 'items_per_page_filter', 0, l.fields:items_per_page_filter, 'Off' ) }"></label><br />
+				<label><MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( l.field_prefix $ 'items_per_page_filter', 1, l.fields:items_per_page_filter, 'On' ) }"></label>
+			</td></tr>
+	
+			<tr><td colspan="2">&nbsp;</td></tr>
+	
+			<tr><td>
+				Notes:
+			</td><td width="100%">
+				<input type="text" name="{ encodeentities( l.field_prefix ) $ 'notes' }" value="{ encodeentities( l.fields:notes ) }" size="40">
+			</td></tr>
+	
+			<tr><td>
+				Versions:
+			</td><td width="100%">
+				<input type="hidden" name="{ encodeentities( l.field_prefix ) $ 'template_recall' }" value="0">
+				<input type="hidden" name="{ encodeentities( l.field_prefix ) $ 'template_clear_history' }" value="0">
+				<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_AD ].TUI_Hide_ComponentFields( l.field_prefix, 'template_version' ) }">
+				<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_ManagedTemplate_Version_Select( l.settings:template_id, l.field_prefix $ 'template_version_selected', l.fields:template_version_selected ) }">
+				<a href="#" onclick="{ 'Toggle( \'' $ [ g.Module_Admin ].JavaScriptEncode( l.field_prefix ) $ 'template_recall' $ '\', 1 ); return false;' }">Recall</a>
+				<a href="#" onclick="{ 'Toggle_Prompt( \'Are you sure you wish to delete all saved configuration settings for Review - Order Items Layout?\\r\\nThis action cannot be undone.\', \'' $ [ g.Module_Admin ].JavaScriptEncode( l.field_prefix ) $ 'template_clear_history' $ '\', 1 ); return false;' }">Clear History</a>
+			</td></tr>
+			</table>
+			<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
+		</MvIF>
+	
+		<MvIF EXPR = "{ NOT [ g.Module_Admin ].Tab_Visible( l.tab, l.item $ '_dimensions' ) }">
+			<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_AD ].TUI_Hide_ComponentFields( l.field_prefix, 'constrain,b_width,b_height' ) }">
+		<MvELSE>
+			<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'GT_PAGE', l.item $ '_dimensions' ) }">
+			<table border="0" cellpadding="2" cellspacing="0" width="100%">
+				<tr>
+					<td align="left" valign="top" nowrap><b>Product Image:</b></td>
+					<td align="left" width="100%">
+						<label><MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( l.field_prefix $ 'constrain', 'N', l.fields:constrain, 'No constraints' ) }"></label><br />
+						<label><MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( l.field_prefix $ 'constrain', 'B', l.fields:constrain, 'Resize to fit within bounding box:' ) }"></label>
+						<input type="text" name="{ encodeentities( l.field_prefix ) $ 'b_width' }" value="{ encodeentities( l.fields:b_width ) }" style="text-align:right;" size="5" /> x 
+						<input type="text" name="{ encodeentities( l.field_prefix ) $ 'b_height' }" value="{ encodeentities( l.fields:b_height ) }" style="text-align:right;" size="5" /> pixels
+					</td>
+				</tr>
+			</table>
+			<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
+		</MvIF>
+
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ComponentModule_Defaults" PARAMETERS = "module var, settings var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.settings:fields_custom"					VALUE = "">
+	<MvASSIGN NAME = "l.settings:field_code"					VALUE = 1>
+	<MvASSIGN NAME = "l.settings:field_name"					VALUE = 1>
+	<MvASSIGN NAME = "l.settings:field_options"					VALUE = 1>
+	<MvASSIGN NAME = "l.settings:field_dtadded"					VALUE = 1>
+	<MvASSIGN NAME = "l.settings:field_notes"					VALUE = 1>
+	<MvASSIGN NAME = "l.settings:field_quantity"				VALUE = 1>
+	<MvASSIGN NAME = "l.settings:field_price"					VALUE = 1>
+	<MvASSIGN NAME = "l.settings:button_add"					VALUE = 1>
+	<MvASSIGN NAME = "l.settings:price"							VALUE = "base">
+	<MvASSIGN NAME = "l.settings:additionalprice"				VALUE = "">
+	<MvASSIGN NAME = "l.settings:displaydiscounts"				VALUE = 0>
+	<MvASSIGN NAME = "l.settings:predictdiscounts"				VALUE = 0>
+	<MvASSIGN NAME = "l.settings:invmsg"						VALUE = "S">
+	<MvASSIGN NAME = "l.settings:per_page"						VALUE = 10>
+	<MvASSIGN NAME = "l.settings:page_disp_count"				VALUE = 3>
+	<MvASSIGN NAME = "l.settings:items_per_page_filter"			VALUE = 1>
+	<MvASSIGN NAME = "l.settings:imagetypes"					VALUE = "">
+	<MvASSIGN NAME = "l.settings:constrain"						VALUE = "B">
+	<MvASSIGN NAME = "l.settings:b_width"						VALUE = 75>
+	<MvASSIGN NAME = "l.settings:b_height"						VALUE = 75>
+	<MvASSIGN NAME = "l.settings:sort_by:switch"				VALUE = 0>
+	<MvASSIGN NAME = "l.settings:sort_by:name"					VALUE = 0>
+	<MvASSIGN NAME = "l.settings:sort_by:code"					VALUE = 0>
+	<MvASSIGN NAME = "l.settings:sort_by:price"					VALUE = 0>
+	<MvASSIGN NAME = "l.settings:sort_by:dtadded"				VALUE = 0>
+	<MvASSIGN NAME = "l.settings:default_sort"					VALUE = "id_desc">
+	<MvASSIGN NAME = "l.settings:reverse_default_disp_order" 	VALUE = 0>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ComponentModule_Page_Assign" PARAMETERS = "module var, page var, item, settings var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ l.item EQ 'tgreviews_orderitems' }">
+		<MvEVAL EXPR = "{ ComponentModule_Generate_Code( l.settings, l.template_source ) }">
+
+		<MvASSIGN NAME = "l.settings:template_filename"	VALUE = "{ tolower( l.page:code ) $ '-' $ tolower( l.item ) $ '.mvc' }">
+		<MvASSIGN NAME = "l.settings:template_id"		VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplate_NoDuplicates( l.template_source, l.settings, l.settings:template_filename ) }">
+
+		<MvIF EXPR = "{ l.settings:template_id EQ 0 }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Page_Assign_Item( l.page, 'buttons' )	OR
+						NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Page_Assign_Item( l.page, 'urls' )	}">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+	</MvIF>
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "ComponentModule_Page_Unassign" PARAMETERS = "module var, page var, item, settings var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ l.item EQ 'tgreviews_orderitems' }">
+		<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Delete_ManagedTemplate( l.settings:template_id ) }">
+	</MvIF>
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -2570,6 +3026,11 @@
 </MVFUNCTION>
 
 <MvFUNCTION NAME = "ComponentModule_Render_Start" PARAMETERS = "module var, item, settings var, item_settings var, param" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ l.item EQ 'tgreviews_orderitems' }">
+		<MvDO FILE = "{ g.Store_Template_Path $ l.item_settings:template_filename }" NAME = "l.null" VALUE = "{ Template_Render( l.null, l.settings ) }">
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
 	<MvIF EXPR = "{ NOT Parse_Function_Parameters( l.param, l.function_name, l.parameters, l.parameter_count ) }">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
@@ -2630,32 +3091,6 @@
 		</MvIF>
 
 		<MvASSIGN NAME = "l.new_param" VALUE = "{ 'Component_' $ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
-	<MvCOMMENT>
-	<MvELSEIF EXPR = "{ l.function_name EQ 'customer_product_reviews_product' }">
-		<MvIF EXPR = "{ l.parameter_count NE 3 }">
-			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, '\'' $ l.function_name $ '\' takes 3 parameters' ) }">
-		</MvIF>
-
-		<MvIF EXPR = "{ NOT Is_Variable( l.parameters[ 3 ] ) }">
-			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, 'The third parameter must be a variable' ) }">
-		</MvIF>
-
-		<MvASSIGN NAME = "l.new_param" VALUE = "{ 'Component_' $ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
-	<MvELSEIF EXPR = "{ l.function_name EQ 'customer_product_reviews_load_offset' }">
-		<MvIF EXPR = "{ l.parameter_count NE 8 }">
-			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, '\'' $ l.function_name $ '\' takes 7 parameters' ) }">
-		</MvIF>
-
-		<MvIF EXPR = "{ NOT Is_Variable( l.parameters[ 7 ] ) }">
-			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, 'The sixth parameter must be a variable' ) }">
-		</MvIF>
-
-		<MvIF EXPR = "{ NOT Is_Variable( l.parameters[ 8 ] ) }">
-			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, 'The eigth parameter must be a variable' ) }">
-		</MvIF>
-
-		<MvASSIGN NAME = "l.new_param" VALUE = "{ 'Component_' $ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
-	</MvCOMMENT>
 	<MvELSE>
 		<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, '\'' $ l.function_name $ '\' is not a valid function' ) }">
 	</MvIF>
@@ -3286,7 +3721,498 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Parse_Function_Parameters" PARAMETERS = "string, function_name var, parameters var, parameter_count var" STANDARDOUTPUTLEVEL = "">	
+<MvFUNCTION NAME = "ComponentModule_Initialize_OrderItems" PARAMETERS = "module var, item, all_settings var, settings var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ l.settings:items_per_page_filter }">
+		<MvIF EXPR = "{ ISNULL g.Per_Page OR NOT [ g.Module_Admin ].Validate_WholeNumber_Required( g.Per_Page ) }">
+			<MvIF EXPR = "{ l.settings:per_page EQ 0 }">
+				<MvASSIGN NAME = "g.Per_Page"			VALUE = -1>
+			<MvELSE>
+				<MvASSIGN NAME = "g.Per_Page"			VALUE = "{ l.settings:per_page }">
+			</MvIF>
+		<MvELSE>
+			<MvIF EXPR = "{ g.Per_Page GE 0 }">
+				<MvASSIGN NAME = "l.settings:per_page"	VALUE = "{ g.Per_Page }">
+			<MvELSE>
+				<MvASSIGN NAME = "g.Per_Page"			VALUE = -1>
+				<MvASSIGN NAME = "l.settings:per_page"	VALUE = 0>
+			</MvIF>
+		</MvIF>
+	</MvIF>
+
+	<MvIF EXPR = "{ g.Sort_By }">
+		<MvASSIGN NAME = "l.sort_by"					VALUE = "{ g.Sort_By }">
+	<MvELSE>
+		<MvASSIGN NAME = "l.sort_by"					VALUE = "{ l.settings:default_sort }">
+		<MvASSIGN NAME = "g.Sort_By"					VALUE = "{ l.settings:default_sort }">
+	</MvIF>
+
+	<MvIF EXPR = "{ l.sort_by EQ 'id_desc' AND 
+	 				l.settings:reverse_default_disp_order }">
+		<MvASSIGN NAME = "l.sort_by" 					VALUE = "id">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.settings:item_count"			VALUE = "{ Runtime_ReviewsOrderItems_Load_Offset_Customer( g.Customer:id, g.Offset, l.settings:per_page, l.sort_by, g.NextOffset, l.settings:items ) }">
+	<MvASSIGN NAME = "l.null"							VALUE = "{ Create_Pagination( l.all_settings, l.settings ) }">
+
+	<MvIF EXPR = "{ l.settings:item_count EQ 0 }">
+		<MvASSIGN NAME = "l.settings:empty"				VALUE = 1>
+	</MvIF>
+
+	<MvASSIGN NAME = "g.PrevOffset"						VALUE = "{ g.Offset - l.settings:per_page }">
+
+	<MvIF EXPR = "{ g.PrevOffset LT 0 }">
+		<MvASSIGN NAME = "g.PrevOffset"					VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_UT ].CommonComponentFields_Initialize_Product_CustomField_Lookup( l.all_settings, l.settings:fields_custom ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ l.settings:predictdiscounts }">
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_PGR_UT ].DiscountState_CreateFromBasket( g.Basket, l.discount_state ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_PGR_UT ].DiscountState_Load_PriceGroups_Basket( g.Basket, l.discount_state ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_PGR_UT ].DiscountState_Disable_Unused_Item_PriceGroups( l.discount_state ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_PGR_UT ].DiscountState_Predict_Baseline_Discounts( l.discount_state ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+	</MvIF>
+
+	<MvFOREACH INDEX = "l.item_pos" ITERATOR = "l.orderitem" ARRAY = "l.settings:items" COUNT = "{ l.settings:item_count }">
+		<MvASSIGN NAME = "l.null"												VALUE = "{ Load_Product_MostRecent_Order_Customer( l.orderitem:product_id, g.Customer:id, l.orderitem:order ) }">
+
+		<MvIF EXPR = "{ l.orderitem:order_id }">
+			<MvASSIGN NAME = "l.orderitem:order:formatted_orderdate_date"		VALUE = "{ [ g.Module_Library_Utilities ].Format_Date( l.orderitem:order:orderdate, s.miva_language ) }">
+			<MvASSIGN NAME = "l.orderitem:order:formatted_orderdate_time"		VALUE = "{ [ g.Module_Library_Utilities ].Format_Time( l.orderitem:order:orderdate, s.miva_language ) }">
+			<MvASSIGN NAME = "l.orderitem:order:formatted_price"				VALUE = "{ [ g.Module_Root $ g.Store:currncy_mod:module ].CurrencyModule_AddFormatting( g.Store:currncy_mod, l.orderitem::order:price) }">
+			<MvASSIGN NAME = "l.orderitem:order:formatted_retail"				VALUE = "{ [ g.Module_Root $ g.Store:currncy_mod:module ].CurrencyModule_AddFormatting( g.Store:currncy_mod, l.orderitem::order:retail) }">
+			<MvASSIGN NAME = "l.orderitem:order:formatted_base_price"			VALUE = "{ [ g.Module_Root $ g.Store:currncy_mod:module ].CurrencyModule_AddFormatting( g.Store:currncy_mod, l.orderitem::order:base_price) }">
+		</MvIF>
+
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_UT ].CommonComponentFields_Initialize_Product_Runtime( l.orderitem:product ) OR
+						NOT [ g.Module_Feature_TUI_UT ].CommonComponentFields_Initialize_Product_CustomFields( l.orderitem:product:id, l.orderitem:product, l.all_settings, l.settings:fields_custom ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
+		</MvIF>
+
+		<MvASSIGN NAME = "l.null" 												VALUE = "{ [ g.Module_Feature_TUI_UT ].CommonComponentFields_Initialize_Product_ImageTypes( l.orderitem:product:id, 0, l.orderitem:product, l.all_settings, l.settings:imagetypes, l.settings:constrain, l.settings:b_width, l.settings:b_height ) }">
+
+		<MvIF EXPR = "{ l.settings:predictdiscounts }">
+			<MvIF EXPR = "{ NOT [ g.Module_Feature_PGR_UT ].DiscountState_Predict_Product_Discounts( l.discount_state, l.orderitem:product, l.variant_id, l.orderitem:quantity, l.orderitem:product:price, l.orderitem:product:discounts, l.orderitem:product:discount_count ) }">
+				<MvFUNCTIONRETURN VALUE = 0>
+			</MvIF>
+
+			<MvASSIGN NAME = "l.orderitem:product:formatted_price" 				VALUE = "{ [ g.Module_Root $ g.Store:currncy_mod:module ].CurrencyModule_AddFormatting( g.Store:currncy_mod, l.orderitem:product:price ) }">
+
+			<MvFOREACH ITERATOR = "l.discount" ARRAY = "l.orderitem:product:discounts" COUNT = "{ l.orderitem:product:discount_count }">
+				<MvASSIGN NAME = "l.discount:formatted_discount" 				VALUE = "{ [ g.Module_Root $ g.Store:currncy_mod:module ].CurrencyModule_AddFormatting( g.Store:currncy_mod, l.discount:discount ) }">
+			</MvFOREACH>
+		</MvIF>
+
+		<MvASSIGN NAME = "l.orderitem:product:link" 							VALUE = "{ [ g.Module_Feature_URI_UT ].Store_Product_URL( l.orderitem:product, l.null ) }">
+		<MvASSIGN NAME = "l.orderitem:product:subtotal_retail"					VALUE = "{ l.orderitem:product:retail * l.orderitem:quantity }">
+		<MvASSIGN NAME = "l.orderitem:product:subtotal_base_price"				VALUE = "{ l.orderitem:product:base_price * l.orderitem:quantity }">
+		<MvASSIGN NAME = "l.orderitem:product:subtotal"							VALUE = "{ l.orderitem:product:price * l.orderitem:quantity }">
+		<MvASSIGN NAME = "l.orderitem:product:formatted_subtotal_retail"		VALUE = "{ [ g.Module_Root $ g.Store:currncy_mod:module ].CurrencyModule_AddFormatting( g.Store:currncy_mod, l.orderitem:product:subtotal_retail ) }">
+		<MvASSIGN NAME = "l.orderitem:product:formatted_subtotal_base_price"	VALUE = "{ [ g.Module_Root $ g.Store:currncy_mod:module ].CurrencyModule_AddFormatting( g.Store:currncy_mod, l.orderitem:product:subtotal_base_price ) }">
+		<MvASSIGN NAME = "l.orderitem:product:formatted_subtotal"				VALUE = "{ [ g.Module_Root $ g.Store:currncy_mod:module ].CurrencyModule_AddFormatting( g.Store:currncy_mod, l.orderitem:product:subtotal ) }">
+	</MvFOREACH>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Runtime_ReviewsOrderItems_Load_Offset_Customer" PARAMETERS = "cust_id, offset, max, sort, nextoffset var, orderitems var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT l.cust_id }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ l.sort EQ 'id_desc' }">				<MvASSIGN NAME = "l.sort_col" VALUE = "prod.id">			<MvASSIGN NAME = "l.sort_dir" VALUE = "DESC">
+	<MvELSEIF EXPR = "{ l.sort EQ 'code_asc' }">		<MvASSIGN NAME = "l.sort_col" VALUE = "prod.code">			<MvASSIGN NAME = "l.sort_dir" VALUE = "ASC">
+	<MvELSEIF EXPR = "{ l.sort EQ 'code_desc' }">		<MvASSIGN NAME = "l.sort_col" VALUE = "prod.code">			<MvASSIGN NAME = "l.sort_dir" VALUE = "DESC">
+	<MvELSEIF EXPR = "{ l.sort EQ 'name_asc' }">		<MvASSIGN NAME = "l.sort_col" VALUE = "prod.name">			<MvASSIGN NAME = "l.sort_dir" VALUE = "ASC">
+	<MvELSEIF EXPR = "{ l.sort EQ 'name_desc' }">		<MvASSIGN NAME = "l.sort_col" VALUE = "prod.name">			<MvASSIGN NAME = "l.sort_dir" VALUE = "DESC">
+	<MvELSE>											<MvASSIGN NAME = "l.sort_col" VALUE = "prod.id">			<MvASSIGN NAME = "l.sort_dir" VALUE = "ASC">
+	</MvIF>
+
+	<MvIF EXPR = "{ l.max EQ 0 }">	<MvASSIGN NAME = "l.limit" VALUE = 0>
+	<MvELSE>						<MvASSIGN NAME = "l.limit" VALUE = "{ l.max + 1 }">
+	</MvIF>
+
+	<MvASSIGN NAME = "g.Session:cache:runtime_reviewsorderitems_load_offset_customer:cust_id"	VALUE = "{ int( l.cust_id ) }">
+	<MvASSIGN NAME = "l.fields"																	VALUE = "g.Session:cache:runtime_reviewsorderitems_load_offset_customer:cust_id">
+
+	<MvASSIGN NAME = "l.query"	VALUE = "{ 'SELECT
+												oi.product_id				AS product_id,
+												orders.cust_id				AS order_cust_id,
+												prod.catcount 				AS product_catcount,
+												prod.cancat_id 				AS product_cancat_id,
+												prod.agrpcount 				AS product_agrpcount,
+												prod.pgrpcount 				AS product_pgrpcount,
+												prod.disp_order 			AS product_disp_order,
+												prod.page_id 				AS product_page_id,
+												prod.code 					AS product_code,
+												prod.sku 					AS product_sku,
+												prod.name 					AS product_name,
+												prod.page_title 			AS product_page_title,
+												prod.thumbnail 				AS product_thumbnail,
+												prod.image 					AS product_image,
+												prod.price 					AS product_price,
+												prod.cost 					AS product_cost,
+												prod.descrip 				AS product_descrip,
+												prod.weight 				AS product_weight,
+												prod.taxable 				AS product_taxable,
+												prod.active 				AS product_active,
+												prod.dt_created				AS product_dt_created,
+												prod.dt_updated				AS product_dt_updated,
+												' $ l.sort_col $ ' 			AS sort_order,
+												ipc.inventory				AS ipc_inventory,
+												ips.active					AS ips_active,
+												ips.in_long					AS ips_in_long,
+												ips.in_short				AS ips_in_short,
+												ips.low_level				AS ips_low_level,
+												ips.low_long				AS ips_low_long,
+												ips.low_lvl_d				AS ips_low_lvl_d,
+												ips.low_short				AS ips_low_short,
+												ips.low_track				AS ips_low_track,
+												ips.out_level				AS ips_out_level,
+												ips.out_long				AS ips_out_long,
+												ips.out_lvl_d				AS ips_out_lvl_d,
+												ips.out_short				AS ips_out_short,
+												ips.out_track				AS ips_out_track,
+												iset.active					AS iset_active,
+												iset.in_long				AS iset_in_long,
+												iset.in_short				AS iset_in_short,
+												iset.low_level				AS iset_low_level,
+												iset.low_long				AS iset_low_long,
+												iset.low_short				AS iset_low_short,
+												iset.low_track				AS iset_low_track,
+												iset.out_level				AS iset_out_level,
+												iset.out_long				AS iset_out_long,
+												iset.out_short				AS iset_out_short,
+												iset.out_track				AS iset_out_track
+											FROM ' $ 
+												g.Store_Table_Prefix $ 'OrderItems oi 
+												LEFT OUTER JOIN ' $ g.Store_Table_Prefix $ 'Orders orders ON orders.id = oi.order_id, ' $
+												g.Store_Table_Prefix $ 'Products prod
+												LEFT OUTER JOIN ' $ g.Store_Table_Prefix $ 'InventoryProductSettings ips ON ips.product_id = prod.id
+												LEFT OUTER JOIN ' $ g.Store_Table_Prefix $ 'InventoryProductCounts ipc ON ipc.product_id = prod.id, ' $
+												g.Store_Table_Prefix $ 'InventorySettings iset
+											WHERE
+												orders.cust_id	= ?					AND
+												oi.product_id 	= prod.id 			AND
+												prod.active		= 1 				AND
+												( ' $ [ g.Module_Library_DB ].Runtime_Product_AvailabilityGroup_Where( l.fields ) $ ' )
+											GROUP BY
+												oi.product_id
+											ORDER BY ' $
+												l.sort_col $ ' ' $ l.sort_dir }">
+
+	<MvIF EXPR = "{ NOT [ g.Module_Library_Native_DBAPI ].DB_OPENVIEW_Range( 'Merchant', 'OrderItems',
+																			 l.query, l.fields,
+																			 l.offset, l.limit ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.orderitem_count" VALUE = 0>
+	<MvWHILE EXPR = "{ ( NOT OrderItems.d.EOF ) AND ( ( l.max EQ 0 ) OR ( l.orderitem_count LT l.max ) ) }">
+		<MvREFERENCEARRAY NAME = "l.orderitem" VARIABLE = "l.orderitems">
+			<MvDIMENSION INDEX = "{ ++l.orderitem_count }">
+		</MvREFERENCEARRAY>
+
+		<MvASSIGN NAME = "l.orderitem:product_id"			VALUE = "{ OrderItems.d.product_id }">
+
+		<MvASSIGN NAME = "l.orderitem:product:id"			VALUE = "{ OrderItems.d.product_id }">
+		<MvASSIGN NAME = "l.orderitem:product:catcount"		VALUE = "{ OrderItems.d.product_catcount }">
+		<MvASSIGN NAME = "l.orderitem:product:cancat_id"	VALUE = "{ OrderItems.d.product_cancat_id }">
+		<MvASSIGN NAME = "l.orderitem:product:agrpcount"	VALUE = "{ OrderItems.d.product_agrpcount }">
+		<MvASSIGN NAME = "l.orderitem:product:pgrpcount"	VALUE = "{ OrderItems.d.product_pgrpcount }">
+		<MvASSIGN NAME = "l.orderitem:product:disp_order"	VALUE = "{ OrderItems.d.product_disp_order }">
+		<MvASSIGN NAME = "l.orderitem:product:page_id"		VALUE = "{ OrderItems.d.product_page_id }">
+		<MvASSIGN NAME = "l.orderitem:product:code"			VALUE = "{ OrderItems.d.product_code }">
+		<MvASSIGN NAME = "l.orderitem:product:sku"			VALUE = "{ OrderItems.d.product_sku }">
+		<MvASSIGN NAME = "l.orderitem:product:name"			VALUE = "{ OrderItems.d.product_name }">
+		<MvASSIGN NAME = "l.orderitem:product:page_title"	VALUE = "{ OrderItems.d.product_page_title }">
+		<MvASSIGN NAME = "l.orderitem:product:thumbnail"	VALUE = "{ OrderItems.d.product_thumbnail }">
+		<MvASSIGN NAME = "l.orderitem:product:image"		VALUE = "{ OrderItems.d.product_image }">
+		<MvASSIGN NAME = "l.orderitem:product:price"		VALUE = "{ OrderItems.d.product_price }">
+		<MvASSIGN NAME = "l.orderitem:product:cost"			VALUE = "{ OrderItems.d.product_cost }">
+		<MvASSIGN NAME = "l.orderitem:product:descrip"		VALUE = "{ OrderItems.d.product_descrip }">
+		<MvASSIGN NAME = "l.orderitem:product:weight"		VALUE = "{ OrderItems.d.product_weight }">
+		<MvASSIGN NAME = "l.orderitem:product:taxable"		VALUE = "{ OrderItems.d.product_taxable }">
+		<MvASSIGN NAME = "l.orderitem:product:active"		VALUE = "{ OrderItems.d.product_active }">
+		<MvASSIGN NAME = "l.orderitem:product:dt_created"	VALUE = "{ OrderItems.d.product_dt_created }">
+		<MvASSIGN NAME = "l.orderitem:product:dt_updated"	VALUE = "{ OrderItems.d.product_dt_updated }">
+
+		<MvEVAL EXPR = "{ [ g.Module_Feature_INV_RT ].Runtime_Product_InventoryFields_Read( l.orderitem:product ) }">
+
+		<MvSKIP NAME = "Merchant" VIEW = "OrderItems" ROWS = 1>
+	</MvWHILE>
+	
+	<MvIF EXPR = "{ OrderItems.d.EOF }">
+		<MvASSIGN NAME = "l.nextoffset"	VALUE = 0>
+	<MvELSE>
+		<MvASSIGN NAME = "l.nextoffset"	VALUE = "{ l.offset + l.orderitem_count }">
+	</MvIF>
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "OrderItems">
+
+	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].ListLoad_EOF_Return( '#Error#', l.orderitem_count ) }">
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Create_Pagination" PARAMETERS = "all_settings var, settings var" STANDARDOUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT Runtime_ReviewsOrderItems_Count_Customer( g.Customer:id, l.settings:total_count ) }">
+		<MvASSIGN NAME = "l.settings:page_disp_count" VALUE = 0>
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ l.settings:page_disp_count EQ 0 OR l.settings:per_page EQ 0 }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT ISNULL g.Per_Page }">	<MvASSIGN NAME = "l.link_additions"	VALUE = "{ l.link_additions $ '&Per_Page=' $ encodeattribute( g.Per_Page ) }">	</MvIF>
+	<MvIF EXPR = "{ NOT ISNULL g.Sort_By }">	<MvASSIGN NAME = "l.link_additions"	VALUE = "{ l.link_additions $ '&Sort_By=' $ encodeattribute( g.Sort_By ) }">	</MvIF>
+
+	<MvASSIGN NAME = "l.page_count"						VALUE = "{ ceil( l.settings:total_count / l.settings:per_page ) }">
+	<MvASSIGN NAME = "l.settings:page_links:last_page"	VALUE = "{ l.page_count }">
+
+	<MvIF EXPR = "{ g.NextOffset }">	<MvASSIGN NAME = "l.settings:page_links:current_page" VALUE = "{ ceil( g.NextOffset / l.settings:per_page ) }">
+	<MvELSE>							<MvASSIGN NAME = "l.settings:page_links:current_page" VALUE = "{ ceil( l.settings:total_count / l.settings:per_page ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.settings:page_links:next_link_params"		VALUE = "{ 'Offset=' $ encodeattribute( ( l.settings:page_links:current_page ) * l.settings:per_page ) $ l.link_additions }">
+	<MvASSIGN NAME = "l.settings:page_links:prev_link_params"		VALUE = "{ 'Offset=' $ encodeattribute( ( l.settings:page_links:current_page - 2 ) * l.settings:per_page ) $ l.link_additions }">
+	<MvASSIGN NAME = "l.settings:page_links:first_link_params"		VALUE = "{ 'Offset=0' $ l.link_additions }">
+
+	<MvIF EXPR = "{ floor( l.settings:total_count / l.settings:per_page ) * l.settings:per_page EQ l.settings:total_count }">
+		<MvASSIGN NAME = "l.last_page_offset"						VALUE = "{ floor( ( l.settings:total_count - 1 ) / l.settings:per_page ) * l.settings:per_page }">
+		<MvASSIGN NAME = "l.settings:page_links:last_link_params"	VALUE = "{ 'Offset=' $ encodeattribute( floor( ( l.settings:total_count - 1 ) / l.settings:per_page ) * l.settings:per_page ) $ l.link_additions }">
+	<MvELSE>
+		<MvASSIGN NAME = "l.last_page_offset"						VALUE = "{ floor( ( l.settings:total_count ) / l.settings:per_page ) * l.settings:per_page }">
+		<MvASSIGN NAME = "l.settings:page_links:last_link_params"	VALUE = "{ 'Offset=' $ encodeattribute( floor( l.settings:total_count / l.settings:per_page ) * l.settings:per_page ) $ l.link_additions }">
+	</MvIF>
+
+	<MvIF EXPR = "{ l.page_count LT l.settings:page_disp_count }">
+		<MvASSIGN NAME = "l.left"	VALUE = "{ floor( ( l.page_count - 1 ) / 2 ) }">
+		<MvASSIGN NAME = "l.right"	VALUE = "{ ceil( ( l.page_count - 1 ) / 2 ) }">
+	<MvELSE>
+		<MvASSIGN NAME = "l.left"	VALUE = "{ floor( ( l.settings:page_disp_count - 1 ) / 2 ) }">
+		<MvASSIGN NAME = "l.right"	VALUE = "{ ceil( ( l.settings:page_disp_count - 1 ) / 2 ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.counter"	VALUE = 0>
+	<MvASSIGN NAME = "l.left_final" VALUE = 0>
+
+	<MvWHILE EXPR = "{ l.counter LT l.left }">
+		<MvIF EXPR = "{ ( ( l.settings:page_links:current_page - l.left + 1 ) + l.counter ) GT 1 }">
+			<MvASSIGN NAME = "l.left_final"	VALUE = "{ l.left_final + 1 }">
+		<MvELSE>
+			<MvASSIGN NAME = "l.right" VALUE = "{ l.right + 1 }">
+		</MvIF>
+
+		<MvASSIGN NAME = "l.counter" VALUE = "{ l.counter + 1 }">
+	</MvWHILE>
+
+	<MvIF EXPR = "{ l.left_final EQ l.left }">
+		<MvASSIGN NAME = "l.counter"	 VALUE = 0>
+		<MvASSIGN NAME = "l.right_final" VALUE = 0>
+
+		<MvWHILE EXPR = "{ l.counter LT l.right }">
+			<MvIF EXPR = "{ ( ( l.settings:page_links:current_page + l.right - 1 ) - l.counter ) LT l.page_count }">
+				<MvASSIGN NAME = "l.right_final" VALUE = "{ l.right_final + 1 }">
+			<MvELSE>
+				<MvASSIGN NAME = "l.left_final" VALUE = "{ l.left_final + 1 }">
+			</MvIF>
+
+			<MvASSIGN NAME = "l.counter" VALUE = "{ l.counter + 1 }">
+		</MvWHILE>
+
+		<MvASSIGN NAME = "l.pages" VALUE = "{ l.left_final + l.right_final + 1 }">
+	<MvELSE>
+		<MvASSIGN NAME = "l.pages" VALUE = "{ l.left_final + l.right + 1 }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.counter" VALUE = 0>
+
+	<MvWHILE EXPR = "{ l.counter LT l.pages }">
+		<MvASSIGN NAME = "l.settings:page_links:pages" INDEX = "{ l.counter + 1 }" MEMBER = "page_num" 		VALUE = "{ ( l.settings:page_links:current_page - l.left_final ) + l.counter }">
+		<MvASSIGN NAME = "l.settings:page_links:pages" INDEX = "{ l.counter + 1 }" MEMBER = "link_params" 	VALUE = "{ 'Offset=' $ encodeattribute( ( ( l.settings:page_links:current_page - l.left_final - 1 ) + l.counter ) * l.settings:per_page ) $ l.link_additions }">
+
+		<MvIF EXPR = "{ ( ( ( l.settings:page_links:current_page - l.left_final - 1 ) + l.counter ) * l.settings:per_page ) EQ 0 }">					<MvASSIGN NAME = "l.settings:page_links:contains_first"	VALUE = "YES">	</MvIF>
+		<MvIF EXPR = "{ ( ( ( l.settings:page_links:current_page - l.left_final - 1 ) + l.counter ) * l.settings:per_page ) EQ l.last_page_offset }">	<MvASSIGN NAME = "l.settings:page_links:contains_last"	VALUE = "YES">	</MvIF>
+
+		<MvASSIGN NAME = "l.counter" VALUE = "{ l.counter + 1 }">
+	</MvWHILE>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "ComponentModule_Generate_Code" PARAMETERS = "settings var, code var" STANDARDOUTPUTLEVEL = "">
+	<MvCAPTURE VARIABLE = "l.code">
+<MIVA STANDARDOUTPUTLEVEL = "text, html"><mvt:if expr="l.settings:tgreviews_orderitems:total_count EQ 0">
+	<div class="o-layout">
+		<div class="o-layout__item">
+			<p class="x-messages x-messages--info">There are no products to review.</p>
+		</div>
+	</div>
+	<mvt:exit />
+</mvt:if>
+
+<mvt:if expr="l.settings:tgreviews_orderitems:items_per_page_filter EQ 1">
+	<div class="u-flex o-layout--align-center o-layout--justify-end o-layout--wrap">
+		<div class="x-display-list-filtering t-display-list-filtering">
+			<div class="x-display-list-filtering__per-page">
+				<ul class="c-form-list">
+					<li class="c-form-list__item">
+						<label class="c-form-label u-font-xsmall u-text-uppercase u-text-normal" for="l-per_page">View</label>
+						<div class="c-form-select">
+							<select id="l-per_page" class="c-form-select__dropdown u-font-small u-text-uppercase u-text-bold" name="Per_Page" onchange="window.location.href='&mvtj:urls:_self:auto_sep;Per_Page=' + encodeURIComponent( this.options[ this.selectedIndex ].value ) + '&amp;Sort_By=' + encodeURIComponent( '&mvtj:global:Sort_By;' );">
+								<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( 10, g.Per_Page, '10 Items/Page' )" />
+								<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( 20, g.Per_Page, '20 Items/Page' )" />
+								<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( 40, g.Per_Page, '40 Items/Page' )" />
+								<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( -1, g.Per_Page, 'All Items' )" />
+							</select>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<!-- end .x-display-list-filtering__per-page -->
+		</div>
+		<!-- end .x-display-list-filtering -->
+	</div>
+</mvt:if>
+
+<div class="o-layout o-layout--wide t-basket">
+	<div class="o-layout__item u-width-12">
+		<table class="c-table-responsive t-basket__product-summary">
+			<thead class="c-table-responsive_thead u-text-left">
+				<tr class="c-table-responsive__row u-text-uppercase u-font-xsmall u-color-gray-3">
+					<th class="c-table-responsive__cell" scope="col">Product</th>
+					<th class="c-table-responsive__cell u-text-right" scope="col">&nbsp;</th>
+				</tr>
+			</thead>
+			<tbody>
+				<mvt:foreach iterator="orderitem" array="tgreviews_orderitems:items">
+					<tr class="c-table-responsive__row">
+						<td class="c-table-responsive__cell" scope="row" data-label="">
+							<div class="o-layout">
+								<div class="o-layout__item u-width-12 u-width-4--m u-width-3--l u-text-center">
+									<p><img src="&mvte:orderitem:product:imagetypes:main;" alt="&mvte:orderitem:product:name;"></p>
+								</div>
+								<div class="o-layout__item u-width-12 u-width-8--m u-width-9--l t-basket__product-details">
+									<a class="u-text-bold u-color-black" href="&mvte:orderitem:product:link;" title="&mvt:orderitem:product:name;" rel="nofollow">&mvt:orderitem:product:name;</a><br>
+									<p>
+										<span class="u-font-small">SKU: &mvt:orderitem:product:code;</span><br>
+										<span class="u-font-small">Last Purchased: &mvt:orderitem:order:formatted_orderdate;</span><br>
+										<span class="u-font-small">Purchased for </span>
+									</p>
+								</div>
+							</div>
+						</td>
+
+						<td class="c-table-responsive__cell">
+							test
+						</td>
+					</tr>
+				</mvt:foreach>
+			</tbody>
+		</table>
+	</div>
+</div>
+
+<mvt:if expr="l.settings:tgreviews_orderitems:page_links:last_page GT 1">
+	<nav class="x-pagination x-pagination--centered t-pagination">
+		<ul class="o-list-inline">
+			<mvt:if expr="l.settings:tgreviews_orderitems:page_links:current_page NE 1">
+				<li class="o-list-inline__item">
+					<a class="c-button c-button--hollow u-border-rounded u-color-gray-4" href="&mvte:urls:_self:auto_sep;&mvte:tgreviews_orderitems:page_links:prev_link_params;" title="Go to the previous page.">
+						<span class="u-icon-chevron-left"></span>
+					</a>
+				</li>
+			<mvt:else>
+				<li class="o-list-inline__item">
+					<span class="c-button c-button--hollow u-border-rounded u-color-gray-4" title="You are on the first page.">
+						<span class="u-icon-chevron-left"></span>
+					</span>
+				</li>
+			</mvt:if>
+			<li class="o-list-inline__item o-layout--grow">
+				<div class="c-form-select">
+					<select class="c-form-select__dropdown u-font-small u-text-uppercase u-text-bold u-color-gray-4" name="Sort_By" onchange="window.location.href=this.options[ this.selectedIndex ].value">
+						<mvt:foreach iterator="pages" array="tgreviews_orderitems:page_links:pages">
+							<mvt:if expr="l.settings:tgreviews_orderitems:page_links:current_page EQ l.settings:pages:page_num">
+								<option value="&mvte:urls:_self:auto_sep;&mvte:pages:link_params;" selected>Page &mvte:pages:page_num; of &mvte:tgreviews_orderitems:page_links:last_page;</option>
+							<mvt:else>
+								<option value="&mvte:urls:_self:auto_sep;&mvte:pages:link_params;">Page &mvte:pages:page_num; of &mvte:tgreviews_orderitems:page_links:last_page;</option>
+							</mvt:if>
+						</mvt:foreach>
+					</select>
+				</div>
+			</li>
+			<mvt:if expr="l.settings:tgreviews_orderitems:page_links:current_page NE l.settings:tgreviews_orderitems:page_links:last_page">
+				<li class="o-list-inline__item">
+					<a class="c-button c-button--hollow u-border-rounded u-color-gray-4" href="&mvte:urls:_self:auto_sep;&mvte:tgreviews_orderitems:page_links:next_link_params;" title="Go to the next page.">
+						<span class="u-icon-chevron-right"></span>
+					</a>
+				</li>
+			<mvt:else>
+				<li class="o-list-inline__item">
+					<span class="c-button c-button--hollow u-border-rounded u-color-gray-4" title="You are on the last page.">
+						<span class="u-icon-chevron-right"></span>
+					</span>
+				</li>
+			</mvt:if>
+		</ul>
+	</nav>
+	<!-- end .x-pagination -->
+</mvt:if>
+<MIVA STANDARDOUTPUTLEVEL = ""></MvCAPTURE>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Runtime_ReviewsOrderItems_Count_Customer" PARAMETERS = "cust_id, count var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvIF EXPR = "{ NOT l.cust_id }">
+		<MvASSIGN NAME = "l.count" VALUE = 0>
+		<MvFUNCTIONRETURN VALUE = 1>
+	</MvIF>
+
+	<MvASSIGN NAME = "l.fields" VALUE = "l.cust_id">
+	<MvOPENVIEW NAME	= "Merchant"
+				VIEW	= "OrderItems"
+				QUERY	= "{ 'SELECT
+								COUNT( DISTINCT oi.product_id ) AS total_count
+							  FROM ' $
+								g.Store_Table_Prefix $ 'OrderItems oi ' $ '
+								LEFT OUTER JOIN ' $ g.Store_Table_Prefix $ 'Orders orders ON orders.id = oi.order_id, ' $
+								g.Store_Table_Prefix $ 'Products prod
+								LEFT OUTER JOIN ' $ g.Store_Table_Prefix $ 'InventoryProductSettings ips ON ips.product_id = prod.id
+								LEFT OUTER JOIN ' $ g.Store_Table_Prefix $ 'InventoryProductCounts ipc ON ipc.product_id = prod.id, ' $
+								g.Store_Table_Prefix $ 'InventorySettings iset
+							  WHERE
+								orders.cust_id 	= ? 				AND
+								oi.product_id = prod.id				AND
+								prod.active		= 1					AND
+								( ' $ [ g.Module_Library_DB ].Runtime_Product_AvailabilityGroup_Where( l.fields ) $ ' )' }"
+				FIELDS	= "{ l.fields }">
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE = 0>
+	</MvIF>
+
+	<MvIF EXPR = "{ OrderItems.d.EOF }">	<MvASSIGN NAME = "l.count" VALUE = 0>
+	<MvELSE>								<MvASSIGN NAME = "l.count" VALUE = "{ OrderItems.d.total_count }">
+	</MvIF>
+
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "OrderItems">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+
+<MvFUNCTION NAME = "Parse_Function_Parameters" PARAMETERS = "string, function_name var, parameters var, parameter_count var" STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.parameter_count" 	VALUE = 0>
 	<MvASSIGN NAME = "l.loop_counter" 		VALUE = 0>
 	<MvASSIGN NAME = "l.string" 			VALUE = "{ trim( l.string ) }">
@@ -6252,6 +7178,69 @@
 			</MvIF>
 		</MvIF>
 	</MvFOREACH>
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Load_Product_MostRecent_Order_Customer" PARAMETERS = "product_id, cust_id, order var" STANDARDOUTPUTLEVEL = "" ERROROUTPUTLEVEL = "">
+	<MvOPENVIEW NAME	= "Merchant"
+				VIEW 	= "OrderItems"
+				QUERY 	= "{ 'SELECT
+								orders.cust_id		AS cust_id,
+								orders.orderdate	AS orderdate,
+								oi.order_id			AS order_id,
+								oi.line_id			AS line_id,
+								oi.group_id			AS group_id,
+								oi.status			AS status,
+								oi.product_id		AS product_id,
+								oi.code				AS code,
+								oi.name				AS name,
+								oi.sku				AS sku,
+								oi.retail			AS retail,
+								oi.base_price		AS base_price,
+								oi.price			AS price,
+								oi.weight			AS weight,
+								oi.taxable			AS taxable,
+								oi.upsold			AS upsold,
+								oi.quantity			AS quantity
+							FROM ' $ 
+								g.Store_Table_Prefix $ 'OrderItems oi 
+								LEFT OUTER JOIN ' $ g.Store_Table_Prefix $ 'Orders orders ON orders.id = oi.order_id
+							WHERE
+								orders.cust_id	= ? AND
+								oi.product_id 	= ?
+							ORDER BY
+								orders.orderdate DESC
+							LIMIT 1' }"
+				FIELDS = "l.cust_id, l.product_id">
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ OrderItems.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "OrderItems">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error#' ) }">
+	</MvIF>
+
+	<MvASSIGN NAME = "l.order:cust_id"		VALUE = "{ OrderItems.d.cust_id }">
+	<MvASSIGN NAME = "l.order:orderdate"	VALUE = "{ OrderItems.d.orderdate }">
+	<MvASSIGN NAME = "l.order:order_id"		VALUE = "{ OrderItems.d.order_id }">
+	<MvASSIGN NAME = "l.order:line_id"		VALUE = "{ OrderItems.d.line_id }">
+	<MvASSIGN NAME = "l.order:group_id"		VALUE = "{ OrderItems.d.group_id }">
+	<MvASSIGN NAME = "l.order:status"		VALUE = "{ OrderItems.d.status }">
+	<MvASSIGN NAME = "l.order:product_id"	VALUE = "{ OrderItems.d.product_id }">
+	<MvASSIGN NAME = "l.order:code"			VALUE = "{ OrderItems.d.code }">
+	<MvASSIGN NAME = "l.order:name"			VALUE = "{ OrderItems.d.name }">
+	<MvASSIGN NAME = "l.order:sku"			VALUE = "{ OrderItems.d.sku }">
+	<MvASSIGN NAME = "l.order:retail"		VALUE = "{ OrderItems.d.retail }">
+	<MvASSIGN NAME = "l.order:base_price"	VALUE = "{ OrderItems.d.base_price }">
+	<MvASSIGN NAME = "l.order:price"		VALUE = "{ OrderItems.d.price }">
+	<MvASSIGN NAME = "l.order:weight"		VALUE = "{ OrderItems.d.weight }">
+	<MvASSIGN NAME = "l.order:taxable"		VALUE = "{ OrderItems.d.taxable }">
+	<MvASSIGN NAME = "l.order:upsold"		VALUE = "{ OrderItems.d.upsold }">
+	<MvASSIGN NAME = "l.order:quantity"		VALUE = "{ OrderItems.d.quantity }">
+		
+	<MvCLOSEVIEW NAME = "Merchant" VIEW = "OrderItems">
 
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
