@@ -3808,12 +3808,6 @@
 		</MvIF>
 
 		<MvASSIGN NAME = "l.orderitem:product:link" 							VALUE = "{ [ g.Module_Feature_URI_UT ].Store_Product_URL( l.orderitem:product, l.null ) }">
-		<MvASSIGN NAME = "l.orderitem:product:subtotal_retail"					VALUE = "{ l.orderitem:product:retail * l.orderitem:quantity }">
-		<MvASSIGN NAME = "l.orderitem:product:subtotal_base_price"				VALUE = "{ l.orderitem:product:base_price * l.orderitem:quantity }">
-		<MvASSIGN NAME = "l.orderitem:product:subtotal"							VALUE = "{ l.orderitem:product:price * l.orderitem:quantity }">
-		<MvASSIGN NAME = "l.orderitem:product:formatted_subtotal_retail"		VALUE = "{ [ g.Module_Root $ g.Store:currncy_mod:module ].CurrencyModule_AddFormatting( g.Store:currncy_mod, l.orderitem:product:subtotal_retail ) }">
-		<MvASSIGN NAME = "l.orderitem:product:formatted_subtotal_base_price"	VALUE = "{ [ g.Module_Root $ g.Store:currncy_mod:module ].CurrencyModule_AddFormatting( g.Store:currncy_mod, l.orderitem:product:subtotal_base_price ) }">
-		<MvASSIGN NAME = "l.orderitem:product:formatted_subtotal"				VALUE = "{ [ g.Module_Root $ g.Store:currncy_mod:module ].CurrencyModule_AddFormatting( g.Store:currncy_mod, l.orderitem:product:subtotal ) }">
 	</MvFOREACH>
 
 	<MvFUNCTIONRETURN VALUE = 1>
