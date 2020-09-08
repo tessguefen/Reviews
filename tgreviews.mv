@@ -3,7 +3,7 @@
 <MvCOMMENT>
 |
 | Prefix         : MOD-SYS-TGR-
-| Next Error Code: 154
+| Next Error Code: 156
 |
 </MvCOMMENT>
 
@@ -140,6 +140,10 @@
 
 	<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_Item( 'tgreviews', l.module:code ) }">
 		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00004', g.Error_Message ) }">
+	</MvIF>
+
+	<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_Item( 'tgreviews_orderitems', l.module:code ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00154', g.Error_Message ) }">
 	</MvIF>
 
 	<MvCOMMENT>
@@ -805,6 +809,19 @@
 		</MvIF>
 	</MvIF>
 
+	<MvIF EXPR = "{ l.version LT 2.004 }">
+
+		<MvCOMMENT>
+		|
+		| Create item `tgreviews_orderitems`
+		|
+		</MvCOMMENT>
+
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_Item( 'tgreviews_orderitems', l.module:code ) }">
+			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00155', g.Error_Message ) }">
+		</MvIF>
+	</MvIF>
+
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -1254,7 +1271,7 @@
 		<table border="0" cellpadding="2" cellspacing="0" width="100%">
 			<tr>
 				<td align="left" nowrap valign="top" colspan="2">
-					<MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Form_Template', '' ) }">
+					<MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'tgreviews', 'Form_Template', '' ) }">
 					<br><br>
 				</td>
 			</tr>
@@ -1266,7 +1283,7 @@
 		<table border="0" cellpadding="2" cellspacing="0" width="100%">
 			<tr>
 				<td align="left" nowrap valign="top" colspan="2">
-					<MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Reviews_Template', ' l.settings:product:id ' ) }">
+					<MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'tgreviews', 'Reviews_Template', ' l.settings:product:id ' ) }">
 					<br><br>
 				</td>
 			</tr>
@@ -1285,40 +1302,44 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Form_Template', '') }"></td>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'tgreviews', 'Form_Template', '') }"></td>
 						<td>Render the Form Template.</td>
 					</tr>
 					<tr>
-						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Reviews_Template', ' l.settings:product:id ') }"></td>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'tgreviews', 'Reviews_Template', ' l.settings:product:id ') }"></td>
 						<td>Render the Reviews Template. Returns <pre style="display:inline;">reviews array</pre> in <pre style="display:inline;">l.settings:tgr:reviews</pre>. If you do not pass an id (i.e. put 0, or an empty string), it will return all approved reviews for the store.</td>
 					</tr>
 					<tr>
-						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Load_Product_Reviews', ' l.settings:product:id, l.settings:product:reviews ') }"></td>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'tgreviews', 'Load_Product_Reviews', ' l.settings:product:id, l.settings:product:reviews ') }"></td>
 						<td>Use this to save all the review data to a variable and utilize in template code.</td>
 					</tr>
 					<tr>
-						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Date', ' \'F jS, Y\', l.settings:review:created, l.settings:review:formatted_created ') }"></td>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'tgreviews', 'Date', ' \'F jS, Y\', l.settings:review:created, l.settings:review:formatted_created ') }"></td>
 						<td>Format a timestamp, and save to a variable (3rd parameter). Uses PHP's date function as a reference.</td>
 					</tr>
 					<tr>
-						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Product_Rating', ' l.settings:product:id, l.settings:product:product_rating ') }"></td>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'tgreviews', 'Product_Rating', ' l.settings:product:id, l.settings:product:product_rating ') }"></td>
 						<td>Returns the average product rating value to a variable (2nd parameter).</td>
 					</tr>
 					<tr>
-						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Product_Review_Breakdowns', ' l.settings:product:id, l.settings:tgr:breakdown ') }"></td>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'tgreviews', 'Product_Review_Breakdowns', ' l.settings:product:id, l.settings:tgr:breakdown ') }"></td>
 						<td>Returns a breakdown of ratings for a product to a variable (2nd parameter). Array has 2 members: <pre style="display:inline;">count</pre> and <pre style="display:inline;">rating</pre></td>
 					</tr>
 					<tr>
-						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Product_Review_Count', ' l.settings:product:id, l.settings:tgr:review_count ') }"></td>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'tgreviews', 'Product_Review_Count', ' l.settings:product:id, l.settings:tgr:review_count ') }"></td>
 						<td>Returns a total number of approved reviews for a product to a variable (2nd parameter).</td>
 					</tr>
 					<tr>
-						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Test_MailAfter_Email', ' 12345, \'hello@email.com\' ') }"></td>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'tgreviews', 'Test_MailAfter_Email', ' 12345, \'hello@email.com\' ') }"></td>
 						<td>This will trigger the email for any order you specify, to the email you specify. This is specifically made to test the email template. Please note: BCC and CC will not carry through. If you have left a review on a product in the order, it will skip that product.</td>
 					</tr>
 					<tr>
-						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Review_Check_CustomerXProduct', ' cust_id, product_id, reviewed var ') }"></td>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'tgreviews', 'Review_Check_CustomerXProduct', ' cust_id, product_id, reviewed var ') }"></td>
 						<td>Pass through a customer id, a product id, it will return if the customer has reviewed that product, into reviewed var (1 or 0)</td>
+					</tr>
+					<tr>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'tgreviews_orderitems', '', '') }"></td>
+						<td>Assign this item to the page you wish to display items a customer has purchased, and display if they have reviewed, or not reviewed the product yet.</td>
 					</tr>
 				</tbody>
 			</table>
@@ -6957,10 +6978,16 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "Admin_Formatted_Item_Function" PARAMETERS = "function_name, parameters" STANDARDOUTPUTLEVEL = "html, text">
-<div style="background: #ffffff; overflow:auto;width:auto;padding:.2em 0;">
-<pre style="margin: 0; line-height: 125%;"><span style="color: #446fbd">&lt;mvt:item</span> <span style="color: #6d8600">name=</span><span style="color: #535353">&quot;tgreviews&quot;</span> <span style="color: #6d8600">param=</span><span style="color: #535353">&quot;<span style="color: #446fbd"><MvEVAL EXPR = "{ l.function_name }"></span>(<MvEVAL EXPR = "{ l.parameters }">)&quot;</span> <span style="color: #446fbd">/&gt;</span></pre>
-</div>
+<MvFUNCTION NAME = "Admin_Formatted_Item_Function" PARAMETERS = "item_name, function_name, parameters" STANDARDOUTPUTLEVEL = "html, text">
+	<MvIF EXPR = "{ l.function_name }">
+		<div style="background: #ffffff; overflow:auto;width:auto;padding:.2em 0;">
+		<pre style="margin: 0; line-height: 125%;"><span style="color: #446fbd">&lt;mvt:item</span> <span style="color: #6d8600">name=</span><span style="color: #535353">&quot;<MvEVAL EXPR = "{ l.item_name }">&quot;</span> <span style="color: #6d8600">param=</span><span style="color: #535353">&quot;<span style="color: #446fbd"><MvEVAL EXPR = "{ l.function_name }"></span>(<MvEVAL EXPR = "{ l.parameters }">)&quot;</span> <span style="color: #446fbd">/&gt;</span></pre>
+		</div>
+	<MvELSE>
+		<div style="background: #ffffff; overflow:auto;width:auto;padding:.2em 0;">
+		<pre style="margin: 0; line-height: 125%;"><span style="color: #446fbd">&lt;mvt:item</span> <span style="color: #6d8600">name=</span><span style="color: #535353">&quot;<MvEVAL EXPR = "{ l.item_name }">&quot;</span> <span style="color: #446fbd">/&gt;</span></pre>
+		</div>
+	</MvIF>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Clientside_Output_File" PARAMETERS = "module var, filename" STANDARDOUTPUTLEVEL = "">
