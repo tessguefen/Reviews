@@ -1334,7 +1334,7 @@
 						<td>This will trigger the email for any order you specify, to the email you specify. This is specifically made to test the email template. Please note: BCC and CC will not carry through. If you have left a review on a product in the order, it will skip that product.</td>
 					</tr>
 					<tr>
-						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'tgreviews', 'Review_Check_CustomerXProduct', ' cust_id, product_id, reviewed var ') }"></td>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'tgreviews', 'Review_Check_CustomerXProduct', ' g.Customer:id, l.settings:product:id, l.settings:customer_hasreviewed ') }"></td>
 						<td>Pass through a customer id, a product id, it will return if the customer has reviewed that product, into reviewed var (1 or 0)</td>
 					</tr>
 					<tr>
@@ -2559,22 +2559,10 @@
 	<MvIF EXPR = "{ l.item EQ 'tgreviews_orderitems' }">
 		<MvASSIGN NAME = "l.fields:b_width"						VALUE = "{ trim( l.fields:b_width ) }">
 		<MvASSIGN NAME = "l.fields:b_height"					VALUE = "{ trim( l.fields:b_height ) }">
-		<MvASSIGN NAME = "l.fields:price"						VALUE = "{ trim( l.fields:price ) }">
-		<MvASSIGN NAME = "l.fields:additionalprice"				VALUE = "{ trim( l.fields:additionalprice ) }">
 		<MvASSIGN NAME = "l.fields:per_page"					VALUE = "{ trim( l.fields:per_page ) }">
 		<MvASSIGN NAME = "l.fields:page_disp_count"				VALUE = "{ trim( l.fields:page_disp_count ) }">
 		<MvASSIGN NAME = "l.fields:reverse_default_disp_order"	VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.fields:reverse_default_disp_order ) }">
-		<MvASSIGN NAME = "l.fields:displaydiscounts"			VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.fields:displaydiscounts ) }">
 		<MvASSIGN NAME = "l.fields:predictdiscounts"			VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.fields:predictdiscounts ) }">
-		<MvASSIGN NAME = "l.fields:field_code"					VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.fields:field_code ) }">
-		<MvASSIGN NAME = "l.fields:field_name"					VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.fields:field_name ) }">
-		<MvASSIGN NAME = "l.fields:field_options"				VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.fields:field_options ) }">
-		<MvASSIGN NAME = "l.fields:field_dtadded"				VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.fields:field_dtadded ) }">
-		<MvASSIGN NAME = "l.fields:field_notes"					VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.fields:field_notes ) }">
-		<MvASSIGN NAME = "l.fields:field_quantity"				VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.fields:field_quantity ) }">
-		<MvASSIGN NAME = "l.fields:field_price"					VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.fields:field_price ) }">
-		<MvASSIGN NAME = "l.fields:button_add"					VALUE = "{ [ g.Module_Admin ].Trim_Boolean( l.fields:button_add ) }">
-		<MvASSIGN NAME = "l.fields:notes"						VALUE = "{ trim( l.fields:notes ) }">
 
 		<MvIF EXPR = "{ l.fields:paginate }">
 			<MvIF EXPR = "{ NOT [ g.Module_Admin ].Validate_WholeNumber_Positive_Required( l.fields:per_page ) }">
@@ -2627,12 +2615,6 @@
 		</MvIF>
 
 		<MvASSIGN NAME = "l.settings:items_per_page_filter"	VALUE = "{ l.fields:items_per_page_filter }">
-
-		<MvASSIGN NAME = "l.settings:sort_by:switch"		VALUE = "{ l.fields:sort_by:switch }">
-		<MvASSIGN NAME = "l.settings:sort_by:name"			VALUE = "{ l.fields:sort_by:name }">
-		<MvASSIGN NAME = "l.settings:sort_by:code"			VALUE = "{ l.fields:sort_by:code }">
-		<MvASSIGN NAME = "l.settings:sort_by:price"			VALUE = "{ l.fields:sort_by:price }">
-		<MvASSIGN NAME = "l.settings:sort_by:dtadded"		VALUE = "{ l.fields:sort_by:dtadded }">
 
 		<MvASSIGN NAME = "l.settings:constrain"				VALUE = "{ l.fields:constrain }">
 		<MvASSIGN NAME = "l.settings:b_width"				VALUE = "{ l.fields:b_width }">
@@ -2747,18 +2729,7 @@
 	
 			<MvASSIGN NAME = "l.fields:notes"						VALUE = "">
 			<MvASSIGN NAME = "l.fields:template_code"				VALUE = "{ l.template:source }">
-			<MvASSIGN NAME = "l.fields:additionalprice"				VALUE = "{ l.settings:additionalprice }">
-			<MvASSIGN NAME = "l.fields:displaydiscounts"			VALUE = "{ l.settings:displaydiscounts }">
 			<MvASSIGN NAME = "l.fields:predictdiscounts"			VALUE = "{ l.settings:predictdiscounts }">
-			<MvASSIGN NAME = "l.fields:field_code"					VALUE = "{ l.settings:field_code }">
-			<MvASSIGN NAME = "l.fields:field_name"					VALUE = "{ l.settings:field_name }">
-			<MvASSIGN NAME = "l.fields:field_options"				VALUE = "{ l.settings:field_options }">
-			<MvASSIGN NAME = "l.fields:field_dtadded"				VALUE = "{ l.settings:field_dtadded }">
-			<MvASSIGN NAME = "l.fields:field_notes"					VALUE = "{ l.settings:field_notes }">
-			<MvASSIGN NAME = "l.fields:field_quantity"				VALUE = "{ l.settings:field_quantity }">
-			<MvASSIGN NAME = "l.fields:field_price"					VALUE = "{ l.settings:field_price }">
-			<MvASSIGN NAME = "l.fields:button_add"					VALUE = "{ l.settings:button_add }">
-			<MvASSIGN NAME = "l.fields:invmsg"						VALUE = "{ l.settings:invmsg }">
 			<MvASSIGN NAME = "l.fields:imagetypes"					VALUE = "{ l.settings:imagetypes }">
 			<MvASSIGN NAME = "l.fields:image"						VALUE = "{ l.settings:imagetypes[ 1 ] }">
 	
@@ -2788,12 +2759,6 @@
 	
 			<MvASSIGN NAME = "l.fields:template_version"			VALUE = "{ l.template:id }">
 			<MvASSIGN NAME = "l.fields:template_version_selected"	VALUE = "{ l.template:id }">
-			
-			<MvASSIGN NAME = "l.fields:sort_by:switch"				VALUE = "{ l.settings:sort_by:switch }">
-			<MvASSIGN NAME = "l.fields:sort_by:name"				VALUE = "{ l.settings:sort_by:name }">
-			<MvASSIGN NAME = "l.fields:sort_by:code"				VALUE = "{ l.settings:sort_by:code }">
-			<MvASSIGN NAME = "l.fields:sort_by:price"				VALUE = "{ l.settings:sort_by:price }">
-			<MvASSIGN NAME = "l.fields:sort_by:dtadded"				VALUE = "{ l.settings:sort_by:dtadded }">
 	
 			<MvIF EXPR = "{ l.settings:default_sort EQ '' }">
 				<MvASSIGN NAME = "l.fields:default_sort"			VALUE = "id_desc">
@@ -2965,19 +2930,9 @@
 
 <MvFUNCTION NAME = "ComponentModule_Defaults" PARAMETERS = "module var, settings var" STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.settings:fields_custom"					VALUE = "">
-	<MvASSIGN NAME = "l.settings:field_code"					VALUE = 1>
-	<MvASSIGN NAME = "l.settings:field_name"					VALUE = 1>
-	<MvASSIGN NAME = "l.settings:field_options"					VALUE = 1>
-	<MvASSIGN NAME = "l.settings:field_dtadded"					VALUE = 1>
-	<MvASSIGN NAME = "l.settings:field_notes"					VALUE = 1>
-	<MvASSIGN NAME = "l.settings:field_quantity"				VALUE = 1>
-	<MvASSIGN NAME = "l.settings:field_price"					VALUE = 1>
-	<MvASSIGN NAME = "l.settings:button_add"					VALUE = 1>
 	<MvASSIGN NAME = "l.settings:price"							VALUE = "base">
 	<MvASSIGN NAME = "l.settings:additionalprice"				VALUE = "">
-	<MvASSIGN NAME = "l.settings:displaydiscounts"				VALUE = 0>
 	<MvASSIGN NAME = "l.settings:predictdiscounts"				VALUE = 0>
-	<MvASSIGN NAME = "l.settings:invmsg"						VALUE = "S">
 	<MvASSIGN NAME = "l.settings:per_page"						VALUE = 10>
 	<MvASSIGN NAME = "l.settings:page_disp_count"				VALUE = 3>
 	<MvASSIGN NAME = "l.settings:items_per_page_filter"			VALUE = 1>
@@ -2985,11 +2940,6 @@
 	<MvASSIGN NAME = "l.settings:constrain"						VALUE = "B">
 	<MvASSIGN NAME = "l.settings:b_width"						VALUE = 75>
 	<MvASSIGN NAME = "l.settings:b_height"						VALUE = 75>
-	<MvASSIGN NAME = "l.settings:sort_by:switch"				VALUE = 0>
-	<MvASSIGN NAME = "l.settings:sort_by:name"					VALUE = 0>
-	<MvASSIGN NAME = "l.settings:sort_by:code"					VALUE = 0>
-	<MvASSIGN NAME = "l.settings:sort_by:price"					VALUE = 0>
-	<MvASSIGN NAME = "l.settings:sort_by:dtadded"				VALUE = 0>
 	<MvASSIGN NAME = "l.settings:default_sort"					VALUE = "id_desc">
 	<MvASSIGN NAME = "l.settings:reverse_default_disp_order" 	VALUE = 0>
 </MvFUNCTION>
