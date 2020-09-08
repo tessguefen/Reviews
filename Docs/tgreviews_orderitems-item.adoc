@@ -1,0 +1,20 @@
+<<<
+
+[[_tgreviewsOrderItemsItem]]
+== tgreviews_orderitems Item
+
+Assign `tgreviews_orderitems` to the page you wish to display items a customer has purchased, and display if they have reviewed, or not reviewed the product yet.
+
+You will have the ability to Sort by the following fields:
+
+- Default (Product Display Order)
+- Product Name Ascending/ Descending
+- Product Code Ascending/ Descending
+- Reviewed Products
+- Products Awaiting Review
+
+[source,xml]
+----
+<mvt:item name="tgreviews_orderitems" />
+----
+

@@ -3,7 +3,7 @@
 <MvCOMMENT>
 |
 | Prefix         : MOD-SYS-TGR-
-| Next Error Code: 147
+| Next Error Code: 154
 |
 </MvCOMMENT>
 
@@ -11,7 +11,7 @@
 	<MvASSIGN NAME = "l.module:code"		VALUE = "tgreviews">
 	<MvASSIGN NAME = "l.module:name"		VALUE = "Product Reviews">
 	<MvASSIGN NAME = "l.module:provider"	VALUE = "Tess Guefen">
-	<MvASSIGN NAME = "l.module:version"		VALUE = "2.003">
+	<MvASSIGN NAME = "l.module:version"		VALUE = "2.004">
 	<MvASSIGN NAME = "l.module:api_ver"		VALUE = "9.12">
 	<MvASSIGN NAME = "l.module:description"	VALUE = "Product Reviews module allows your customers to easily write reviews for products. This module also allows for importing and exporting product reviews.">
 	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside, component, fields_prod, not_prod, fulfill, scheduledtask, vis_product, export, import, json_api, prod_facet">
@@ -1316,6 +1316,10 @@
 						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Test_MailAfter_Email', ' 12345, \'hello@email.com\' ') }"></td>
 						<td>This will trigger the email for any order you specify, to the email you specify. This is specifically made to test the email template. Please note: BCC and CC will not carry through. If you have left a review on a product in the order, it will skip that product.</td>
 					</tr>
+					<tr>
+						<td><MvEVAL EXPR = "{ Admin_Formatted_Item_Function( 'Review_Check_CustomerXProduct', ' cust_id, product_id, reviewed var ') }"></td>
+						<td>Pass through a customer id, a product id, it will return if the customer has reviewed that product, into reviewed var (1 or 0)</td>
+					</tr>
 				</tbody>
 			</table>
 		</div>
@@ -2619,7 +2623,7 @@
 			<MvASSIGN NAME = "l.settings:default_sort"		VALUE = "{ l.fields:default_sort }">
 		</MvIF>
 
-		<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( '#Error#', l.module:name $ ' \'' $ l.item $ '\' settings updated' ) }">
+		<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( 'MOD-SYS-TGR-00147', l.module:name $ ' \'' $ l.item $ '\' settings updated' ) }">
 
 		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_ID( l.fields:template_version, l.template ) OR
 						NOT [ g.Module_Feature_TUI_DB ].ManagedTemplate_Load_ID( l.settings:template_id, l.managedtemplate ) }">
@@ -2639,7 +2643,7 @@
 					<MvFUNCTIONRETURN VALUE = 0>
 				</MvIF>
 
-				<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( '#Error#', l.module:name $ ' \'' $ l.item $ '\' template reverted' ) }">
+				<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( 'MOD-SYS-TGR-00148', l.module:name $ ' \'' $ l.item $ '\' template reverted' ) }">
 			</MvIF>
 		<MvELSE>
 			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplateVersion( l.managedtemplate, l.fields:notes, l.fields:template_code, l.settings, l.compile_error ) }">
@@ -2651,7 +2655,7 @@
 				<MvFUNCTIONRETURN VALUE = 0>
 			</MvIF>
 
-			<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( '#Error#',  l.module:name $ ' \'' $ l.item $ '\' template updated' ) }">
+			<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( 'MOD-SYS-TGR-00149',  l.module:name $ ' \'' $ l.item $ '\' template updated' ) }">
 		</MvIF>
 	</MvIF>
 
@@ -2741,7 +2745,7 @@
 	
 			<MvIF EXPR = "{ l.settings:per_page EQ 0 }">
 				<MvASSIGN NAME = "l.fields:paginate"				VALUE = 0>
-				<MvASSIGN NAME = "l.fields:per_page"				VALUE = 10>
+				<MvASSIGN NAME = "l.fields:per_page"				VALUE = 12>
 			<MvELSE>
 				<MvASSIGN NAME = "l.fields:paginate"				VALUE = 1>
 				<MvASSIGN NAME = "l.fields:per_page"				VALUE = "{ l.settings:per_page }">
@@ -2855,6 +2859,8 @@
 									<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'name_desc',	 	l.fields:default_sort, 'Name Descending' ) }">
 									<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'code_asc',		l.fields:default_sort, 'Code Ascending' ) }">
 									<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'code_desc',		l.fields:default_sort, 'Code Descending' ) }">
+									<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'reviewed_desc',	l.fields:default_sort, 'Reviewed Products' ) }">
+									<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawOption( 'reviewed_asc',	l.fields:default_sort, 'Products Awaiting Review' ) }">
 								</select>
 							</td>
 							<td width="100%">
@@ -3088,6 +3094,16 @@
 	<MvELSEIF EXPR = "{ l.function_name EQ 'test_mailafter_email' }">
 		<MvIF EXPR = "{ l.parameter_count NE 2 }">
 			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, '\'' $ l.function_name $ '\' takes 2 parameters' ) }">
+		</MvIF>
+
+		<MvASSIGN NAME = "l.new_param" VALUE = "{ 'Component_' $ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
+	<MvELSEIF EXPR = "{ l.function_name EQ 'review_check_customerxproduct' }">
+		<MvIF EXPR = "{ l.parameter_count NE 3 }">
+			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, '\'' $ l.function_name $ '\' takes 3 parameters' ) }">
+		</MvIF>
+
+		<MvIF EXPR = "{ NOT Is_Variable( l.parameters[ 3 ] ) }">
+			<MvFUNCTIONRETURN VALUE = "{ Parameter_Error( l.param, 'The second parameter must be a variable' ) }">
 		</MvIF>
 
 		<MvASSIGN NAME = "l.new_param" VALUE = "{ 'Component_' $ l.function_name $ '( l.module, l.param, l.settings, ' $ l.parameters $ ' )' }">
@@ -3666,6 +3682,10 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
+<MvFUNCTION NAME = "Component_Review_Check_CustomerXProduct" PARAMETERS = "module var, param, all_settings var, cust_id, product_id, reviewed var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.reviewed" VALUE = "{ Review_Check_CustomerXProduct( l.cust_id, l.product_id ) }">
+</MvFUNCTION>
+
 <MvFUNCTION NAME = "Is_Variable" PARAMETERS = "variable var" STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.valid_chars" 		VALUE = "_.: ">
 	<MvASSIGN NAME = "l.square_bracket_pos" VALUE = 0>
@@ -3789,12 +3809,12 @@
 	<MvFOREACH INDEX = "l.item_pos" ITERATOR = "l.orderitem" ARRAY = "l.settings:items" COUNT = "{ l.settings:item_count }">
 		<MvASSIGN NAME = "l.null"												VALUE = "{ Load_Product_MostRecent_Order_Customer( l.orderitem:product_id, g.Customer:id, l.orderitem:order ) }">
 
-		<MvIF EXPR = "{ l.orderitem:order_id }">
+		<MvIF EXPR = "{ l.orderitem:order:order_id }">
 			<MvASSIGN NAME = "l.orderitem:order:formatted_orderdate_date"		VALUE = "{ [ g.Module_Library_Utilities ].Format_Date( l.orderitem:order:orderdate, s.miva_language ) }">
 			<MvASSIGN NAME = "l.orderitem:order:formatted_orderdate_time"		VALUE = "{ [ g.Module_Library_Utilities ].Format_Time( l.orderitem:order:orderdate, s.miva_language ) }">
-			<MvASSIGN NAME = "l.orderitem:order:formatted_price"				VALUE = "{ [ g.Module_Root $ g.Store:currncy_mod:module ].CurrencyModule_AddFormatting( g.Store:currncy_mod, l.orderitem::order:price) }">
-			<MvASSIGN NAME = "l.orderitem:order:formatted_retail"				VALUE = "{ [ g.Module_Root $ g.Store:currncy_mod:module ].CurrencyModule_AddFormatting( g.Store:currncy_mod, l.orderitem::order:retail) }">
-			<MvASSIGN NAME = "l.orderitem:order:formatted_base_price"			VALUE = "{ [ g.Module_Root $ g.Store:currncy_mod:module ].CurrencyModule_AddFormatting( g.Store:currncy_mod, l.orderitem::order:base_price) }">
+			<MvASSIGN NAME = "l.orderitem:order:formatted_price"				VALUE = "{ [ g.Module_Root $ g.Store:currncy_mod:module ].CurrencyModule_AddFormatting( g.Store:currncy_mod, l.orderitem:order:price) }">
+			<MvASSIGN NAME = "l.orderitem:order:formatted_retail"				VALUE = "{ [ g.Module_Root $ g.Store:currncy_mod:module ].CurrencyModule_AddFormatting( g.Store:currncy_mod, l.orderitem:order:retail) }">
+			<MvASSIGN NAME = "l.orderitem:order:formatted_base_price"			VALUE = "{ [ g.Module_Root $ g.Store:currncy_mod:module ].CurrencyModule_AddFormatting( g.Store:currncy_mod, l.orderitem:order:base_price) }">
 		</MvIF>
 
 		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_UT ].CommonComponentFields_Initialize_Product_Runtime( l.orderitem:product ) OR
@@ -3838,6 +3858,8 @@
 	<MvELSEIF EXPR = "{ l.sort EQ 'code_desc' }">		<MvASSIGN NAME = "l.sort_col" VALUE = "prod.code">			<MvASSIGN NAME = "l.sort_dir" VALUE = "DESC">
 	<MvELSEIF EXPR = "{ l.sort EQ 'name_asc' }">		<MvASSIGN NAME = "l.sort_col" VALUE = "prod.name">			<MvASSIGN NAME = "l.sort_dir" VALUE = "ASC">
 	<MvELSEIF EXPR = "{ l.sort EQ 'name_desc' }">		<MvASSIGN NAME = "l.sort_col" VALUE = "prod.name">			<MvASSIGN NAME = "l.sort_dir" VALUE = "DESC">
+	<MvELSEIF EXPR = "{ l.sort EQ 'reviewed_desc' }">	<MvASSIGN NAME = "l.sort_col" VALUE = "tgrp.id">			<MvASSIGN NAME = "l.sort_dir" VALUE = "DESC">
+	<MvELSEIF EXPR = "{ l.sort EQ 'reviewed_asc' }">	<MvASSIGN NAME = "l.sort_col" VALUE = "tgrp.id">			<MvASSIGN NAME = "l.sort_dir" VALUE = "ASC">
 	<MvELSE>											<MvASSIGN NAME = "l.sort_col" VALUE = "prod.id">			<MvASSIGN NAME = "l.sort_dir" VALUE = "ASC">
 	</MvIF>
 
@@ -3846,7 +3868,7 @@
 	</MvIF>
 
 	<MvASSIGN NAME = "g.Session:cache:runtime_reviewsorderitems_load_offset_customer:cust_id"	VALUE = "{ int( l.cust_id ) }">
-	<MvASSIGN NAME = "l.fields"																	VALUE = "g.Session:cache:runtime_reviewsorderitems_load_offset_customer:cust_id">
+	<MvASSIGN NAME = "l.fields"																	VALUE = "g.Session:cache:runtime_reviewsorderitems_load_offset_customer:cust_id, g.Session:cache:runtime_reviewsorderitems_load_offset_customer:cust_id">
 
 	<MvASSIGN NAME = "l.query"	VALUE = "{ 'SELECT
 												oi.product_id				AS product_id,
@@ -3896,10 +3918,12 @@
 												iset.out_level				AS iset_out_level,
 												iset.out_long				AS iset_out_long,
 												iset.out_short				AS iset_out_short,
-												iset.out_track				AS iset_out_track
+												iset.out_track				AS iset_out_track,
+												COUNT( tgrp.id )			AS product_reviewed
 											FROM ' $ 
 												g.Store_Table_Prefix $ 'OrderItems oi 
-												LEFT OUTER JOIN ' $ g.Store_Table_Prefix $ 'Orders orders ON orders.id = oi.order_id, ' $
+												LEFT OUTER JOIN ' $ g.Store_Table_Prefix $ 'Orders orders ON orders.id = oi.order_id
+												LEFT OUTER JOIN ' $ g.Store_Table_Prefix $ 'TGReviewsProducts tgrp ON tgrp.product_id = oi.product_id AND tgrp.cust_id	= ?, ' $
 												g.Store_Table_Prefix $ 'Products prod
 												LEFT OUTER JOIN ' $ g.Store_Table_Prefix $ 'InventoryProductSettings ips ON ips.product_id = prod.id
 												LEFT OUTER JOIN ' $ g.Store_Table_Prefix $ 'InventoryProductCounts ipc ON ipc.product_id = prod.id, ' $
@@ -3917,7 +3941,7 @@
 	<MvIF EXPR = "{ NOT [ g.Module_Library_Native_DBAPI ].DB_OPENVIEW_Range( 'Merchant', 'OrderItems',
 																			 l.query, l.fields,
 																			 l.offset, l.limit ) }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00150', g.MvOPENVIEW_Error ) }">
 	</MvIF>
 
 	<MvASSIGN NAME = "l.orderitem_count" VALUE = 0>
@@ -3927,6 +3951,7 @@
 		</MvREFERENCEARRAY>
 
 		<MvASSIGN NAME = "l.orderitem:product_id"			VALUE = "{ OrderItems.d.product_id }">
+		<MvASSIGN NAME = "l.orderitem:product_reviewed"		VALUE = "{ OrderItems.d.product_reviewed }">
 
 		<MvASSIGN NAME = "l.orderitem:product:id"			VALUE = "{ OrderItems.d.product_id }">
 		<MvASSIGN NAME = "l.orderitem:product:catcount"		VALUE = "{ OrderItems.d.product_catcount }">
@@ -3963,7 +3988,7 @@
 
 	<MvCLOSEVIEW NAME = "Merchant" VIEW = "OrderItems">
 
-	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].ListLoad_EOF_Return( '#Error#', l.orderitem_count ) }">
+	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].ListLoad_EOF_Return( 'MOD-SYS-TGR-00151', l.orderitem_count ) }">
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Create_Pagination" PARAMETERS = "all_settings var, settings var" STANDARDOUTPUTLEVEL = "">
@@ -4066,16 +4091,16 @@
 
 <mvt:if expr="l.settings:tgreviews_orderitems:items_per_page_filter EQ 1">
 	<div class="u-flex o-layout--align-center o-layout--justify-end o-layout--wrap">
-		<div class="x-display-list-filtering t-display-list-filtering">
+		<div class="x-display-list-filtering t-display-list-filtering u-flex">
 			<div class="x-display-list-filtering__per-page">
 				<ul class="c-form-list">
 					<li class="c-form-list__item">
 						<label class="c-form-label u-font-xsmall u-text-uppercase u-text-normal" for="l-per_page">View</label>
 						<div class="c-form-select">
 							<select id="l-per_page" class="c-form-select__dropdown u-font-small u-text-uppercase u-text-bold" name="Per_Page" onchange="window.location.href='&mvtj:urls:_self:auto_sep;Per_Page=' + encodeURIComponent( this.options[ this.selectedIndex ].value ) + '&amp;Sort_By=' + encodeURIComponent( '&mvtj:global:Sort_By;' );">
-								<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( 10, g.Per_Page, '10 Items/Page' )" />
-								<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( 20, g.Per_Page, '20 Items/Page' )" />
-								<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( 40, g.Per_Page, '40 Items/Page' )" />
+								<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( 12, g.Per_Page, '12 Items/Page' )" />
+								<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( 24, g.Per_Page, '24 Items/Page' )" />
+								<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( 48, g.Per_Page, '48 Items/Page' )" />
 								<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( -1, g.Per_Page, 'All Items' )" />
 							</select>
 						</div>
@@ -4083,6 +4108,25 @@
 				</ul>
 			</div>
 			<!-- end .x-display-list-filtering__per-page -->
+			<div class="x-display-list-filtering__sort-by">
+				<ul class="c-form-list">
+					<li class="c-form-list__item">
+						<label class="c-form-label u-font-xsmall u-text-uppercase u-text-normal" for="l-sort_by">Sort By</label>
+						<div class="c-form-select">
+							<select id="l-sort_by" class="c-form-select__dropdown u-font-small u-text-uppercase u-text-bold" name="Sort_By" onchange="window.location.href='&mvtj:urls:_self:auto_sep;Sort_By=' + encodeURIComponent( this.options[ this.selectedIndex ].value ) + '&amp;Per_Page=' + encodeURIComponent( '&mvtj:global:Per_Page;' );">
+								<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( 'id_desc', g.Sort_By, 'Default' )" />
+								<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( 'name_asc', g.Sort_By, 'Name Ascending' )" />
+								<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( 'name_desc', g.Sort_By, 'Name Descending' )" />
+								<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( 'code_asc', g.Sort_By, 'Code Ascending' )" />
+								<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( 'code_desc', g.Sort_By, 'Code Descending' )" />
+								<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( 'reviewed_desc', g.Sort_By, 'Reviewed Products' )" />
+								<mvt:do file="g.Module_Library_Utilities" name="l.success" value="DrawOption( 'reviewed_asc', g.Sort_By, 'Products Awaiting Review' )" />
+							</select>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<!-- end .x-display-list-filtering__sort-by -->
 		</div>
 		<!-- end .x-display-list-filtering -->
 	</div>
@@ -4109,15 +4153,21 @@
 									<a class="u-text-bold u-color-black" href="&mvte:orderitem:product:link;" title="&mvt:orderitem:product:name;" rel="nofollow">&mvt:orderitem:product:name;</a><br>
 									<p>
 										<span class="u-font-small">SKU: &mvt:orderitem:product:code;</span><br>
-										<span class="u-font-small">Last Purchased: &mvt:orderitem:order:formatted_orderdate;</span><br>
-										<span class="u-font-small">Purchased for </span>
+										<span class="u-font-small">Last Purchased: &mvt:orderitem:order:formatted_orderdate_date;</span><br>
+										<mvt:if expr="l.settings:orderitem:order:price">
+											<span class="u-font-small">Purchased for &mvt:orderitem:order:formatted_price;</span>
+										</mvt:if>
 									</p>
 								</div>
 							</div>
 						</td>
 
 						<td class="c-table-responsive__cell">
-							test
+							<mvt:if expr="l.settings:orderitem:product_reviewed">
+								Thanks for your review!
+							<mvt:else>
+								<a class="u-text-bold u-color-black" href="&mvte:orderitem:product:link;" title="&mvt:orderitem:product:name;" rel="nofollow">Review this Product</a>
+							</mvt:if>
 						</td>
 					</tr>
 				</mvt:foreach>
@@ -6889,22 +6939,22 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Review_Check_CustomerXProduct" PARAMETERS = "cust_id, product_id" STANDARDOUTPUTLEVEL = ""  ERROROUTPUTLEVEL = "">
-<MvOPENVIEW	NAME	= "Merchant"
-			VIEW	= "TGReviewsProducts"
-			QUERY	= "{'SELECT id FROM ' $ g.Store_Table_Prefix $ 'TGReviewsProducts WHERE cust_id = ? AND product_id = ? LIMIT 1' }"
-			FIELDS	= "l.cust_id, l.product_id">
-<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
-	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00139', g.MvOPENVIEW_Error ) }">
-</MvIF>
+	<MvOPENVIEW	NAME	= "Merchant"
+				VIEW	= "TGReviewsProducts"
+				QUERY	= "{'SELECT id FROM ' $ g.Store_Table_Prefix $ 'TGReviewsProducts WHERE cust_id = ? AND product_id = ? LIMIT 1' }"
+				FIELDS	= "l.cust_id, l.product_id">
+	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00139', g.MvOPENVIEW_Error ) }">
+	</MvIF>
 
-<MvIF EXPR = "{ TGReviewsProducts.d.EOF }">
+	<MvIF EXPR = "{ TGReviewsProducts.d.EOF }">
+		<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( 'MOD-SYS-TGR-00140' ) }">
+	</MvIF>
+
 	<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
-	<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( 'MOD-SYS-TGR-00140' ) }">
-</MvIF>
 
-<MvCLOSEVIEW NAME = "Merchant" VIEW = "TGReviewsProducts">
-
-<MvFUNCTIONRETURN VALUE = 1>
+	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Admin_Formatted_Item_Function" PARAMETERS = "function_name, parameters" STANDARDOUTPUTLEVEL = "html, text">
@@ -7214,12 +7264,12 @@
 							LIMIT 1' }"
 				FIELDS = "l.cust_id, l.product_id">
 	<MvIF EXPR = "{ g.MvOPENVIEW_Error }">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( '#Error#', g.MvOPENVIEW_Error ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00152', g.MvOPENVIEW_Error ) }">
 	</MvIF>
 
 	<MvIF EXPR = "{ OrderItems.d.EOF }">
 		<MvCLOSEVIEW NAME = "Merchant" VIEW = "OrderItems">
-		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( '#Error#' ) }">
+		<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_DB ].Error_Load_EOF( 'MOD-SYS-TGR-00153' ) }">
 	</MvIF>
 
 	<MvASSIGN NAME = "l.order:cust_id"		VALUE = "{ OrderItems.d.cust_id }">
