@@ -301,12 +301,12 @@
 	<mvt:if expr="l.settings:tgr:pagination:total GT 1">
 		<div class="tgreviews-row tgreviews-pagination">
 			<span class="tgreviews-pagination-label">Pages</span> 
-			<mvt:foreach iterator="page" array="tgr:pagination:pages">
+			<mvt:foreach iterator="tgr_page" array="tgr:pagination:pages">
 				<mvt:if expr="POS1 GT 1">&nbsp;</mvt:if>
-				<mvt:if expr="l.settings:page:current EQ 1">
-					<span><strong>&mvte:page:page_number;</strong></span>
+				<mvt:if expr="l.settings:tgr_page:current EQ 1">
+					<span><strong>&mvte:tgr_page:page_number;</strong></span>
 				<mvt:else>
-					<span><a href="&mvte:tgr:link;?&mvte:page:params;">&mvte:page:page_number;</a></span>
+					<span><a href="&mvte:tgr:link;?&mvte:tgr_page:params;">&mvte:tgr_page:page_number;</a></span>
 				</mvt:if>
 			</mvt:foreach>
 		</div>
