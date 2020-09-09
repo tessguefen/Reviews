@@ -97,3 +97,14 @@ This will trigger the email for any order you specify, to the email you specify.
 <mvt:item name="tgreviews" param="Test_MailAfter_Email( 12345, 'test@test.com' )" />
 ----
 
+[[__itemReviewCheckCustomerXProduct]]
+=== Check if a customer has reviewed a product
+
+``Review_Check_CustomerXProduct( cust_id, product_id, reviewed var )``
+
+Pass through a customer id, a product id, it will return if the customer has reviewed that product, into reviewed var (1 or 0)
+
+[source,xml]
+----
+<mvt:item name="tgreviews" param="Review_Check_CustomerXProduct( g.Customer:id, l.settings:product:id, l.settings:customer_hasreviewed )" />
+----
