@@ -7184,7 +7184,7 @@
 				</MvIF>
 			</MvIF>
 		<MvELSEIF EXPR = "{ [ g.Module_Library_DB ].OrderShipmentList_Load_Order( l.order:id, l.order:shipments ) }">
-			<MvIF EXPR = "{ NOT miva_array_search( l.order:shipments, 1, l.shipment, 'l.shipment:ship_date EQ 0 OR l.shipment:ship_date GT l.timestamp_check' ) }">
+			<MvIF EXPR = "{ NOT miva_array_search( l.order:shipments, 1, l.shipment, 'l.shipment:ship_date EQ 0 OR l.shipment:ship_date GT l.timestamp_check OR l.shipment:status NE 200' ) }">
 				<MvIF EXPR = "{ MailAfter_Email_Trigger( l.order ) }">
 					<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Feature_SCH_DB ].ScheduledTaskLog_Insert( l.task:id, 'I', 'Reviews: Mail After Email triggered for Order \'' $ l.order:id $ '\'' ) }">
 				<MvELSE>
