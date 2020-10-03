@@ -11,7 +11,7 @@
 	<MvASSIGN NAME = "l.module:code"		VALUE = "tgreviews">
 	<MvASSIGN NAME = "l.module:name"		VALUE = "Product Reviews">
 	<MvASSIGN NAME = "l.module:provider"	VALUE = "Tess Guefen">
-	<MvASSIGN NAME = "l.module:version"		VALUE = "2.005">
+	<MvASSIGN NAME = "l.module:version"		VALUE = "2.006">
 	<MvASSIGN NAME = "l.module:api_ver"		VALUE = "9.12">
 	<MvASSIGN NAME = "l.module:description"	VALUE = "Product Reviews module allows your customers to easily write reviews for products. This module also allows for importing and exporting product reviews.">
 	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside, component, fields_prod, not_prod, fulfill, scheduledtask, vis_product, export, import, json_api, prod_facet">
@@ -888,14 +888,6 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_System_Head" PARAMETERS = "module var, tab" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
-	<MvIF EXPR = "{ l.tab EQ 'TGR_SETT' }">
-		<style>
-			.tgreviews_fields_table_container {
-				width: 375px;
-			}
-		</style>
-	</MvIF>
-
 	<MvIF EXPR = "{ ( l.tab EQ 'TGR_PROD' ) }">
 		<MvIF EXPR = "{ NOT TGReviewsGeneralSettings_Load_Cached( l.general_settings ) }">
 			<MvFUNCTIONRETURN VALUE = 0>
@@ -7192,7 +7184,7 @@
 				</MvIF>
 			</MvIF>
 		<MvELSEIF EXPR = "{ [ g.Module_Library_DB ].OrderShipmentList_Load_Order( l.order:id, l.order:shipments ) }">
-			<MvIF EXPR = "{ l.order:shipments[ 1 ]:ship_date LE l.timestamp_check }">
+			<MvIF EXPR = "{ NOT miva_array_search( l.order:shipments, 1, l.shipment, 'l.shipment:ship_date EQ 0 OR l.shipment:ship_date GT l.timestamp_check' ) }">
 				<MvIF EXPR = "{ MailAfter_Email_Trigger( l.order ) }">
 					<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Feature_SCH_DB ].ScheduledTaskLog_Insert( l.task:id, 'I', 'Reviews: Mail After Email triggered for Order \'' $ l.order:id $ '\'' ) }">
 				<MvELSE>
