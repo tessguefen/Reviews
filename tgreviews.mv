@@ -2331,6 +2331,17 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
+<MvFUNCTION NAME = "Module_Product_Facets_Query" PARAMETERS = "module var, query var, facets var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.facets"										VALUE = "">
+
+	<MvASSIGN NAME = "l.facets" INDEX = 1 MEMBER = "code"			VALUE = "tgr_rating">
+	<MvASSIGN NAME = "l.facets" INDEX = 1 MEMBER = "name"			VALUE = "Average Rating">
+	<MvASSIGN NAME = "l.facets" INDEX = 1 MEMBER = "allowed_types"	VALUE = "checkbox,radio,select,rangeslider">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+
 <MvFUNCTION NAME = "Module_Product_Facet_Values_Query_PostProcess" PARAMETERS = "module var, query var, facet var, values var, value_count" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ l.facet:input_value_count EQ 0 }">
 		<MvFUNCTIONRETURN VALUE = "{ l.value_count }">
@@ -2876,7 +2887,7 @@
 	</MvIF>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "ComponentModule_Defaults" PARAMETERS = "module var, settings var" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "ComponentModule_Defaults" PARAMETERS = "module var, item, settings var" STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.settings:fields_custom"					VALUE = "">
 	<MvASSIGN NAME = "l.settings:price"							VALUE = "base">
 	<MvASSIGN NAME = "l.settings:additionalprice"				VALUE = "">
@@ -4588,6 +4599,14 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Notify_Product_Update" PARAMETERS = "module var, product var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_Notify_Product_LowStock" PARAMETERS = "module var, product var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_Notify_Product_OutOfStock" PARAMETERS = "module var, product var" STANDARDOUTPUTLEVEL = "">
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
