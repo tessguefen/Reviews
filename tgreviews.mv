@@ -7081,8 +7081,8 @@
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 
-	<MvASSIGN NAME = "l.page:review"	VALUE = "{ l.review }">
-	<MvASSIGN NAME = "l.page:order"		VALUE = "{ l.order }">
+	<MvASSIGN NAME = "l.page:settings:review"	VALUE = "{ l.review }">
+	<MvASSIGN NAME = "l.page:settings:order"	VALUE = "{ l.order }">
 
 	<MvCAPTURE VARIABLE = "l.message"><MvASSIGN NAME = "l.result" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Render_Page_LowLevel( l.page:code, l.page ) }"></MvCAPTURE>
 
