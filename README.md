@@ -1,7 +1,7 @@
 # Reviews
 
-**Current Version 2.006**
+**Current Version 2.007**
 
-*10/02/2020*
+*11/24/2020*
 
 Please see Reviews [Reviews Documentation](Docs/tgreviews-documentation.pdf)

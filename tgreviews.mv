@@ -11,7 +11,7 @@
 	<MvASSIGN NAME = "l.module:code"		VALUE = "tgreviews">
 	<MvASSIGN NAME = "l.module:name"		VALUE = "Product Reviews">
 	<MvASSIGN NAME = "l.module:provider"	VALUE = "Tess Guefen">
-	<MvASSIGN NAME = "l.module:version"		VALUE = "2.006">
+	<MvASSIGN NAME = "l.module:version"		VALUE = "2.007">
 	<MvASSIGN NAME = "l.module:api_ver"		VALUE = "9.12">
 	<MvASSIGN NAME = "l.module:description"	VALUE = "Product Reviews module allows your customers to easily write reviews for products. This module also allows for importing and exporting product reviews.">
 	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside, component, fields_prod, not_prod, fulfill, scheduledtask, vis_product, export, import, json_api, prod_facet">
@@ -7081,37 +7081,10 @@
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
 
-	<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplate_Load_ID( l.page:templ_id, l.email_template ) }">
-		<MvFUNCTIONRETURN VALUE = 0>
-	</MvIF>
+	<MvASSIGN NAME = "l.page:settings:review"	VALUE = "{ l.review }">
+	<MvASSIGN NAME = "l.page:settings:order"	VALUE = "{ l.order }">
 
-	<MvCOMMENT>
-	|
-	| Load and initialize items
-	|
-	</MvCOMMENT>
-
-	<MvASSIGN NAME = "l.item_pos"			VALUE = 1>
-	<MvASSIGN NAME = "l.item_count"			VALUE = "{ [ g.Module_Feature_TUI_DB ].ItemModuleList_Load_Page_Render( l.page:id,			l.page:settings:_mgr ) }">
-	<MvASSIGN NAME = "l.extension_count"	VALUE = "{ [ g.Module_Feature_TUI_DB ].ItemExtensionModuleList_Load_Page_Render( l.page:id,	l.page:settings:_mgr ) }">
-
-	<MvWHILE EXPR = "{ l.item_pos LE l.item_count }">
-		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Initialize_Item_LowLevel( l.page:settings, l.page:settings:_mgr:items[ l.item_pos ] ) }">
-			<MvFUNCTIONRETURN VALUE = 0>
-		</MvIF>
-
-		<MvIF EXPR = "{ g.TemplateManager_Exception }">
-			<MvFUNCTIONRETURN VALUE = "{ [ g.Module_Library_Utilities ].Error( 'MOD-SYS-TGR-00134', 'Item \'' $ l.page:settings:_mgr:items[ l.item_pos ]:item_code $ '\' threw exception \'' $ g.TemplateManager_Exception_Code $ '\' during initialization' ) }">
-		</MvIF>
-
-		<MvASSIGN NAME = "l.item_pos"	VALUE = "{ l.item_pos + 1 }">
-	</MvWHILE>
-
-	<MvASSIGN NAME = "l.all_settings"			VALUE = "{ l.page:settings }">
-	<MvASSIGN NAME = "l.all_settings:review"	VALUE = "{ l.review }">
-	<MvASSIGN NAME = "l.all_settings:order"		VALUE = "{ l.order }">
-
-	<MvCAPTURE VARIABLE = "l.message"><MvASSIGN NAME = "l.result" VALUE = "{ [ g.Store_Template_Path $ l.email_template:filename ].Template_Render( l.page, l.all_settings ) }"></MvCAPTURE>
+	<MvCAPTURE VARIABLE = "l.message"><MvASSIGN NAME = "l.result" VALUE = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_Render_Page_LowLevel( l.page:code, l.page ) }"></MvCAPTURE>
 
 	<MvIF EXPR = "{ ISNULL l.message }">
 		<MvIF EXPR = "{ l.order:id }">
