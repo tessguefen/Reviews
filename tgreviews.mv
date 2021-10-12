@@ -2338,6 +2338,17 @@
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
+<MvFUNCTION NAME = "Module_Product_Facets_Query" PARAMETERS = "module var, query var, facets var" STANDARDOUTPUTLEVEL = "">
+	<MvASSIGN NAME = "l.facets"										VALUE = "">
+
+	<MvASSIGN NAME = "l.facets" INDEX = 1 MEMBER = "code"			VALUE = "tgr_rating">
+	<MvASSIGN NAME = "l.facets" INDEX = 1 MEMBER = "name"			VALUE = "Average Rating">
+	<MvASSIGN NAME = "l.facets" INDEX = 1 MEMBER = "allowed_types"	VALUE = "checkbox,radio,select,rangeslider">
+
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+
 <MvFUNCTION NAME = "Module_Product_Facet_Values_Query_PostProcess" PARAMETERS = "module var, query var, facet var, values var, value_count" STANDARDOUTPUTLEVEL = "">
 	<MvIF EXPR = "{ l.facet:input_value_count EQ 0 }">
 		<MvFUNCTIONRETURN VALUE = "{ l.value_count }">
@@ -2648,7 +2659,7 @@
 				<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( 'MOD-SYS-TGR-00148', l.module:name $ ' \'' $ l.item $ '\' template reverted' ) }">
 			</MvIF>
 		<MvELSE>
-			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplateVersion( l.managedtemplate, l.fields:notes, l.fields:template_code, l.settings, l.compile_error ) }">
+			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplateVersion( l.managedtemplate, l.module:name $ ' \'' $ l.item $ ' Updated', l.fields:template_code, l.settings, l.compile_error ) }">
 				<MvIF EXPR = "{ len( l.compile_error ) }">
 					<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Admin ].FieldError( l.item, l.field_prefix $ 'template_code', l.compile_error ) }">
 					<MvFUNCTIONRETURN VALUE = 1>
@@ -2666,31 +2677,8 @@
 
 <MvFUNCTION NAME = "ComponentModule_Content" PARAMETERS = "module var, item, tab, load_fields, field_prefix, fields var, settings var"  STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
 	<MvIF EXPR = "{ l.item EQ 'tgreviews_orderitems' }">
-		<MvIF EXPR = "{ l.fields:template_clear_history }">
-			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplate_Delete_History( l.settings:template_id ) }">
-				<MvFUNCTIONRETURN VALUE = 0>
-			</MvIF>
-	
-			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_Template_Current( l.settings:template_id, l.template ) }">
-				<MvFUNCTIONRETURN VALUE = 0>
-			</MvIF>
-	
-			<MvASSIGN NAME = "l.fields:template_version"			VALUE = "{ l.template:id }">
-			<MvASSIGN NAME = "l.fields:template_version_selected"	VALUE = "{ l.template:id }">
-		<MvELSEIF EXPR = "{ l.fields:template_recall }">
-			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_ID( l.fields:template_version_selected, l.template ) }">
-				<MvFUNCTIONRETURN VALUE = 0>
-			</MvIF>
-	
-			<MvASSIGN NAME = "l.template_id"						VALUE = "{ l.settings:template_id }">
-			<MvASSIGN NAME = "l.settings"							VALUE = "{ l.template:settings }">
-			<MvASSIGN NAME = "l.settings:template_id"				VALUE = "{ l.template_id }">
-	
-			<MvASSIGN NAME = "l.load_fields"						VALUE = 1>
-		<MvELSE>
-			<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_Template_Current( l.settings:template_id, l.template ) }">
-				<MvFUNCTIONRETURN VALUE = 0>
-			</MvIF>
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_Template_Current( l.settings:template_id, l.template ) }">
+			<MvFUNCTIONRETURN VALUE = 0>
 		</MvIF>
 	
 		<MvCOMMENT>
@@ -2726,7 +2714,6 @@
 				<MvASSIGN NAME = "l.fields:price"					VALUE = "{ l.settings:price }">
 			</MvIF>
 	
-			<MvASSIGN NAME = "l.fields:notes"						VALUE = "">
 			<MvASSIGN NAME = "l.fields:template_code"				VALUE = "{ l.template:source }">
 			<MvASSIGN NAME = "l.fields:predictdiscounts"			VALUE = "{ l.settings:predictdiscounts }">
 			<MvASSIGN NAME = "l.fields:imagetypes"					VALUE = "{ l.settings:imagetypes }">
@@ -2757,7 +2744,6 @@
 			</MvIF>
 	
 			<MvASSIGN NAME = "l.fields:template_version"			VALUE = "{ l.template:id }">
-			<MvASSIGN NAME = "l.fields:template_version_selected"	VALUE = "{ l.template:id }">
 	
 			<MvIF EXPR = "{ l.settings:default_sort EQ '' }">
 				<MvASSIGN NAME = "l.fields:default_sort"			VALUE = "id_desc">
@@ -2769,15 +2755,15 @@
 		</MvIF>
 	
 		<MvIF EXPR = "{ NOT [ g.Module_Admin ].Tab_Visible( l.tab, l.item ) }">
-			<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_AD ].TUI_Hide_ComponentFields( l.field_prefix, 'fields_custom,image,imagetypes,paginate,per_page,paginate_count,items_per_page_filter,page_disp_count,price,additionalprice,displaydiscounts,predictdiscounts,field_code,field_name,field_options,field_dtadded,field_notes,field_quantity,field_price,button_add,invmsg,default_sort,sort_by:switch,sort_by:name,sort_by:code,sort_by:price,sort_by:dtadded,reverse_default_disp_order,notes,template_code,template_version_selected,template_recall,template_clear_history,template_version,advanced' ) }">
+			<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_AD ].TUI_Hide_ComponentFields( l.field_prefix, 'fields_custom,image,imagetypes,paginate,per_page,paginate_count,items_per_page_filter,page_disp_count,price,additionalprice,displaydiscounts,predictdiscounts,field_code,field_name,field_options,field_dtadded,field_notes,field_quantity,field_price,button_add,invmsg,default_sort,sort_by:switch,sort_by:name,sort_by:code,sort_by:price,sort_by:dtadded,reverse_default_disp_order,notes,template_code,template_version,advanced' ) }">
 		<MvELSE>
 			<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_Start( 'GT_PAGE', l.item ) }">
 			<table border="0" cellpadding="2" cellspacing="0" width="100%">
 			<tr><td colspan="2" width="100%">
-				<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawTemplateTextArea( l.field_prefix $ 'template_code', l.fields:template_code, 20, 100 ) }">
+				<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawTemplateTextArea_WithRecall( l.field_prefix $ 'template_code', l.fields:template_code, 20, 100, l.template_id ) }">
 			</td></tr>
 	
-			<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_AD ].TUI_Hide_ComponentFields( l.field_prefix, 'field_code,field_name,field_options,field_dtadded,field_notes,field_quantity,field_price' ) }">
+			<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_AD ].TUI_Hide_ComponentFields( l.field_prefix, 'field_code,field_name,field_options,field_dtadded,field_quantity,field_price,template_version' ) }">
 	
 			<MvASSIGN NAME = "l.customfield_count"					VALUE = "{ [ g.Module_Library_Utilities ].ProductCustomFieldList_Load( l.customfields ) }">
 	
@@ -2882,25 +2868,6 @@
 				<label><MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( l.field_prefix $ 'items_per_page_filter', 0, l.fields:items_per_page_filter, 'Off' ) }"></label><br />
 				<label><MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawRadio( l.field_prefix $ 'items_per_page_filter', 1, l.fields:items_per_page_filter, 'On' ) }"></label>
 			</td></tr>
-	
-			<tr><td colspan="2">&nbsp;</td></tr>
-	
-			<tr><td>
-				Notes:
-			</td><td width="100%">
-				<input type="text" name="{ encodeentities( l.field_prefix ) $ 'notes' }" value="{ encodeentities( l.fields:notes ) }" size="40">
-			</td></tr>
-	
-			<tr><td>
-				Versions:
-			</td><td width="100%">
-				<input type="hidden" name="{ encodeentities( l.field_prefix ) $ 'template_recall' }" value="0">
-				<input type="hidden" name="{ encodeentities( l.field_prefix ) $ 'template_clear_history' }" value="0">
-				<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_AD ].TUI_Hide_ComponentFields( l.field_prefix, 'template_version' ) }">
-				<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_ManagedTemplate_Version_Select( l.settings:template_id, l.field_prefix $ 'template_version_selected', l.fields:template_version_selected ) }">
-				<a href="#" onclick="{ 'Toggle( \'' $ [ g.Module_Admin ].JavaScriptEncode( l.field_prefix ) $ 'template_recall' $ '\', 1 ); return false;' }">Recall</a>
-				<a href="#" onclick="{ 'Toggle_Prompt( \'Are you sure you wish to delete all saved configuration settings for Review - Order Items Layout?\\r\\nThis action cannot be undone.\', \'' $ [ g.Module_Admin ].JavaScriptEncode( l.field_prefix ) $ 'template_clear_history' $ '\', 1 ); return false;' }">Clear History</a>
-			</td></tr>
 			</table>
 			<MvEVAL EXPR = "{ [ g.Module_Admin ].DrawGroupTabEntry_End() }">
 		</MvIF>
@@ -2927,7 +2894,7 @@
 	</MvIF>
 </MvFUNCTION>
 
-<MvFUNCTION NAME = "ComponentModule_Defaults" PARAMETERS = "module var, settings var" STANDARDOUTPUTLEVEL = "">
+<MvFUNCTION NAME = "ComponentModule_Defaults" PARAMETERS = "module var, item, settings var" STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.settings:fields_custom"					VALUE = "">
 	<MvASSIGN NAME = "l.settings:price"							VALUE = "base">
 	<MvASSIGN NAME = "l.settings:additionalprice"				VALUE = "">
@@ -4639,6 +4606,14 @@
 </MvFUNCTION>
 
 <MvFUNCTION NAME = "Module_Notify_Product_Update" PARAMETERS = "module var, product var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_Notify_Product_LowStock" PARAMETERS = "module var, product var" STANDARDOUTPUTLEVEL = "">
+	<MvFUNCTIONRETURN VALUE = 1>
+</MvFUNCTION>
+
+<MvFUNCTION NAME = "Module_Notify_Product_OutOfStock" PARAMETERS = "module var, product var" STANDARDOUTPUTLEVEL = "">
 	<MvFUNCTIONRETURN VALUE = 1>
 </MvFUNCTION>
 
@@ -6526,30 +6501,9 @@
 </MvCOMMENT>
 
 <MvFUNCTION NAME = "Admin_Template" PARAMETERS = "name, field_prefix, template_id, load_fields" STANDARDOUTPUTLEVEL = "text, html, compresswhitespace">
-	<MvIF EXPR = "{ miva_variable_value( 'g.' $ l.field_prefix $ 'template_clear_history' ) }">
-		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplate_Delete_History( l.template_id ) }">
-			<MvFUNCTIONRETURN VALUE = 0>
-		</MvIF>
-
-		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_Template_Current( l.template_id, l.template ) }">
-			<MvFUNCTIONRETURN VALUE = 0>
-		</MvIF>
-
-		<MvASSIGN NAME = "{ l.field_prefix $ 'template_version' }"				VALUE = "{ l.template:id }">
-		<MvASSIGN NAME = "{ l.field_prefix $ 'template_version_selected' }"		VALUE = "{ l.template:id }">
-	<MvELSEIF EXPR = "{ miva_variable_value( 'g.' $ l.field_prefix $ 'template_recall' ) }">
-		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_ID(  miva_variable_value( 'g.' $ l.field_prefix $ 'template_version_selected' ), l.template ) }">
-			<MvFUNCTIONRETURN VALUE = 0>
-		</MvIF>
-
-		<MvASSIGN NAME = "l.load_fields"										VALUE = 1>
-	<MvELSE>
-		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_Template_Current( l.template_id, l.template ) }">
-			<MvFUNCTIONRETURN VALUE = 0>
-		</MvIF>
+	<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_DB ].ManagedTemplateVersion_Load_Template_Current( l.template_id, l.template ) }">
+		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
-
-	<MvASSIGN NAME = "{ 'g.' $ l.field_prefix $ 'notes' }"						VALUE = "">
 
 	<MvIF EXPR = "{ g.Data_Entry_Error AND NOT ISNULL miva_variable_value( 'g.' $ l.field_prefix $ 'template_code' ) }">
 		<MvASSIGN NAME = "{ 'g.' $ l.field_prefix $ 'template_code' }"			VALUE = "{ miva_variable_value( 'g.' $ l.field_prefix $ 'template_code' ) }">
@@ -6558,32 +6512,12 @@
 	</MvIF>
 
 	<MvASSIGN NAME = "{ 'g.' $ l.field_prefix $ 'template_version' }"			VALUE = "{ l.template:id }">
-	<MvASSIGN NAME = "{ 'g.' $ l.field_prefix $ 'template_version_selected' }"	VALUE = "{ l.template:id }">
+
+	<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_AD ].TUI_Hide_ComponentFields( l.field_prefix, 'template_version' ) }">
 
 	<tr>
 		<td colspan="2" width="100%">
-			<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawTemplateTextArea( l.field_prefix $ 'template_code', miva_variable_value( 'g.' $  l.field_prefix $ 'template_code' ), 20, 100 ) }">
-		</td>
-	</tr>
-	<tr>
-		<td>
-			Notes:
-		</td>
-		<td width="100%">
-			<input type="text" name="{ encodeentities( l.field_prefix ) $ 'notes' }" value="{ encodeentities( miva_variable_value( 'g.' $  l.field_prefix $ 'notes' ) ) }" size="40">
-		</td>
-	</tr>
-	<tr>
-		<td>
-			Versions:
-		</td>
-		<td width="100%">
-			<input type="hidden" name="{ encodeentities( l.field_prefix ) $ 'template_recall' }" value="0">
-			<input type="hidden" name="{ encodeentities( l.field_prefix ) $ 'template_clear_history' }" value="0">
-			<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_AD ].TUI_Hide_ComponentFields( l.field_prefix, 'template_version' ) }">
-			<MvEVAL EXPR = "{ [ g.Module_Feature_TUI_MGR ].TemplateManager_ManagedTemplate_Version_Select( l.template_id, l.field_prefix $ 'template_version_selected', miva_variable_value( 'g.' $ l.field_prefix $ 'template_version_selected' ) ) }">
-			<a href="#" onclick="{ 'Toggle( \'' $ [ g.Module_Admin ].JavaScriptEncode( l.field_prefix ) $ 'template_recall' $ '\', 1 ); return false;' }">Recall</a>
-			<a href="#" onclick="{ 'Toggle_Prompt( \'Are you sure you wish to delete all templates for ' $ l.name $ '?\\r\\nThis action cannot be undone.\', \'' $ [ g.Module_Admin ].JavaScriptEncode( l.field_prefix ) $ 'template_clear_history' $ '\', 1 ); return false;' }">Clear History</a>
+			<MvEVAL EXPR = "{ [ g.Module_Library_Utilities ].DrawTemplateTextArea_WithRecall( l.field_prefix $ 'template_code', miva_variable_value( 'g.' $  l.field_prefix $ 'template_code' ), 20, 100, l.template_id ) }">
 		</td>
 	</tr>
 </MvFUNCTION>
@@ -6610,7 +6544,7 @@
 			<MvEVAL EXPR = "{ [ g.Module_Admin ].Admin_Log_Action( 'MOD-SYS-TGR-00123', l.module:name $ ' ' $ l.name $ ' template reverted' ) }">
 		</MvIF>
 	<MvELSE>
-		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplateVersion( l.managedtemplate, miva_variable_value( 'g.' $ l.field_prefix $ 'notes' ), miva_variable_value( 'g.' $ l.field_prefix $ 'template_code' ), l.settings, l.compile_error ) }">
+		<MvIF EXPR = "{ NOT [ g.Module_Feature_TUI_MGR ].TemplateManager_Create_ManagedTemplateVersion( l.managedtemplate, l.module:name $ ' ' $ l.name $ ' Updated', miva_variable_value( 'g.' $ l.field_prefix $ 'template_code' ), l.settings, l.compile_error ) }">
 			<MvIF EXPR = "{ len( l.compile_error ) }">
 				<MvASSIGN NAME = "l.null" VALUE = "{ [ g.Module_Admin ].FieldError( 'TGR_SETT', l.field_prefix $ 'template_code', l.compile_error ) }">
 				<MvFUNCTIONRETURN VALUE = 1>
