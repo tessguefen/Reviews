@@ -1,7 +1,7 @@
 :title-page:
 = Product Reviews Documentation
-Module Version: 2.011
-Last Updated: 05/04/2022
+Module Version: 2.012
+Last Updated: 11/06/2023
 :toc:
 :toclevels: 3
 
