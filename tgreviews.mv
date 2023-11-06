@@ -11,7 +11,7 @@
 	<MvASSIGN NAME = "l.module:code"		VALUE = "tgreviews">
 	<MvASSIGN NAME = "l.module:name"		VALUE = "Product Reviews">
 	<MvASSIGN NAME = "l.module:provider"	VALUE = "Tess Guefen">
-	<MvASSIGN NAME = "l.module:version"		VALUE = "2.011">
+	<MvASSIGN NAME = "l.module:version"		VALUE = "2.012">
 	<MvASSIGN NAME = "l.module:api_ver"		VALUE = "10.00">
 	<MvASSIGN NAME = "l.module:description"	VALUE = "Product Reviews module allows your customers to easily write reviews for products. This module also allows for importing and exporting product reviews.">
 	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside, component, fields_prod, not_prod, fulfill, scheduledtask, vis_product, export, import, json_api, prod_facet">
@@ -3809,7 +3809,6 @@
 												prod.agrpcount 				AS product_agrpcount,
 												prod.pgrpcount 				AS product_pgrpcount,
 												prod.disp_order 			AS product_disp_order,
-												prod.page_id 				AS product_page_id,
 												prod.code 					AS product_code,
 												prod.sku 					AS product_sku,
 												prod.name 					AS product_name,
@@ -3890,7 +3889,6 @@
 		<MvASSIGN NAME = "l.orderitem:product:agrpcount"	VALUE = "{ OrderItems.d.product_agrpcount }">
 		<MvASSIGN NAME = "l.orderitem:product:pgrpcount"	VALUE = "{ OrderItems.d.product_pgrpcount }">
 		<MvASSIGN NAME = "l.orderitem:product:disp_order"	VALUE = "{ OrderItems.d.product_disp_order }">
-		<MvASSIGN NAME = "l.orderitem:product:page_id"		VALUE = "{ OrderItems.d.product_page_id }">
 		<MvASSIGN NAME = "l.orderitem:product:code"			VALUE = "{ OrderItems.d.product_code }">
 		<MvASSIGN NAME = "l.orderitem:product:sku"			VALUE = "{ OrderItems.d.product_sku }">
 		<MvASSIGN NAME = "l.orderitem:product:name"			VALUE = "{ OrderItems.d.product_name }">
