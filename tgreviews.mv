@@ -10,8 +10,8 @@
 <MvFUNCTION NAME = "Module_Description" PARAMETERS = "module var" STANDARDOUTPUTLEVEL = "">
 	<MvASSIGN NAME = "l.module:code"		VALUE = "tgreviews">
 	<MvASSIGN NAME = "l.module:name"		VALUE = "Product Reviews">
-	<MvASSIGN NAME = "l.module:provider"	VALUE = "Tess Guefen">
-	<MvASSIGN NAME = "l.module:version"		VALUE = "2.013">
+	<MvASSIGN NAME = "l.module:provider"	VALUE = "Tess Guefen Stearns">
+	<MvASSIGN NAME = "l.module:version"		VALUE = "2.014">
 	<MvASSIGN NAME = "l.module:api_ver"		VALUE = "10.00">
 	<MvASSIGN NAME = "l.module:description"	VALUE = "Product Reviews module allows your customers to easily write reviews for products. This module also allows for importing and exporting product reviews.">
 	<MvASSIGN NAME = "l.module:features"	VALUE = "data_store, system, vis_system, json, clientside, component, fields_prod, not_prod, fulfill, scheduledtask, vis_product, export, import, json_api, prod_facet">
@@ -6649,7 +6649,7 @@
 		</MvIF>
 	</MvIF>
 
-	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].Runtime_Product_Load_Code_Cached( g.TGR_Product_Code, l.product ) }">
+	<MvIF EXPR = "{ NOT [ g.Module_Library_DB ].Product_Load_Code_Cached( g.TGR_Product_Code, l.product ) }">
 		<MvASSIGN NAME = "g.TGR_Error" VALUE = "Invalid Product">
 		<MvFUNCTIONRETURN VALUE = 0>
 	</MvIF>
